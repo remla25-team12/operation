@@ -7,7 +7,7 @@ Approved PR: ...
 
 **Mees Chammat:**\
 Created PR: https://github.com/remla25-team12/operation/pull/1 \
-Approved PR: ... 
+Approved PR: https://github.com/remla25-team12/lib-version/pull/1
 
 
 **Philippe Henry:**\
@@ -16,7 +16,7 @@ Approved PR: ...
 
 
 **Peter Huang:**\
-Created PR: ... \
+Created PR: https://github.com/remla25-team12/lib-version/pull/1 \
 Approved PR: ... 
 
 
