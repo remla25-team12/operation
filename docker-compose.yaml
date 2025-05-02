@@ -1,24 +1,22 @@
-version: '3.9'
-
 services:
   app:
-    image: ghcr.io/remla25-team12/app:latest
+    image: ghcr.io/remla25-team12/app:${TAG_APP-latest}
     container_name: app
-    # environment:
-    #   - ENV_VAR=<tbd>
-    # volumes:
-    #   - <tbd>
+    volumes:
+      - ../app:/app # assuming docker-compose is executed inside the operation folder, which is placed alongside the app folder
     ports:
-      - 8080:8080
+      - 5000:5000 
+    # depends-on:
+    #   - model-service # to ensure the model loads before the web app
     restart: unless-stopped
     
-  model-service:
-    image: ghcr.io/remla25-team12/model-service:latest
-    container_name: model-service
+  #model-service:
+    #image: ghcr.io/remla25-team12/model-service:$(TAG_MODEL_SERVICE-latest)
+    #container_name: model-service
     # environment:
     #   - ENV_VAR=<tbd>
     #   - Pass model url as env? 
     # volumes:
     #   - <tbd>
-    restart: unless-stopped
+    #restart: unless-stopped
 
