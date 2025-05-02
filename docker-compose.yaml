@@ -2,23 +2,24 @@ version: '3.9'
 
 services:
   app:
-    image: ghcr.io/remla25-team12/app:latest
+    image: ghcr.io/remla25-team12/app:${APP_TAG-latest}
     container_name: app
-    # environment:
-    #   - ENV_VAR=<tbd>
-    # volumes:
-    #   - <tbd>
+    env_file:
+      - versions.env
     ports:
       - 8080:8080
     restart: unless-stopped
     
   model-service:
-    image: ghcr.io/remla25-team12/model-service:latest
+    image: ghcr.io/remla25-team12/model-service:${TAG_MODEL_SERVICE-latest}
     container_name: model-service
+    env_file:
+      - versions.env
+    volumes:
+      ### syntax: path/to/local/dir:path/to/docker/dir
+    #  - ./:/root/
     # environment:
     #   - ENV_VAR=<tbd>
     #   - Pass model url as env? 
-    # volumes:
-    #   - <tbd>
     restart: unless-stopped
 
