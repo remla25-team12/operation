@@ -3,7 +3,7 @@
 This repository contains the deployment configuration, including a `docker-compose.yml`, and links to all other components.
 
 ## About
-This project is an adaptation of the [Restaurant Sentiment Analysis](https://github.com/proksch/restaurant-sentiment) project.
+This repository contains all information about running the project. It is an adaptation of the [Restaurant Sentiment Analysis](https://github.com/proksch/restaurant-sentiment) project. 
 
 ## Relevant repositories
 Repository | Purpose | 
@@ -21,12 +21,12 @@ Repository | Purpose |
 
 
 ## Install and run
-1. Clone this repository.
+1. Clone this repository, and all other repositories listed in "Relevant repositories", into a folder.
 2. Deploy the project using Docker Compose by running this command in the project's root folder.
 ```
 $ docker-compose up -d
 ```
-3. Navigate to localhost:8080 to access the application homepage.
+3. Navigate to localhost:5000 to access the application homepage.
 
 ## Config
 The .env file in this repository allows you to choose which version of the app and model-service container you'd like to use. By default, the latest image will be pulled.
