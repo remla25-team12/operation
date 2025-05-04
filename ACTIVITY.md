@@ -6,7 +6,7 @@ Approved PR: https://github.com/remla25-team12/app/pull/1 & https://github.com/r
 
 
 **Mees Chammat:**\
-Created PR: https://github.com/remla25-team12/operation/pull/1 \
+Created PR: https://github.com/remla25-team12/app/pull/5) \
 Approved PR: https://github.com/remla25-team12/lib-version/pull/1
 
 
