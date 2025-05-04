@@ -1,22 +1,30 @@
 services:
-  app:
-    image: ghcr.io/remla25-team12/app:${TAG_APP-latest}
-    container_name: app
-    volumes:
-      - ../app:/app # assuming docker-compose is executed inside the operation folder, which is placed alongside the app folder
-    ports:
-      - 5000:5000 
-    # depends-on:
-    #   - model-service # to ensure the model loads before the web app
+  model-service:
+    image: ghcr.io/remla25-team12/model-service:${TAG_MODEL_SERVICE:-latest}
+    #image: ms-test:latest
+    container_name: model-service
+    env_file: .env
+    # ports:
+    #   - 5000:5000  # temp, for debugging
+    networks:
+      - backend
     restart: unless-stopped
-    
-  #model-service:
-    #image: ghcr.io/remla25-team12/model-service:$(TAG_MODEL_SERVICE-latest)
-    #container_name: model-service
-    # environment:
-    #   - ENV_VAR=<tbd>
-    #   - Pass model url as env? 
-    # volumes:
-    #   - <tbd>
-    #restart: unless-stopped
 
+  app:
+    image: ghcr.io/remla25-team12/app:${TAG_APP:-latest}
+    #image: app-test:latest
+    container_name: app
+    env_file: .env
+    ports:
+      - 8080:5000
+    environment:
+      - MODEL_SERVICE_URL=http://model-service:5000/predict
+    networks:
+      - backend
+    restart: unless-stopped
+
+networks:
+  backend:
+    driver: bridge
+
+    #This is a great product!
