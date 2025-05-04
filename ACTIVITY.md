@@ -1,7 +1,7 @@
 # A1:
 
 **Selin Ceydeli:** \
-Created PR: https://github.com/remla25-team12/lib-ml/pull/3
+Created PR: https://github.com/remla25-team12/lib-ml/pull/3 \
 Approved PR: https://github.com/remla25-team12/app/pull/1
 
 **Mees Chammat:**\
