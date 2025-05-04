@@ -1,9 +1,9 @@
 # Operation
-
-This repository contains the deployment configuration, including a `docker-compose.yml`, and links to all other components.
+REMLA Group 12
 
 ## About
-This repository contains all information about running the project. It is an adaptation of the [Restaurant Sentiment Analysis](https://github.com/proksch/restaurant-sentiment) project. 
+This project is an adaptation of the [Restaurant Sentiment Analysis](https://github.com/proksch/restaurant-sentiment) project. 
+This repository serves as the central point of the project, containing the deployment configuration (`docker-compose.yaml`), installation instructions, and links to other components.
 
 ## Relevant repositories
 Repository | Purpose | 
@@ -17,8 +17,7 @@ Repository | Purpose |
 # Getting started
 ## Requirements
 - Linux or MacOS
-- Docker
-
+- Docker and Docker Compose
 
 ## Install and run
 1. Clone this repository.
@@ -29,12 +28,16 @@ $ docker compose up -d
 3. Navigate to `http://localhost:8080` to access the application homepage.
 
 ## Config
-The .env file in this repository allows you to choose which version of the app and model-service container you'd like to use. By default, the latest image will be pulled.
+The .env file in this repository allows you to choose which version of the `app` and `model-service` container you'd like to use. If none are specified, the latest images will be pulled by default.
 
 
 # Continuous progress log
+_Add a new paragraph for each assignment as a continuous progress log that (briefly) describes which assignment parts have been implemented to support the peer-review process._
+
 ## Assignment 1
-[Add a new paragraph for each assignment as a continuous progress log that (briefly) describes which assignment parts have been implemented to support the peer-review process.]
+The docker-compose.yaml successfully launches both containers (`app` and `model-service`). They communicate with each other over a shared Docker network, and only `app`'s port is exposed to the host. The app frontend can be used to query the model for predictions. All libraries and containers are released using automatic versioning via a GitHub workflow. We do not yet have additional interaction options (e.g. flagging incorrect predictions).
+
+
 
 
 
