@@ -1,18 +1,23 @@
 services:
   model-service:
     image: ghcr.io/remla25-team12/model-service:${TAG_MODEL_SERVICE:-latest}
-    #image: ms-test:latest
+    #image: ms-test:latest # local build, only for testing purposes
     container_name: model-service
     env_file: .env
     # ports:
-    #   - 5000:5000  # temp, for debugging
+    #   - 5000:5000  # only expose this port during debugging/testing
+    environment:
+      - MODEL_URL=https://github.com/remla25-team12/model-training/releases/download/v0.1.0/Classifier_Sentiment_Model.joblib # model URL
+      - VEC_URL=https://github.com/remla25-team12/model-training/releases/download/v0.1.0/c1_BoW_Sentiment_Model.pkl # vectorizer URL
+    # volumes:
+    # - ./Classifier_Sentiment_Model.joblib:/app/Classifier_Sentiment_Model.joblib # local pre-downloaded model (prevent re-downloading)
     networks:
       - backend
     restart: unless-stopped
 
   app:
     image: ghcr.io/remla25-team12/app:${TAG_APP:-latest}
-    #image: app-test:latest
+    #image: app-test:latest # local build, only for testing purposes
     container_name: app
     env_file: .env
     ports:
@@ -27,4 +32,3 @@ networks:
   backend:
     driver: bridge
 
-    #This is a great product!
