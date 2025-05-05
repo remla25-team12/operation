@@ -14,9 +14,9 @@ Created PR: https://github.com/remla25-team12/model-service/pull/1 \
 Approved PR: https://github.com/remla25-team12/lib-ml/pull/2
 
 
-**Peter Huang:**\
+**Pengxuan (Peter) Huang:**\
 Created PR: https://github.com/remla25-team12/lib-version/pull/1 \
-Approved PR: ... 
+Approved PR: https://github.com/remla25-team12/lib-ml/pull/3
 
 
 **Ayush Kuruvilla:**\
