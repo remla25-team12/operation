@@ -11,6 +11,8 @@ services:
       - VEC_URL=https://github.com/remla25-team12/model-training/releases/download/v0.1.0/c1_BoW_Sentiment_Model.pkl # vectorizer URL
     # volumes:
     # - ./Classifier_Sentiment_Model.joblib:/app/Classifier_Sentiment_Model.joblib # local pre-downloaded model (prevent re-downloading)
+    volumes:
+      - cache:/app/cache # cache for downloaded models
     networks:
       - backend
     restart: unless-stopped
@@ -32,3 +34,5 @@ networks:
   backend:
     driver: bridge
 
+volumes:
+  cache:
