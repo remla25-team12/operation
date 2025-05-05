@@ -9,10 +9,10 @@ This repository serves as the central point of the project, containing the deplo
 Repository | Purpose | 
 | --- | --- | 
 [model-training](https://github.com/remla25-team12/model-training) | Training pipeline for the restaurant sentiment analysis model. |
-[model-service](https://github.com/remla25-team12/model-service) | Model wrapper for communication with other components of the project, e.g. for inference | 
+[model-service](https://github.com/remla25-team12/model-service) | Model wrapper for communication with other components of the project, e.g. for inference. | 
 [lib-ml](https://github.com/remla25-team12/model-service) | Preprocessing logic for input data, used during model training and inference. | 
 [lib-version](https://github.com/remla25-team12/lib-version) | A simple version-aware libary that reports its own version. | 
-[app](https://github.com/remla25-team12/app) | Webapp (frontend + service) to interface with the model | 
+[app](https://github.com/remla25-team12/app) | Webapp (frontend + service) to interface with the model. | 
 
 # Getting started
 ## Requirements
