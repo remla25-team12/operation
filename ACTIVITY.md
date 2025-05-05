@@ -20,7 +20,7 @@ Approved PR: ...
 
 
 **Ayush Kuruvilla:**\
-Created PR: ... \
+Created PR: https://github.com/remla25-team12/app/pull/3 \
 Approved PR: https://github.com/remla25-team12/operation/pull/1
 
 
