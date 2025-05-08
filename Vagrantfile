@@ -55,13 +55,13 @@ Vagrant.configure("2") do |config|
       end
 
       # General setup logic
-      ctrl.vm.provision "ansible" do |ansible|
+      node.vm.provision "ansible" do |ansible|
         ansible.compatibility_mode = "2.0"
         ansible.playbook = "provisioning/general.yaml"
       end
 
       # Additional setup logic for the worker node
-      ctrl.vm.provision "ansible" do |ansible|
+      node.vm.provision "ansible" do |ansible|
         ansible.compatibility_mode = "2.0"
         ansible.playbook = "provisioning/node.yaml"
       end

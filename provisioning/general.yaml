@@ -1,2 +1,9 @@
+# general.yaml
 - hosts: all
-  tasks: []
+  become: yes
+  tasks:
+    - name: Register SSH key from macOS
+      ansible.posix.authorized_key:
+        user: vagrant
+        state: present
+        key: "{{ lookup('file', '/Users/selinceydeli/.ssh/id_rsa.pub') }}"
