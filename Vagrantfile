@@ -27,6 +27,18 @@ Vagrant.configure("2") do |config|
       vb.memory = 4096
       vb.cpus = 1
     end
+
+    # General setup logic
+    ctrl.vm.provision "ansible" do |ansible|
+      ansible.compatibility_mode = "2.0"
+      ansible.playbook = "provisioning/general.yaml"
+    end
+
+    # Additional setup logic for the controller node
+    ctrl.vm.provision "ansible" do |ansible|
+      ansible.compatibility_mode = "2.0"
+      ansible.playbook = "provisioning/ctrl.yaml"
+    end
   end
 
   # Define the worker nodes with 2 cores and 6+ GB of memory each
@@ -40,6 +52,18 @@ Vagrant.configure("2") do |config|
         vb.name = "node-#{num}"
         vb.memory = 6144
         vb.cpus = 2
+      end
+
+      # General setup logic
+      ctrl.vm.provision "ansible" do |ansible|
+        ansible.compatibility_mode = "2.0"
+        ansible.playbook = "provisioning/general.yaml"
+      end
+
+      # Additional setup logic for the worker node
+      ctrl.vm.provision "ansible" do |ansible|
+        ansible.compatibility_mode = "2.0"
+        ansible.playbook = "provisioning/node.yaml"
       end
     end
   end
