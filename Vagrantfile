@@ -32,12 +32,14 @@ Vagrant.configure("2") do |config|
     ctrl.vm.provision "ansible" do |ansible|
       ansible.compatibility_mode = "2.0"
       ansible.playbook = "provisioning/general.yaml"
+      ansible.vault_password_file = "~/.vault_pass.txt"
     end
 
     # Additional setup logic for the controller node
     ctrl.vm.provision "ansible" do |ansible|
       ansible.compatibility_mode = "2.0"
       ansible.playbook = "provisioning/ctrl.yaml"
+      ansible.vault_password_file = "~/.vault_pass.txt"
     end
   end
 
@@ -58,12 +60,14 @@ Vagrant.configure("2") do |config|
       node.vm.provision "ansible" do |ansible|
         ansible.compatibility_mode = "2.0"
         ansible.playbook = "provisioning/general.yaml"
+        ansible.vault_password_file = "~/.vault_pass.txt"
       end
 
       # Additional setup logic for the worker node
       node.vm.provision "ansible" do |ansible|
         ansible.compatibility_mode = "2.0"
         ansible.playbook = "provisioning/node.yaml"
+        ansible.vault_password_file = "~/.vault_pass.txt"
       end
     end
   end

@@ -1,9 +1,11 @@
 # general.yaml
 - hosts: all
   become: yes
+  vars_files:
+    - "{{ playbook_dir }}/keys/selin.pub"
   tasks:
-    - name: Register SSH key from macOS
+    - name: Register SSH key of Selin
       ansible.posix.authorized_key:
         user: vagrant
         state: present
-        key: "{{ lookup('file', '/Users/selinceydeli/.ssh/id_rsa.pub') }}"
+        key: "{{ selin_key }}"
