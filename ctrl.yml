@@ -68,6 +68,8 @@
   hosts: master
   become: yes
 
+
+#  shold flannel be installed first?
   tasks:
     - name: download flannel config from github
       get_url:
@@ -80,9 +82,30 @@
         regexp: 'args:'
         insertafter: 'args:'
         line: '        - --iface=eth1'
+        # TODO: check if this is oke? Maybe other args?
 
     - name: Apply flannel network
       command: kubectl apply -f /tmp/kube-flannel.yml
 
+---
+
+- name: Helm
+  hosts: master
+  become: yes
+
+  tasks:
+    - name: Install Helm
+      command: >
+        curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
+        sudo apt-get install apt-transport-https --yes
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+        sudo apt-get update
+        sudo apt-get install helm
+        
+    - name: Add helm diff
+      command: >
+          helm plugin install https://github.com/databus23/helm-diff 
+        
+        
 
 
