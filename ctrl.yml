@@ -58,7 +58,8 @@
     - name: copy kube config to host
       copy:
         src: /etc/kubernetes/admin.conf
-        dest: ../kubeconfig/admin.conf
+        dest: WHERE IS HOSt?
+#        TODO: find a host -,-, apperently we can define a shared folder in the vagrant file: config.vm.synced_folder "./host_shared", "/vagrant/host_shared"
         remote_src: yes
 
 
