@@ -1,0 +1,14 @@
+- name: Setting up kubernetes workers
+  hosts: worker
+  become: yes
+
+  tasks:
+    - name: Generate join command
+      command: kubeadm token create --print-join-command
+      delegate_to: master
+      register: join_command
+
+    - name: Run join command
+      command: "{{ join_command.stdout }}"
+      when: join_command is defined
+      register: join_result
