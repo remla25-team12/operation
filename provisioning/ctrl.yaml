@@ -1,3 +1,93 @@
-# ctrl.yaml
-- hosts: all
-  tasks: []
+---
+- name: Initialize Kubernetes Cluster
+  hosts: master
+  become: yes
+
+  tasks:
+    - name: Check if kubernetes is initialized
+      stat:
+        path: /etc/kubernetes/admin.conf
+      register: kube_config
+
+    - name: Initialize Kubernetes with kubeadm
+      command: >
+        kubeadm init
+        --apiserver-advertise-address={{ ansible_host }}
+        --node-name ctrl
+        --pod-network-cidr=10.244.0.0/16
+      when: kube_config.stat.exists == false
+
+    - name: Ensure kube config is accessible
+      shell: |
+        mkdir -p $HOME/.kube
+        cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+        chown $(id -u):$(id -g) $HOME/.kube/config
+      when: kube_config.stat.exists == false
+
+
+- name: Setup kubectl
+  hosts: masmasterter
+  become: yes
+
+  tasks:
+    - name: Install kubectl
+      apt:
+        name: kubectl
+        state: present
+        update_cache: yes
+
+    - name: Copy kubeconfig to vagrant users home
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/vagrant/.kube/config
+        remote_src: yes
+      become-user: vagrant
+
+    - name: set permissions for vagrant user
+      file:
+        path: /home/vagrant/.kube/config
+        owner: vagrant
+        group: vagrant
+        mode: 0600
+
+- name: Create pod network
+  hosts: master
+  become: yes
+#  shold flannel be installed first?
+  tasks:
+    - name: download flannel config from github
+      get_url:
+        url: https://github.com/flannel-io/flannel/releases/download/v0.26.7/kube-flannel.yml
+        dest: /tmp/kube-flannel.yml
+
+    - name: change flannel to only use eth1
+      lineinfile:
+        path: /tmp/kube-flannel.yml
+        regexp: 'args:'
+        insertafter: 'args:'
+        line: '        - --iface=eth1'
+        # TODO: check if this is oke? Maybe other args?
+
+    - name: Apply flannel network
+      command: kubectl apply -f /tmp/kube-flannel.yml
+
+- name: Helm
+  hosts: master
+  become: yes
+
+  tasks:
+    - name: Install Helm
+      command: >
+        curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
+        sudo apt-get install apt-transport-https --yes
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+        sudo apt-get update
+        sudo apt-get install helm
+
+    - name: Add helm diff
+      command: >
+          helm plugin install https://github.com/databus23/helm-diff 
+        
+        
+
+
