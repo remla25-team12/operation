@@ -17,6 +17,7 @@
         --apiserver-advertise-address={{ ansible_host }}
         --node-name ctrl
         --pod-network-cidr= {env?}
+#        TODO: add env variable for pod-network ?? tbd
       when: kube_config.stat.exists == false
 
     - name: Ensure kube config is accessible
@@ -25,3 +26,37 @@
         cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
         chown $(id -u):$(id -g) $HOME/.kube/config
       when: kube_config.stat.exists == false
+
+---
+
+- name: Setup kubectl
+  hosts: master
+  become: yes
+
+  tasks:
+    - name: Install kubectl
+      apt:
+        name: kubectl
+        state: present
+        update_cache: yes
+
+    - name: Copy kubeconfig to vagrant users home
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/vagrant/.kube/config
+        remote_src: yes
+      become-user: vagrant
+
+    - name: set permissions for vagrant user
+      file:
+        path: /home/vagrant/.kube/config
+        owner: vagrant
+        group: vagrant
+        mode: 0600
+        # TODO: check if this code is oke, now is r/w for owner and no permissions for group and others, my q is group??
+
+    - name: copy kube config to host
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: ../kubeconfig/admin.conf
+        remote_src: yes
