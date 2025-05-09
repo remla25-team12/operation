@@ -43,3 +43,49 @@
       community.general.modprobe:
         name: br_netfilter
         state: present
+# Step 11: Configure containerd
+   - name: Generate default containerd file
+     ansible.builtin.command: containerd config default
+     register: containerd_config_default
+     changed_when: false
+
+
+   - name: Ensure "/etc/containerd" directory exists
+     ansible.builtin.file:
+       path: /etc/containerd
+       state: directory
+       owner: root
+       group: root
+       mode: '0755'
+
+
+   - name: Save default containerd file to "/etc/containerd" directory
+# Step 11: Configure containerd
+   - name: Generate default containerd file
+     ansible.builtin.command: containerd config default
+     register: containerd_config_default
+     changed_when: false
+
+
+   - name: Ensure "/etc/containerd" directory exists
+     ansible.builtin.file:
+       path: /etc/containerd
+       state: directory
+       owner: root
+       group: root
+       mode: '0755'
+
+
+   - name: Save default containerd file to "/etc/containerd" directory
+     ansible.builtin.lineinfile:
+       path: /etc/containerd/config.toml
+       regexp: '^(\s*)SystemdCgroup\s*=.*'
+       line: '\1SystemdCgroup = true'
+       backrefs: yes
+
+
+   - name: Restart containerd service
+     ansible.builtin.service:
+       name: containerd
+       state: restarted
+       enabled: yes
