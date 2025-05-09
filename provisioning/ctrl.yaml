@@ -1,3 +1,4 @@
+---
 - name: Initialize Kubernetes Cluster
   hosts: master
   become: yes
@@ -23,7 +24,6 @@
         chown $(id -u):$(id -g) $HOME/.kube/config
       when: kube_config.stat.exists == false
 
----
 
 - name: Setup kubectl
   hosts: masmasterter
@@ -50,21 +50,9 @@
         group: vagrant
         mode: 0600
 
-    - name: copy kube config to host
-      copy:
-        src: /etc/kubernetes/admin.conf
-        dest: WHERE IS HOSt?
-#        TODO: find a host -,-, apperently we can define a shared folder in the vagrant file: config.vm.synced_folder "./host_shared", "/vagrant/host_shared"
-        remote_src: yes
-
-
----
-
 - name: Create pod network
   hosts: master
   become: yes
-
-
 #  shold flannel be installed first?
   tasks:
     - name: download flannel config from github
@@ -82,8 +70,6 @@
 
     - name: Apply flannel network
       command: kubectl apply -f /tmp/kube-flannel.yml
-
----
 
 - name: Helm
   hosts: master
