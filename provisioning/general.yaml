@@ -5,23 +5,33 @@
     - community.general
   vars_files:
     - "{{ playbook_dir }}/keys/selin.pub"
+    - "{{ playbook_dir }}/keys/mees.pub"
   tasks:
+    # Step 4
     - name: Register SSH key of Selin
       ansible.posix.authorized_key:
         user: vagrant
         state: present
         key: "{{ selin_key }}"
 
+    - name: Register SSH key of Mees
+      ansible.posix.authorized_key:
+        user: vagrant
+        state: present
+        key: "{{ mees_key }}"
+
+    # Step 5
     - name: Disable SWAP
       ansible.builtin.shell: swapoff -a
 
     - name: Prevent a re-mount on the next boot by removing swap entries
       ansible.builtin.lineinfile:
         path: /etc/fstab
-        regexp: '.*swap.*' # I have no clue how to define the regex expression for this
+        regexp: '/swapfile'
         state: absent
         backrefs: yes
 
+    # Step 6
     - name: Register the automated load for future system boots using overlay and br_netfilter modules
       ansible.builtin.copy:
         dest: /etc/modules-load.d/k8s.conf
@@ -36,3 +46,112 @@
       community.general.modprobe:
         name: br_netfilter
         state: present
+
+
+    # Step 7: 
+    - name: Enable IPv4 port forwarding kernel property
+      ansible.posix.sysctl:
+        name: net.ipv4.ip_forward
+        value: '1'
+        sysctl_set: true
+
+    - name: Enable 'iptables' kernel property
+      ansible.posix.sysctl:
+        name: net.bridge.bridge-nf-call-iptables
+        value: '1'
+        sysctl_set: true
+
+    - name: Enable 'ip6tables' kernel property
+      ansible.posix.sysctl:
+        name: net.bridge.bridge-nf-call-ip6tables 
+        value: '1'
+        sysctl_set: true
+  
+    # Step 8: Modify hosts file
+    - name: Generate /etc/hosts file and copy to each VM
+      template:
+        src: ./generate_hosts.j2
+        dest: /etc/hosts
+        owner: root
+        group: root
+        mode: '0644'
+
+    # Step 9: Add Kubernetes repository
+    - name: Create keyring folder if it doesn't exist yet
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Add signing key to GPG
+      ansible.builtin.get_url:
+        url: https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key
+        dest: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+        mode: '0644'    
+
+    - name: Add official Kubernetes release repo as a pkg source
+      ansible.builtin.apt_repository:
+        repo: 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /'
+        filename: 'kubernetes'
+        state: present
+
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: yes
+    
+
+    # Step 11: Configure containerd
+    - name: Generate default containerd file
+      ansible.builtin.command: containerd config default
+      register: containerd_config_default
+      changed_when: false
+ 
+ 
+    - name: Ensure "/etc/containerd" directory exists
+      ansible.builtin.file:
+        path: /etc/containerd
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+ 
+    - name: Save default containerd file to "/etc/containerd" directory
+      ansible.builtin.copy:
+        dest: /etc/containerd/config.toml
+        content: "{{ containerd_config_default.stdout }}"
+        owner: root
+        group: root
+        mode: '0644'
+      when: containerd_config_default.stdout is defined and containerd_config_default.stdout | length > 0
+ 
+    - name: Disable AppArmor
+      ansible.builtin.lineinfile:
+        path: /etc/containerd/config.toml
+        regexp: '^(\s*)disable_apparmor\s*=.*'
+        line: '\1disable_apparmor = true'
+        backrefs: yes
+ 
+ 
+    - name: Update version of the sandbox image
+      ansible.builtin.lineinfile:
+        path: /etc/containerd/config.toml
+        regexp: '^(\s*)sandbox_image\s*=.*'
+        line: '\1sandbox_image = "registry.k8s.io/pause:3.10"'
+        backrefs: yes
+ 
+ 
+    - name: Set SystemdCgroup to true
+      ansible.builtin.lineinfile:
+        path: /etc/containerd/config.toml
+        regexp: '^(\s*)SystemdCgroup\s*=.*'
+        line: '\1SystemdCgroup = true'
+        backrefs: yes
+ 
+ 
+    - name: Restart containerd service
+      ansible.builtin.service:
+        name: containerd
+        state: restarted
+        enabled: yes
+ 
+ 
