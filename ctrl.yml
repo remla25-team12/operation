@@ -60,3 +60,29 @@
         src: /etc/kubernetes/admin.conf
         dest: ../kubeconfig/admin.conf
         remote_src: yes
+
+
+---
+
+- name: Create pod network
+  hosts: master
+  become: yes
+
+  tasks:
+    - name: download flannel config from github
+      get_url:
+        url: https://github.com/flannel-io/flannel/releases/download/v0.26.7/kube-flannel.yml
+        dest: /tmp/kube-flannel.yml
+
+    - name: change flannel to only use eth1
+      lineinfile:
+        path: /tmp/kube-flannel.yml
+        regexp: 'args:'
+        insertafter: 'args:'
+        line: '        - --iface=eth1'
+
+    - name: Apply flannel network
+      command: kubectl apply -f /tmp/kube-flannel.yml
+
+
+
