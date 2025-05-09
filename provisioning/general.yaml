@@ -9,3 +9,15 @@
         user: vagrant
         state: present
         key: "{{ selin_key }}"
+
+    - name: Disable SWAP
+      ansible.builtin.shell: swapoff -a
+      args:
+        warn: false
+
+    - name: Prevent a re-mount on the next boot by removing swap entries
+      ansible.builtin.lineinfile:
+        path: /etc/fstab
+        regexp: '.*swap.*' # I have no clue how to define the regex expression for this
+        state: absent
+        backrefs: yes
