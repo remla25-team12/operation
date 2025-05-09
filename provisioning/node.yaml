@@ -1,5 +1,5 @@
 - name: Setting up kubernetes workers
-  hosts: worker
+  hosts: all
   become: yes
 
   tasks:
