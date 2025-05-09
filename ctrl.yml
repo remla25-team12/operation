@@ -1,0 +1,27 @@
+
+# previous playbook
+---
+- name: Initialize Kubernetes Cluster
+  hosts: master
+  become: yes
+
+  tasks:
+    - name: Check if kubernetes is initialized
+      stat:
+        path: /etc/kubernetes/admin.conf
+      register: kube_config
+
+    - name: Initialize Kubernetes with kubeadm
+      command: >
+        kubeadm init
+        --apiserver-advertise-address={{ ansible_host }}
+        --node-name ctrl
+        --pod-network-cidr= {env?}
+      when: kube_config.stat.exists == false
+
+    - name: Ensure kube config is accessible
+      shell: |
+        mkdir -p $HOME/.kube
+        cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+        chown $(id -u):$(id -g) $HOME/.kube/config
+      when: kube_config.stat.exists == false
