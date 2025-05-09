@@ -164,3 +164,10 @@
         name: containerd
         state: restarted
         enabled: yes
+  
+    # Step 12: Kubelet
+    - name: Auto-start kubelet service on future boots
+      service:
+        name: kubelet
+        state: started
+        enabled: yes
