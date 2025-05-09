@@ -1,5 +1,6 @@
+# ---
 - name: Initialize Kubernetes Cluster
-  hosts: master
+  hosts: all
   become: yes
 
   tasks:
@@ -7,6 +8,41 @@
       stat:
         path: /etc/kubernetes/admin.conf
       register: kube_config
+    
+    - name: Add an apt signing key for Kubernetes
+      apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
+
+    - name: Adding apt repository for Kubernetes
+      apt_repository:
+        repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+        state: present
+        filename: kubernetes.list
+
+    - name: Install Kubernetes binaries
+      apt: 
+        name: "{{ packages }}"
+        state: present
+        update_cache: yes
+      vars:
+        packages:
+          - kubelet 
+          - kubeadm 
+          - kubectl
+
+    - name: Configure node ip
+      lineinfile:
+        path: /etc/default/kubelet
+        line: KUBELET_EXTRA_ARGS=--node-ip={{ node_ip }}
+
+    - name: Restart kubelet
+      service:
+        name: kubelet
+        daemon_reload: yes
+        state: restarted
+
+   
 
     - name: Initialize Kubernetes with kubeadm
       command: >
@@ -22,11 +58,9 @@
         cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
         chown $(id -u):$(id -g) $HOME/.kube/config
       when: kube_config.stat.exists == false
-
----
-
+# ---
 - name: Setup kubectl
-  hosts: masmasterter
+  hosts: all
   become: yes
 
   tasks:
@@ -41,7 +75,7 @@
         src: /etc/kubernetes/admin.conf
         dest: /home/vagrant/.kube/config
         remote_src: yes
-      become-user: vagrant
+      become_user: vagrant
 
     - name: set permissions for vagrant user
       file:
@@ -50,18 +84,17 @@
         group: vagrant
         mode: 0600
 
-    - name: copy kube config to host
-      copy:
-        src: /etc/kubernetes/admin.conf
-        dest: WHERE IS HOSt?
-#        TODO: find a host -,-, apperently we can define a shared folder in the vagrant file: config.vm.synced_folder "./host_shared", "/vagrant/host_shared"
-        remote_src: yes
+#     - name: copy kube config to host
+#       copy:
+#         src: /etc/kubernetes/admin.conf
+#         dest: WHERE IS HOSt?
+# #        TODO: find a host -,-, apperently we can define a shared folder in the vagrant file: config.vm.synced_folder "./host_shared", "/vagrant/host_shared"
+#         remote_src: yes
 
-
----
+# ---
 
 - name: Create pod network
-  hosts: master
+  hosts: all
   become: yes
 
 
@@ -82,11 +115,10 @@
 
     - name: Apply flannel network
       command: kubectl apply -f /tmp/kube-flannel.yml
-
----
+# ---
 
 - name: Helm
-  hosts: master
+  hosts: all
   become: yes
 
   tasks:
