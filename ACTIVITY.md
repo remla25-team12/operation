@@ -38,13 +38,13 @@ Approved PR: https://github.com/remla25-team12/operation/pull/9
 
 
 **Philippe Henry:**\
-Created PR: \
-Approved PR: 
+Created PR: https://github.com/remla25-team12/operation/pull/11 \
+Approved PR: https://github.com/remla25-team12/operation/pull/13
 
 
 **Pengxuan (Peter) Huang:**\
-Created PR: \
-Approved PR: 
+Created PR: https://github.com/remla25-team12/operation/pull/13 \
+Approved PR: https://github.com/remla25-team12/operation/pull/11
 
 
 **Ayush Kuruvilla:**\
