@@ -29,7 +29,7 @@ Approved PR: https://github.com/remla25-team12/operation/pull/1
 
 **Selin Ceydeli:** \
 Created PR: https://github.com/remla25-team12/operation/pull/9 \
-Approved PR: https://github.com/remla25-team12/operation/pull/10
+Approved PR: https://github.com/remla25-team12/operation/pull/12
 
 
 **Mees Chammat:**\
