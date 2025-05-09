@@ -33,6 +33,9 @@ Vagrant.configure("2") do |config|
       ansible.compatibility_mode = "2.0"
       ansible.playbook = "provisioning/general.yaml"
       ansible.vault_password_file = "~/.vault_pass.txt"
+      ansible.extra_vars = {
+        worker_count: NUM_WORKERS
+      }
     end
 
     # Additional setup logic for the controller node
@@ -40,6 +43,9 @@ Vagrant.configure("2") do |config|
       ansible.compatibility_mode = "2.0"
       ansible.playbook = "provisioning/ctrl.yaml"
       ansible.vault_password_file = "~/.vault_pass.txt"
+      ansible.extra_vars = {
+        worker_count: NUM_WORKERS
+      }
     end
   end
 
@@ -61,6 +67,9 @@ Vagrant.configure("2") do |config|
         ansible.compatibility_mode = "2.0"
         ansible.playbook = "provisioning/general.yaml"
         ansible.vault_password_file = "~/.vault_pass.txt"
+        ansible.extra_vars = {
+          worker_count: NUM_WORKERS
+        }
       end
 
       # Additional setup logic for the worker node
@@ -68,9 +77,13 @@ Vagrant.configure("2") do |config|
         ansible.compatibility_mode = "2.0"
         ansible.playbook = "provisioning/node.yaml"
         ansible.vault_password_file = "~/.vault_pass.txt"
+        ansible.extra_vars = {
+          worker_count: NUM_WORKERS
+        }
       end
     end
   end
+  
 
   # Step 3. Register an Ansible provisioner 
   # config.vm.provision :ansible do |a|

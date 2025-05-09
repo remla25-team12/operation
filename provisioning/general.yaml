@@ -7,6 +7,7 @@
     - "{{ playbook_dir }}/keys/selin.pub"
     - "{{ playbook_dir }}/keys/mees.pub"
   tasks:
+    # Step 4
     - name: Register SSH key of Selin
       ansible.posix.authorized_key:
         user: vagrant
@@ -19,6 +20,7 @@
         state: present
         key: "{{ mees_key }}"
 
+    # Step 5
     - name: Disable SWAP
       ansible.builtin.shell: swapoff -a
 
@@ -29,6 +31,7 @@
         state: absent
         backrefs: yes
 
+    # Step 6
     - name: Register the automated load for future system boots using overlay and br_netfilter modules
       ansible.builtin.copy:
         dest: /etc/modules-load.d/k8s.conf
@@ -43,3 +46,55 @@
       community.general.modprobe:
         name: br_netfilter
         state: present
+
+    # Step 7: 
+    - name: Enable IPv4 port forwarding kernel property
+      ansible.posix.sysctl:
+        name: net.ipv4.ip_forward
+        value: '1'
+        sysctl_set: true
+
+    - name: Enable 'iptables' kernel property
+      ansible.posix.sysctl:
+        name: net.bridge.bridge-nf-call-iptables
+        value: '1'
+        sysctl_set: true
+
+    - name: Enable 'ip6tables' kernel property
+      ansible.posix.sysctl:
+        name: net.bridge.bridge-nf-call-ip6tables 
+        value: '1'
+        sysctl_set: true
+  
+    # Step 8: Modify hosts file
+    - name: Generate /etc/hosts file and copy to each VM
+      template:
+        src: ./generate_hosts.j2
+        dest: /etc/hosts
+        owner: root
+        group: root
+        mode: '0644'
+
+    # Step 9: Add Kubernetes repository
+    - name: Create keyring folder if it doesn't exist yet
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Add signing key to GPG
+      ansible.builtin.get_url:
+        url: https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key
+        dest: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+        mode: '0644'    
+
+    - name: Add official Kubernetes release repo as a pkg source
+      ansible.builtin.apt_repository:
+        repo: 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /'
+        filename: 'kubernetes'
+        state: present
+
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: yes
+    
