@@ -1,6 +1,8 @@
 # general.yaml
 - hosts: all
   become: yes
+  collections:
+    - community.general
   vars_files:
     - "{{ playbook_dir }}/keys/selin.pub"
   tasks:
@@ -12,8 +14,6 @@
 
     - name: Disable SWAP
       ansible.builtin.shell: swapoff -a
-      args:
-        warn: false
 
     - name: Prevent a re-mount on the next boot by removing swap entries
       ansible.builtin.lineinfile:
