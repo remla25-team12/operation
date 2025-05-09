@@ -21,3 +21,18 @@
         regexp: '.*swap.*' # I have no clue how to define the regex expression for this
         state: absent
         backrefs: yes
+
+    - name: Register the automated load for future system boots using overlay and br_netfilter modules
+      ansible.builtin.copy:
+        dest: /etc/modules-load.d/k8s.conf
+        content: |
+          br_netfilter
+          overlay
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Add br_netfilter module
+      community.general.modprobe:
+        name: br_netfilter
+        state: present
