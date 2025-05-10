@@ -1,5 +1,6 @@
 # general.yaml
-- hosts: all
+- name: General Kubernetes cluster setup
+  hosts: all
   become: yes
   collections:
     - community.general
@@ -7,8 +8,9 @@
     - "{{ playbook_dir }}/keys/selin.pub"
     - "{{ playbook_dir }}/keys/mees.pub"
     - "{{ playbook_dir }}/keys/ayush.pub"
-    #- "{{ playbook_dir }}/keys/peter.pub"
+    - "{{ playbook_dir }}/keys/peter.pub"
     - "{{ playbook_dir }}/keys/phil.pub"
+  
   tasks:
     # Step 4
     - name: Register SSH keys
@@ -20,7 +22,7 @@
         - "{{ selin_key }}" 
         - "{{ mees_key }}" 
         - "{{ ayush_key }}" 
-        #- "{{ peter_key }}"
+        - "{{ peter_key }}"
         - "{{ phil_key }}"
 
     # Step 5
