@@ -1,8 +1,48 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# Variable to configure the number of worker nodes
+# Variables
 NUM_WORKERS = 2
+WORKER_CPU = 2
+WORKER_MEMORY = 6144
+CTRL_CPU = 1
+CTRL_MEMORY = 4096
+GENERAL_PLAYBOOK_PATH = "provisioning/general.yaml"
+CTRL_PLAYBOOK_PATH = "provisioning/ctrl.yaml"
+NODE_PLAYBOOK_PATH = "provisioning/node.yaml"
+
+
+# VM setup function
+def vm_setup(vm, name:, ip:, memory:, cpus:, playbook:)
+  # Create VM (Step 1 & 2)
+  vm.vm.box = "bento/ubuntu-24.04"
+  vm.vm.hostname = name
+  vm.vm.network "private_network", ip: ip # Add second NIC for host-only networking
+  vm.vm.provider "virtualbox" do |vb|
+    vb.name = name
+    vb.memory = memory
+    vb.cpus = cpus
+  end
+
+  # Provision with general playbook (Step 3)
+  vm.vm.provision "ansible" do |ansible|
+    ansible.compatibility_mode = "2.0"
+    ansible.playbook = GENERAL_PLAYBOOK_PATH
+    ansible.vault_password_file = "~/.vault_pass.txt"
+    ansible.extra_vars = {
+      worker_count: NUM_WORKERS
+    }
+  end
+
+  # Provision with node-specific playbook (Step 3)
+  # (ctrl.yaml for controller, node.yaml for worker nodes)
+  # vm.vm.provision "ansible" do |ansible|
+  #   ansible.compatibility_mode = "2.0"
+  #   ansible.playbook = playbook
+  #   ansible.vault_password_file = "~/.vault_pass.txt"
+  # end
+end
+
 
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
 # configures the configuration version (we support older styles for
@@ -13,83 +53,33 @@ Vagrant.configure("2") do |config|
   # For a complete reference, please see the online documentation at
   # https://docs.vagrantup.com.
 
-  # Every Vagrant development environment requires a box. You can search for
-  # boxes at https://vagrantcloud.com/search.
-  # config.vm.box = "bento/ubuntu-24.04"
-
-  # Define the control node with 1 core and 4+ GB of memory
+  # Define the control node
   config.vm.define "ctrl" do |ctrl|
-    ctrl.vm.box = "bento/ubuntu-24.04"
-    ctrl.vm.hostname = "ctrl"
-    ctrl.vm.network "private_network", ip: "192.168.56.100" # Add second NIC for host-only networking
-    ctrl.vm.provider "virtualbox" do |vb|
-      vb.name = "ctrl"
-      vb.memory = 4096
-      vb.cpus = 1
-    end
-
-    # General setup logic
-    ctrl.vm.provision "ansible" do |ansible|
-      ansible.compatibility_mode = "2.0"
-      ansible.playbook = "provisioning/general.yaml"
-      ansible.vault_password_file = "~/.vault_pass.txt"
-      ansible.extra_vars = {
-        worker_count: NUM_WORKERS
-      }
-    end
-
-    # Additional setup logic for the controller node
-    ctrl.vm.provision "ansible" do |ansible|
-      ansible.compatibility_mode = "2.0"
-      ansible.playbook = "provisioning/ctrl.yaml"
-      ansible.vault_password_file = "~/.vault_pass.txt"
-      ansible.extra_vars = {
-        worker_count: NUM_WORKERS
-      }
-    end
+    vm_setup(
+      ctrl,
+      name: "ctrl",
+      ip: "192.168.56.100",
+      cpus: CTRL_CPU,
+      memory: CTRL_MEMORY,
+      playbook: CTRL_PLAYBOOK_PATH,
+    )
   end
 
-  # Define the worker nodes with 2 cores and 6+ GB of memory each
+  # Define the worker nodes 
   # Number of workers is configurable through the NUM_WORKERS variable to enable scaling up and down
   (1..NUM_WORKERS).each do |num|
     config.vm.define "node-#{num}" do |node|
-      node.vm.box = "bento/ubuntu-24.04"
-      node.vm.hostname = "node-#{num}"
-      node.vm.network "private_network", ip: "192.168.56.#{100+num}" # Add second NIC for host-only networking
-      node.vm.provider "virtualbox" do |vb|
-        vb.name = "node-#{num}"
-        vb.memory = 6144
-        vb.cpus = 2
-      end
-
-      # General setup logic
-      node.vm.provision "ansible" do |ansible|
-        ansible.compatibility_mode = "2.0"
-        ansible.playbook = "provisioning/general.yaml"
-        ansible.vault_password_file = "~/.vault_pass.txt"
-        ansible.extra_vars = {
-          worker_count: NUM_WORKERS
-        }
-      end
-
-      # Additional setup logic for the worker node
-      node.vm.provision "ansible" do |ansible|
-        ansible.compatibility_mode = "2.0"
-        ansible.playbook = "provisioning/node.yaml"
-        ansible.vault_password_file = "~/.vault_pass.txt"
-        ansible.extra_vars = {
-          worker_count: NUM_WORKERS
-        }
-      end
+      vm_setup(
+        node,
+        name: "node-#{num}",
+        ip: "192.168.56.#{100 + num}",
+        cpus: WORKER_CPU,
+        memory: WORKER_MEMORY,
+        playbook: NODE_PLAYBOOK_PATH,
+      )
     end
   end
   
-
-  # Step 3. Register an Ansible provisioner 
-  # config.vm.provision :ansible do |a|
-  #   a.compatibility_mode = "2.0"
-  #   a.playbook = "provisioning.yml" # Create different .yaml files and refer to them here later on
-  # end
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
