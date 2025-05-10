@@ -42,8 +42,9 @@ Vagrant.configure("2") do |config|
     ctrl.vm.provision "ansible" do |ansible|
       ansible.compatibility_mode = "2.0"
       ansible.playbook = "provisioning/ctrl.yaml"
-      ansible.vault_password_file = "~/.vault_pass.txt"
+      ansible.vault_password_file = "~/.vault_pass.txt"   
       ansible.extra_vars = {
+        api_server_advertised_address: "192.168.56.100",
         worker_count: NUM_WORKERS
       }
     end
