@@ -6,19 +6,22 @@
   vars_files:
     - "{{ playbook_dir }}/keys/selin.pub"
     - "{{ playbook_dir }}/keys/mees.pub"
+    - "{{ playbook_dir }}/keys/ayush.pub"
+    #- "{{ playbook_dir }}/keys/peter.pub"
+    - "{{ playbook_dir }}/keys/phil.pub"
   tasks:
     # Step 4
-    - name: Register SSH key of Selin
+    - name: Register SSH keys
       ansible.posix.authorized_key:
         user: vagrant
         state: present
-        key: "{{ selin_key }}"
-
-    - name: Register SSH key of Mees
-      ansible.posix.authorized_key:
-        user: vagrant
-        state: present
-        key: "{{ mees_key }}"
+        key: "{{ item }}"
+      loop:
+        - "{{ selin_key }}" 
+        - "{{ mees_key }}" 
+        - "{{ ayush_key }}" 
+        #- "{{ peter_key }}"
+        - "{{ phil_key }}"
 
     # Step 5
     - name: Disable SWAP
