@@ -40,6 +40,9 @@ def vm_setup(vm, name:, ip:, memory:, cpus:, playbook:)
     ansible.compatibility_mode = "2.0"
     ansible.playbook = playbook
     ansible.vault_password_file = "~/.vault_pass.txt"
+    ansible.extra_vars = {
+      api_server_advertised_address: "192.168.56.100",
+    }
   end
 end
 
