@@ -1,9 +1,13 @@
 ---
+# Step 13
 - name: Initialize Kubernetes Cluster
-  hosts: all
+  hosts: ctrl
   become: yes
+  gather_facts: yes
+
 
   tasks:
+
     - name: Check if kubernetes is initialized
       stat:
         path: /etc/kubernetes/admin.conf
@@ -12,9 +16,10 @@
     - name: Initialize Kubernetes with kubeadm
       command: >
         kubeadm init
-        --apiserver-advertise-address={{ ansible_host }}
+        --apiserver-advertise-address={{ api_server_advertised_address }}
         --node-name ctrl
         --pod-network-cidr=10.244.0.0/16
+        --ignore-preflight-errors=NumCPU        
       when: kube_config.stat.exists == false
 
     - name: Ensure kube config is accessible
@@ -24,7 +29,7 @@
         chown $(id -u):$(id -g) $HOME/.kube/config
       when: kube_config.stat.exists == false
 
-
+# Step 14
 - name: Setup kubectl
   hosts: all
   become: yes
@@ -35,21 +40,35 @@
         name: kubectl
         state: present
         update_cache: yes
+    
+    - name: Create .kube directory for vagrant 
+      file:
+        path: /home/vagrant/.kube
+        state: directory
+        owner: vagrant
+        group: vagrant
+        mode: '0700'
+      become: yes                          
 
     - name: Copy kubeconfig to vagrant users home
       copy:
         src: /etc/kubernetes/admin.conf
         dest: /home/vagrant/.kube/config
         remote_src: yes
-      become_user: vagrant
-
-    - name: set permissions for vagrant user
-      file:
-        path: /home/vagrant/.kube/config
         owner: vagrant
         group: vagrant
-        mode: 0600
+        mode: '0600'
+      become: yes
+      when: kube_config.stat.exists 
 
+    # - name: set permissions for vagrant user
+    #   file:
+    #     path: /home/vagrant/.kube/config
+    #     owner: vagrant
+    #     group: vagrant
+    #     mode: 0600
+
+# Step 15
 - name: Create pod network
   hosts: all
   become: yes
@@ -65,19 +84,20 @@
         path: /tmp/kube-flannel.yml
         regexp: 'args:'
         insertafter: 'args:'
-        line: '        - --iface=eth1'
+        line: '\1\n --iface=eth1'
         # TODO: check if this is oke? Maybe other args?
 
     - name: Apply flannel network
       command: kubectl apply -f /tmp/kube-flannel.yml
 
+# Step 16
 - name: Helm
   hosts: all
   become: yes
 
   tasks:
     - name: Install Helm
-      command: >
+      shell: |
         curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
         sudo apt-get install apt-transport-https --yes
         echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
