@@ -36,11 +36,11 @@ def vm_setup(vm, name:, ip:, memory:, cpus:, playbook:)
 
   # Provision with node-specific playbook (Step 3)
   # (ctrl.yaml for controller, node.yaml for worker nodes)
-  # vm.vm.provision "ansible" do |ansible|
-  #   ansible.compatibility_mode = "2.0"
-  #   ansible.playbook = playbook
-  #   ansible.vault_password_file = "~/.vault_pass.txt"
-  # end
+  vm.vm.provision "ansible" do |ansible|
+    ansible.compatibility_mode = "2.0"
+    ansible.playbook = playbook
+    ansible.vault_password_file = "~/.vault_pass.txt"
+  end
 end
 
 
