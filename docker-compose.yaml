@@ -1,9 +1,7 @@
 services:
   model-service:
-    #image: ghcr.io/remla25-team12/model-service:${TAG_MODEL_SERVICE:-latest}
+    image: ghcr.io/remla25-team12/model-service:${TAG_MODEL_SERVICE:-latest}
     #image: ms-test:latest # local build, only for testing purposes
-    build:
-      context: ../model-service
     container_name: model-service
     env_file: .env
     # ports:
@@ -23,10 +21,8 @@ services:
     restart: unless-stopped
 
   app:
-    #image: ghcr.io/remla25-team12/app:${TAG_APP:-latest}
+    image: ghcr.io/remla25-team12/app:${TAG_APP:-latest}
     #image: app-test:latest # local build, only for testing purposes
-    build:
-      context: ../app
     container_name: app
     env_file: .env
     ports:
