@@ -1,16 +1,19 @@
-- name: Setting up kubernetes workers
+- name: Setting up Kubernetes workers
   hosts: node-*
   become: yes
+  gather_facts: no
 
   tasks:
-    # Step 17
-    - name: Generate join command
+    # Step 18
+    - name: Generate join command from controller
       command: kubeadm token create --print-join-command
       delegate_to: ctrl
       register: join_command
+      changed_when: false
 
-    # Step 18
-    - name: Run join command
-      command: "{{ join_command.stdout }}"
-      when: join_command is defined
-      register: join_result
+    # Step 19
+    - name: Join worker node to the cluster
+      shell: "{{ join_command.stdout }} --ignore-preflight-errors=NumCPU"
+      args:
+        creates: /etc/kubernetes/kubelet.conf
+
