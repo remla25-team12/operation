@@ -9,10 +9,13 @@ services:
     environment:
       - MODEL_URL=https://github.com/remla25-team12/model-training/releases/download/v0.1.0/Classifier_Sentiment_Model.joblib # model URL
       - VEC_URL=https://github.com/remla25-team12/model-training/releases/download/v0.1.0/c1_BoW_Sentiment_Model.pkl # vectorizer URL
+      - MODEL_CACHE_DIR=/app/cache
+      - FEEDBACK_FILE_PATH=/app/feedback/feedback_dump.tsv
     # volumes:
     # - ./Classifier_Sentiment_Model.joblib:/app/Classifier_Sentiment_Model.joblib # local pre-downloaded model (prevent re-downloading)
     volumes:
       - cache:/app/cache # cache for downloaded models
+      - ./feedback:/app/feedback 
     networks:
       - backend
     restart: unless-stopped
@@ -26,6 +29,8 @@ services:
       - 8080:5000
     environment:
       - MODEL_SERVICE_URL=http://model-service:5000/predict
+      - NEW_DATA_URL=http://model-service:5000/new_data
+      - VERSION_URL=http://model-service:5000/version
     networks:
       - backend
     restart: unless-stopped
