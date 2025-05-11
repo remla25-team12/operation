@@ -41,16 +41,15 @@
         state: present
         update_cache: yes
     
-    - name: Create .kube directory for vagrant 
+    - name: Create .kube directory for vagrant
       file:
         path: /home/vagrant/.kube
         state: directory
         owner: vagrant
         group: vagrant
         mode: '0700'
-      become: yes                          
 
-    - name: Copy kubeconfig to vagrant users home
+    - name: Copy kubeconfig
       copy:
         src: /etc/kubernetes/admin.conf
         dest: /home/vagrant/.kube/config
@@ -58,55 +57,45 @@
         owner: vagrant
         group: vagrant
         mode: '0600'
-      become: yes
-      when: kube_config.stat.exists 
 
-    # - name: set permissions for vagrant user
-    #   file:
-    #     path: /home/vagrant/.kube/config
-    #     owner: vagrant
-    #     group: vagrant
-    #     mode: 0600
+    # Step 15: Apply Flannel network
+    - name: Download Flannel config
+      get_url:
+        url: https://github.com/flannel-io/flannel/releases/download/v0.26.7/kube-flannel.yml
+        dest: /tmp/kube-flannel.yml
 
-# Step 15
-# - name: Create pod network
-#   hosts: all
-#   become: yes
-# #  shold flannel be installed first?
-#   tasks:
-#     - name: download flannel config from github
-#       get_url:
-#         url: https://github.com/flannel-io/flannel/releases/download/v0.26.7/kube-flannel.yml
-#         dest: /tmp/kube-flannel.yml
+    - name: Add --iface=eth1 to Flannel config
+      lineinfile:
+        path: /tmp/kube-flannel.yml
+        regexp: 'args:'
+        insertafter: 'args:'
+        line: '        - --iface=eth1'
 
-#     - name: change flannel to only use eth1
-#       lineinfile:
-#         path: /tmp/kube-flannel.yml
-#         regexp: 'args:'
-#         insertafter: 'args:'
-#         line: '\1\n --iface=eth1'
-#         # TODO: check if this is oke? Maybe other args?
+    - name: Apply Flannel network
+      command: kubectl apply -f /tmp/kube-flannel.yml
 
-#     - name: Apply flannel network
-#       command: kubectl apply -f /tmp/kube-flannel.yml
+    # Step 16: Install Helm
+    - name: Add Helm GPG key
+      apt_key:
+        url: https://baltocdn.com/helm/signing.asc
+        state: present
 
-# Step 16
-- name: Helm
-  hosts: all
-  become: yes
+    - name: Add Helm apt repository
+      apt_repository:
+        repo: deb https://baltocdn.com/helm/stable/debian/ all main
+        state: present
 
-  tasks:
     - name: Install Helm
-      shell: |
-        curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
-        sudo apt-get install apt-transport-https --yes
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
-        sudo apt-get update
-        sudo apt-get install helm
+      apt:
+        name: helm
+        state: present
+        update_cache: yes
 
-    - name: Add helm diff
-      command: >
-          helm plugin install https://github.com/databus23/helm-diff 
+    # Step 17: Install helm-diff plugin
+    - name: Install helm-diff plugin
+      shell: helm plugin install https://github.com/databus23/helm-diff
+      args:
+        creates: /home/vagrant/.local/share/helm/plugins/helm-diff
         
         
 
