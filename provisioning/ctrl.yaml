@@ -69,6 +69,12 @@
         owner: vagrant
         group: vagrant
         mode: '0600'
+    - name: Copy kube config from VM to host (fetch admin.conf)
+      fetch:
+        src: /etc/kubernetes/admin.conf
+        dest: ./
+        flat: yes
+      when: kube_config.stat.exists == false
 
     # Step 15: Apply Flannel network
     - name: Download Flannel config
