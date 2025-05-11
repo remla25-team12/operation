@@ -1,13 +1,15 @@
 - name: Setting up kubernetes workers
-  hosts: all
+  hosts: node-*
   become: yes
 
   tasks:
+    # Step 17
     - name: Generate join command
       command: kubeadm token create --print-join-command
-      delegate_to: master
+      delegate_to: ctrl
       register: join_command
 
+    # Step 18
     - name: Run join command
       command: "{{ join_command.stdout }}"
       when: join_command is defined
