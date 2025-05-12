@@ -56,7 +56,7 @@ $ docker compose up -d
    ```bash
        vagrant up
    ```
-if needed run vagrant provision and then
+   if needed run vagrant provision and then
 
 like step 1.4 says run ansible-playbook -u vagrant -i 192.168.56.100, finalization.yml
 Once provisioning is complete, the Kubernetes Dashboard will be available via Ingress at:
@@ -64,6 +64,7 @@ Once provisioning is complete, the Kubernetes Dashboard will be available via In
 - `https://dashboard.local`
 
 > **Note**: You must add the following to your `/etc/hosts` file:
+>
 > ```
 > 192.168.56.91 dashboard.local
 > ```
@@ -73,8 +74,8 @@ To log in:
 ```bash
 kubectl -n kubernetes-dashboard create token admin-user
 ```
-or see the token already automatically created for you in the logs of the yaml
 
+or see the token already automatically created for you in the logs of the yaml
 
 Paste the token on the login screen. Accessing the dashboard **via browser** currently shows the interface but login results in 401 Unauthorized. However, login **via kubectl token works correctly**.
 
@@ -92,5 +93,4 @@ The docker-compose.yaml successfully launches both containers (`app` and `model-
 
 ## Assignment 2
 
-The Kubernetes-based deployment infrastructure is fully operational. MetalLB and NGINX Ingress Controller are installed and configured with fixed IP addresses. The Kubernetes Dashboard is deployed via Helm and exposed via an Ingress using HTTPS with self-signed certificates. The dashboard loads correctly at `https://dashboard.local`, and token-based login is functional through the command line, although UI login fails with a 401. This setup lays the groundwork for future feature deployments and secure service exposure.
-All steps including optional until the end are done.
+The Kubernetes-based deployment infrastructure is fully operational. MetalLB and NGINX Ingress Controller are installed and configured with fixed IP addresses. The Kubernetes Dashboard is deployed via Helm and exposed via an Ingress using HTTPS with self-signed certificates. The dashboard loads correctly at `https://dashboard.local`, and token-based login is functional through the command line, although UI login fails with a 401. This setup lays the groundwork for future feature deployments and secure service exposure. All steps described in the assignment document, including the optional Step 23, are implemented.
