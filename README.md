@@ -81,18 +81,28 @@ $ docker compose up -d
    Once provisioning is complete, the Kubernetes Dashboard will be available at:
 
    ```bash
-    https://dashboard.local
+   dashboard.local
    ```
 
 6. Add host entry
 
-   To resolve `dashboard.local`, you must update your `/etc/hosts` file:
+
+   To resolve `dashboard.local`, you must update your `/etc/hosts` file by running:
+      ```bash
+   sudo nano /etc/hosts/
+   ```
+   Then append below text to the file.
 
    ```plaintext
     192.168.56.91 dashboard.local
    ```
 
 7. Log in to the Dashboard
+
+   Access the control node by running 
+   ```
+   vagrant ssh ctrl
+   ```
 
    Generate a token with:
 
@@ -122,6 +132,8 @@ The docker-compose.yaml successfully launches both containers (`app` and `model-
 
 ## Assignment 2
 
-The Kubernetes-based deployment infrastructure is fully operational. MetalLB and NGINX Ingress Controller are installed and configured with fixed IP addresses. The Kubernetes Dashboard is deployed via Helm and exposed via an Ingress using HTTPS with self-signed certificates. The dashboard loads correctly at `https://dashboard.local`, and token-based login is functional through the command line, although UI login fails with a 401. This setup lays the groundwork for future feature deployments and secure service exposure. All steps described in the assignment document, including the optional Step 23, are implemented.
+The Kubernetes-based deployment infrastructure is fully operational. MetalLB and NGINX Ingress Controller are installed and configured with fixed IP addresses. The Kubernetes Dashboard is deployed via Helm and exposed via an Ingress using HTTPS with self-signed certificates. The dashboard loads correctly at `https://dashboard.local`, and token-based login is functional through the command line, although UI login fails with a 401. This setup lays the groundwork for future feature deployments and secure service exposure. All steps described in the assignment document, including the optional Step 23, are implemented. 
+
+In Step 14, coping config to hosts is not done fully. While the current ctrl.yaml copies it to privisioning folder, the step in the assignment **"config should be usable from the host via KUBECONFIG environment variable or through --kubeconfig argument:"** will still need to be implemented.
 
 Please closely follow the steps described under **Setting Up the Kubernetes Cluster** section of this README to test the functionality of our Kubernetes-based deployment infrastructure.
