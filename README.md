@@ -48,36 +48,65 @@ $ docker compose up -d
 1. Clone the repository:
 
    ```bash
-       git clone https://github.com/remla25-team12/operation.git
-       cd operation
+    git clone https://github.com/remla25-team12/operation.git
+    cd operation
    ```
 
 2. Start the virtual environment:
+
    ```bash
-       vagrant up
+    vagrant up
+    vagrant provision
    ```
-   if needed run vagrant provision and then
 
-like step 1.4 says run ansible-playbook -u vagrant -i 192.168.56.100, finalization.yml
-Once provisioning is complete, the Kubernetes Dashboard will be available via Ingress at:
+3. Reset host-only networks in VirtualBox:
 
-- `https://dashboard.local`
+   Before continuing, **open the VirtualBox GUI** and:
 
-> **Note**: You must add the following to your `/etc/hosts` file:
->
-> ```
-> 192.168.56.91 dashboard.local
-> ```
+   - Go to `Tools > Network`
+   - **Remove any existing "Host-only Networks"** listed under that section
 
-To log in:
+   > This prevents conflicts with stale or broken network configurations from previous VirtualBox setups.
 
-```bash
-kubectl -n kubernetes-dashboard create token admin-user
-```
+4. Run the Ansible playbook
 
-or see the token already automatically created for you in the logs of the yaml
+   Once the VM is up, run the following Ansible playbook to finalize the Kubernetes setup:
 
-Paste the token on the login screen. Accessing the dashboard **via browser** currently shows the interface but login results in 401 Unauthorized. However, login **via kubectl token works correctly**.
+   ```bash
+    ansible-playbook -u vagrant -i 192.168.56.100, provisioning/finalization.yml
+   ```
+
+5. Access the Kubernetes Dashboard
+
+   Once provisioning is complete, the Kubernetes Dashboard will be available at:
+
+   ```bash
+    https://dashboard.local
+   ```
+
+6. Add host entry
+
+   To resolve `dashboard.local`, you must update your `/etc/hosts` file:
+
+   ```plaintext
+    192.168.56.91 dashboard.local
+   ```
+
+7. Log in to the Dashboard
+
+   Generate a token with:
+
+   ```bash
+    kubectl -n kubernetes-dashboard create token admin-user
+   ```
+
+   > Or check the logs of the RBAC YAML used to provision `admin-user` to find the pre-generated token.
+
+   Paste the token into the dashboard login screen.
+
+   > **Note:** Logging in via browser may display the UI but result in `401 Unauthorized`. This is a known issue.
+   >
+   > However, login using the token **via `kubectl` works correctly.**
 
 ## Config
 
@@ -94,3 +123,5 @@ The docker-compose.yaml successfully launches both containers (`app` and `model-
 ## Assignment 2
 
 The Kubernetes-based deployment infrastructure is fully operational. MetalLB and NGINX Ingress Controller are installed and configured with fixed IP addresses. The Kubernetes Dashboard is deployed via Helm and exposed via an Ingress using HTTPS with self-signed certificates. The dashboard loads correctly at `https://dashboard.local`, and token-based login is functional through the command line, although UI login fails with a 401. This setup lays the groundwork for future feature deployments and secure service exposure. All steps described in the assignment document, including the optional Step 23, are implemented.
+
+Please closely follow the steps described under **Setting Up the Kubernetes Cluster** section of this README to test the functionality of our Kubernetes-based deployment infrastructure.
