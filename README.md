@@ -75,6 +75,12 @@ $ docker compose up -d
    ```bash
     ansible-playbook -u vagrant -i 192.168.56.100, provisioning/finalization.yml
    ```
+   When running this command, there could be error, e.g. in the **Check if ingress-nginx is already installed** step, below error could occur 
+   ```
+   fatal: [192.168.56.100]: FAILED! => {"changed": true, "cmd": ["helm", "status", "ingress-nginx", "-n", "ingress-nginx"], "delta": "0:00:00.048696", "end": "2025-05-13 09:13:26.349148", "msg": "non-zero return code", "rc": 1, "start": "2025-05-13 09:13:26.300452", "stderr": "Error: release: not found", "stderr_lines": ["Error: release: not found"], "stdout": "", "stdout_lines": []}. 
+   ```
+   We hypothesis that VM takes some time to set everything from the backend, it this case, just re-run the command.
+
 
 5. Access the Kubernetes Dashboard
 
