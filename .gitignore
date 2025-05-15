@@ -4,3 +4,4 @@
 **/vault_pass.txt
 provisioning/admin.conf
 provisioning/inventory.cfg
+.DS_Store
