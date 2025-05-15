@@ -50,6 +50,11 @@
 
   tasks:
     # Step 20: Install MetalLB
+    - name: Download MetalLB yaml file
+      get_url:
+        url: https://raw.githubusercontent.com/metallb/metallb/v0.14.9/config/manifests/metallb-native.yaml
+        dest: "/tmp/metallb-native.yaml"
+
     - name: Apply MetalLB CRDs
       shell: kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.9/config/manifests/metallb-native.yaml
 
@@ -109,12 +114,12 @@
             service:
               loadBalancerIP: 192.168.56.91
 
-    - name: Wait for ingress-nginx controller to be ready
-      shell: >
-        kubectl wait -n ingress-nginx 
-        -l app.kubernetes.io/component=controller 
-        --for=condition=ready pod 
-        --timeout=60s
+    # - name: Wait for ingress-nginx controller to be ready
+    #   shell: >
+    #     kubectl wait -n ingress-nginx 
+    #     -l app.kubernetes.io/component=controller 
+    #     --for=condition=ready pod 
+    #     --timeout=60s
 
     # Step 22: Install Kubernetes Dashboard
     - name: "Add Kubernetes dashboard repository"
@@ -147,7 +152,7 @@
     - name: Apply dashboard ingress
       command: kubectl apply -f /tmp/dashboard-ingress.yaml
 
-    - name: Create admin token
+    - name: Generate dashboard admin token
       command: kubectl -n kubernetes-dashboard create token admin-user
       register: dashboard_token
 
@@ -167,23 +172,24 @@
       become: true
 
     - name: Extract Istio
-      unarchive:
+      ansible.builtin.unarchive:
         src: /tmp/istio.tar.gz
-        dest: /opt/
+        dest: /home/vagrant/
         remote_src: yes
       become: true
+      args:
+        creates: /home/vagrant/istio-1.25.2/manifests
 
-    ### TODO make idempotent
-    # - name: Add istioctl to PATH
-    #   lineinfile:
-    #     path: /home/vagrant/.bashrc
-    #     line: 'export PATH=$PATH:/opt/istio-1.25.2/bin'
-    #     insertafter: EOF
-    #     regexp: '^export PATH=.*:/opt/istio-1\.25\.2/bin'
-    #     state: present
+    - name: Add istioctl to PATH
+      lineinfile:
+        path: /home/vagrant/.bashrc
+        line: 'export PATH=$PATH:/home/vagrant/istio-1.25.2/bin'
+        insertafter: EOF
+        state: present
 
-    # - name: Run istioctl install (demo profile)
-    #   shell: |
-    #     /opt/istio-1.25.2/bin/istioctl install --set profile=demo -y
-    #   args:
-    #     creates: /opt/istio-1.25.2/manifests
+    - name: Run istioctl install (demo profile)
+      shell: |
+        istioctl install --set profile=demo -y
+      args:
+        creates: /home/vagrant/istio-1.25.2/manifests
+
