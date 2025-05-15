@@ -1,59 +1,26 @@
----
-# Pre-Step: Ensure required directories exist for Flannel
-- name: Ensure /opt/cni/bin exists
-  hosts: all
-  become: yes
-
-  tasks:
-    - name: Create /opt/cni/bin directory
-      file:
-        path: /opt/cni/bin
-        state: directory
-        mode: '0755'
-
-# Step 13
-- name: Initialize Kubernetes Cluster
+- name: Control-specific provisioning playbook
   hosts: ctrl
   become: yes
   gather_facts: yes
 
-
   tasks:
-
-    - name: Check if kubernetes is initialized
+    # Step 13: Init cluster
+    - name: Check if kubernetes is already initialized
       stat:
         path: /etc/kubernetes/admin.conf
       register: kube_config
 
-    - name: Initialize Kubernetes with kubeadm
+    - name: Initialize cluster with kubeadm
       command: >
         kubeadm init
         --apiserver-advertise-address={{ api_server_advertised_address }}
         --node-name ctrl
         --pod-network-cidr=10.244.0.0/16
         --ignore-preflight-errors=NumCPU        
-      when: kube_config.stat.exists == false
+      when: not kube_config.stat.exists
 
-    - name: Ensure kube config is accessible
-      shell: |
-        mkdir -p $HOME/.kube
-        cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-        chown $(id -u):$(id -g) $HOME/.kube/config
-      when: kube_config.stat.exists == false
-
-# Step 14
-- name: Setup kubectl
-  hosts: all
-  become: yes
-
-  tasks:
-    - name: Install kubectl
-      apt:
-        name: kubectl
-        state: present
-        update_cache: yes
-    
-    - name: Create .kube directory for vagrant
+    # Step 14: Setup kubectl
+    - name: Create .kube directory in vagrant user's home directory
       file:
         path: /home/vagrant/.kube
         state: directory
@@ -61,7 +28,7 @@
         group: vagrant
         mode: '0700'
 
-    - name: Copy kubeconfig
+    - name: Copy kubeconfig to vagrant user's .kube directory
       copy:
         src: /etc/kubernetes/admin.conf
         dest: /home/vagrant/.kube/config
@@ -69,14 +36,15 @@
         owner: vagrant
         group: vagrant
         mode: '0600'
-    - name: Copy kube config from VM to host (fetch admin.conf)
+    
+    - name: Copy kubeconfig from VM to host (fetch admin.conf)
       fetch:
         src: /etc/kubernetes/admin.conf
         dest: ./
         flat: yes
-      when: kube_config.stat.exists == false
+      #when: not kube_config.stat.exists
 
-    # Step 15: Apply Flannel network
+    # Step 15: Create Pod network
     - name: Download Flannel config
       get_url:
         url: https://github.com/flannel-io/flannel/releases/download/v0.26.7/kube-flannel.yml
@@ -88,9 +56,11 @@
         regexp: 'args:\n( +- --ip-masq)'
         replace: 'args:\n        - --iface=eth1\n\1'
 
-
-    - name: Apply Flannel network
+    - name: Apply Flannel network 
       command: kubectl apply -f /tmp/kube-flannel.yml
+      become_user: vagrant
+      # environment:
+      #   KUBECONFIG: /home/vagrant/.kube/config
 
     # Step 16: Install Helm
     - name: Add Helm GPG key
@@ -111,9 +81,10 @@
 
     # Step 17: Install helm-diff plugin
     - name: Install helm-diff plugin
-      become: yes
       become_user: vagrant
-      shell: helm plugin list | grep -q diff || helm plugin install https://github.com/databus23/helm-diff
+      shell: helm plugin install https://github.com/databus23/helm-diff
+      args:
+        creates: ~/.local/share/helm/plugins/helm-diff
 
         
         
