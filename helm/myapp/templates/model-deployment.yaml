@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "myapp.fullname" . }}-model
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: model
+  template:
+    metadata:
+      labels:
+        app: model
+    spec:
+      containers:
+        - name: model
+          image: "{{ .Values.model.image.repository }}:{{ .Values.model.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.model.port }}
+          env:
+            - name: MODEL_URL
+              value: "https://github.com/remla25-team12/model-training/releases/download/v0.1.0/Classifier_Sentiment_Model.joblib"
+            - name: VEC_URL
+              value: "https://github.com/remla25-team12/model-training/releases/download/v0.1.0/c1_BoW_Sentiment_Model.pkl"
+            - name: MODEL_CACHE_DIR
+              value: {{ .Values.model.cachePath }}
+            - name: FEEDBACK_FILE_PATH
+              value: {{ .Values.model.feedbackPath }}/feedback_dump.tsv
+          volumeMounts:
+            - name: cache
+              mountPath: {{ .Values.model.cachePath }}
+            - name: feedback
+              mountPath: {{ .Values.model.feedbackPath }}
+      volumes:
+        - name: cache
+          emptyDir: {}
+        - name: feedback
+          emptyDir: {}
