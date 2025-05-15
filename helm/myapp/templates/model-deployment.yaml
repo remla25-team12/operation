@@ -18,6 +18,16 @@ spec:
           ports:
             - containerPort: {{ .Values.model.port }}
           env:
+            - name: MODEL_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "myapp.fullname" . }}-config
+                  key: MODEL_HOST
+            - name: SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "myapp.fullname" . }}-secret
+                  key: SMTP_PASSWORD
             - name: MODEL_URL
               value: "https://github.com/remla25-team12/model-training/releases/download/v0.1.0/Classifier_Sentiment_Model.joblib"
             - name: VEC_URL
@@ -26,13 +36,13 @@ spec:
               value: {{ .Values.model.cachePath }}
             - name: FEEDBACK_FILE_PATH
               value: {{ .Values.model.feedbackPath }}/feedback_dump.tsv
-          volumeMounts:
-            - name: cache
-              mountPath: {{ .Values.model.cachePath }}
-            - name: feedback
-              mountPath: {{ .Values.model.feedbackPath }}
       volumes:
         - name: cache
           emptyDir: {}
         - name: feedback
           emptyDir: {}
+        - name: shared-folder
+          hostPath:
+            path: /mnt/shared
+            type: Directory
+
