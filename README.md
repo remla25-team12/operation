@@ -134,23 +134,54 @@ $ docker compose up -d
    >
    > However, login using the token **via `kubectl` works correctly.**
 
-## For HELM
-### ✅ 1. Prerequisites
+## Setting up the Application with Helm
 
-- Helm 3 installed
-- Kubernetes cluster running (e.g., Minikube)
+### Prerequisites for Helm Deployment
 
-Optional for Minikube:
+Ensure you have the following components ready in your environment:
 
-```bash
-minikube start --driver=docker
-minikube addons enable ingress
-```
-### Install the helm chart
-helm install myapp-dev ./helm/myapp  --set app.image.tag=latest   --set model.image.tag=latest   --set model.port=5000   --set app.port=8080
+- **Helm 3 Installed:** You'll need the Helm 3 command-line interface (CLI) installed on your local machine. Helm is the package manager for Kubernetes.
 
-if you want to change after making any changes, do 
-helm upgrade --install myapp-dev ./helm/myapp   --set model.image.tag=latest   --set app.image.tag=latest   --set model.port=5000   --set app.port=8080
+- **Running Kubernetes Cluster:** A functional Kubernetes cluster is essential for deploying applications using Helm. To provision a local Kubernetes cluster with Minikube and enable the ingress controller, you can run these commands:
+
+  ```bash
+   minikube delete
+   minikube start --driver=docker
+   minikube addons enable ingress
+  ```
+
+  > **Note:** Cleaning up any previous Minikube instance is recommended with the `minikube delete` command described above.
+
+### Deploying the Application using the Helm Chart
+
+1. Install Helm chart:
+
+   ```bash
+    helm install myapp-dev ./helm/myapp \
+    --set app.image.tag=latest \
+    --set model.image.tag=latest \
+    --set model.port=5000 \
+    --set app.port=8080
+   ```
+
+2. (Optional) Upgrading or re-running the Helm chart:
+   If you make changes to your Helm chart or need to update the deployed application with new configurations, you can run the below `helm upgrade` command.
+
+   ```bash
+    helm upgrade --install myapp-dev ./helm/myapp \
+    --set model.image.tag=latest \
+    --set app.image.tag=latest \
+    --set model.port=5000 \
+    --set app.port=8080
+   ```
+
+3. Access the deployed application:
+
+   ```bash
+    kubectl port-forward svc/myapp-dev-myapp-app 8080:8080
+   ```
+
+   > Navigate to `http://localhost:8080` to access the application.
 
 ## Config
 
