@@ -152,6 +152,18 @@ helm install myapp-dev ./helm/myapp  --set app.image.tag=latest   --set model.im
 if you want to change after making any changes, do 
 helm upgrade --install myapp-dev ./helm/myapp   --set model.image.tag=latest   --set app.image.tag=latest   --set model.port=5000   --set app.port=8080
 
+### Access Prometheus
+
+```bash
+↪ kubectl port-forward svc/myapp-dev-myapp 8080:8080
+```
+
+then:
+```bash
+minikube service myprom-kube-prometheus-sta-prometheus --url
+```
+There should be a ServiceMonitor/default/myapp-dev-myapp/0 under status->TargetHealth that is greent/up.
+
 ## Config
 
 The .env file in this repository allows you to choose which version of the `app` and `model-service` container you'd like to use. If none are specified, the latest images will be pulled by default.
