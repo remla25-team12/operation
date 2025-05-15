@@ -1,5 +1,5 @@
 # general.yaml
-- name: General Kubernetes cluster setup
+- name: General provisioning playbook
   hosts: all
   become: yes
   collections:
@@ -122,7 +122,7 @@
         line: '\1disable_apparmor = true'
         backrefs: yes
       notify: 
-        - Restart containerd
+        - Restart containerd (if config changes were made)
  
     - name: Update version of the sandbox image
       ansible.builtin.lineinfile:
@@ -131,7 +131,7 @@
         line: '\1sandbox_image = "registry.k8s.io/pause:3.10"'
         backrefs: yes
       notify: 
-        - Restart containerd
+        - Restart containerd (if config changes were made)
  
     - name: Set SystemdCgroup to true
       ansible.builtin.lineinfile:
@@ -140,7 +140,7 @@
         line: '\1SystemdCgroup = true'
         backrefs: yes
       notify: 
-        - Restart containerd
+        - Restart containerd (if config changes were made)
     
     - name: Flush handlers
       meta: flush_handlers
