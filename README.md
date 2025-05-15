@@ -134,6 +134,24 @@ $ docker compose up -d
    >
    > However, login using the token **via `kubectl` works correctly.**
 
+## For HELM
+### ✅ 1. Prerequisites
+
+- Helm 3 installed
+- Kubernetes cluster running (e.g., Minikube)
+
+Optional for Minikube:
+
+```bash
+minikube start --driver=docker
+minikube addons enable ingress
+```
+### Install the helm chart
+helm install myapp-dev ./helm/myapp  --set app.image.tag=latest   --set model.image.tag=latest   --set model.port=5000   --set app.port=8080
+
+if you want to change after making any changes, do 
+helm upgrade --install myapp-dev ./helm/myapp   --set model.image.tag=latest   --set app.image.tag=latest   --set model.port=5000   --set app.port=8080
+
 ## Config
 
 The .env file in this repository allows you to choose which version of the `app` and `model-service` container you'd like to use. If none are specified, the latest images will be pulled by default.

@@ -1,0 +1,19 @@
+app:
+  image:
+    repository: ghcr.io/remla25-team12/app
+    tag: latest
+    pullPolicy: Always
+  port: 8080
+
+model:
+  image:
+    repository: ghcr.io/remla25-team12/model-service
+    tag: latest
+    pullPolicy: Always
+  port: 5000
+  cachePath: /app/cache
+  feedbackPath: /app/feedback
+
+ingress:
+  enabled: true
+  host: myapp.local
