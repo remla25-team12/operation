@@ -4,7 +4,7 @@
   become: yes
   become_user: vagrant
   vars:
-    dashboard-admin-yaml: | 
+    dashboard_admin_yaml: | 
       apiVersion: v1
       kind: ServiceAccount
       metadata:
@@ -23,7 +23,7 @@
       - kind: ServiceAccount
         name: admin-user
         namespace: kubernetes-dashboard
-    dashboard-ingress-yaml: |
+    dashboard_ingress_yaml: |
       apiVersion: networking.k8s.io/v1
       kind: Ingress
       metadata:
@@ -134,7 +134,7 @@
     - name: Create 'admin user config' (ServiceAccount & ClusterRoleBinding)
       copy:
         dest: /tmp/dashboard-admin.yaml
-        content: "{{ dashboard-admin-yaml }}"
+        content: "{{ dashboard_admin_yaml }}"
           
     - name: Apply admin user config
       command: kubectl apply -f /tmp/dashboard-admin.yaml
@@ -142,7 +142,7 @@
     - name: Create dashboard Ingress
       copy:
         dest: /tmp/dashboard-ingress.yaml
-        content: "{{ dashboard-ingress-yaml }}"
+        content: "{{ dashboard_ingress_yaml }}"
 
     - name: Apply dashboard ingress
       command: kubectl apply -f /tmp/dashboard-ingress.yaml
@@ -170,7 +170,7 @@
       unarchive:
         src: /tmp/istio.tar.gz
         dest: /opt/
-        #remote_src: yes
+        remote_src: yes
       become: true
 
     ### TODO make idempotent
