@@ -5,7 +5,8 @@ REMLA Group 12
 ## About
 
 This project is an adaptation of the [Restaurant Sentiment Analysis](https://github.com/proksch/restaurant-sentiment) project.
-This repository serves as the central point of the project, containing the deployment configuration (`docker-compose.yaml`), installation instructions, and links to other components.
+This repository serves as the central point of the project, containing the Docker and Kubernetes deployment configurations, installation instructions, and links to other components.
+
 
 ## Relevant Repositories
 
@@ -17,122 +18,74 @@ This repository serves as the central point of the project, containing the deplo
 | [lib-version](https://github.com/remla25-team12/lib-version)       | A simple version-aware libary that reports its own version.                               |
 | [app](https://github.com/remla25-team12/app)                       | Webapp (frontend + service) to interface with the model.                                  |
 
-# Getting Started
 
-## Requirements
+## Deployment with Docker
 
-- Linux or MacOS
+### Requirements
+
+- Linux or macOS
 - Docker and Docker Compose
 
-## Install and Run
-
+### Install and Run
 1. Clone this repository.
+   ```bash
+    git clone https://github.com/remla25-team12/operation.git
+   ```
 2. Deploy the project using Docker Compose by running this command in the project's root folder.
 
-```
-$ docker compose up -d
-```
+   ```bash
+   docker compose up -d
+   ```
 
-3. Navigate to `http://localhost:8080` to access the application homepage.
+3. Navigate to http://localhost:8080 to access the application homepage.
 
-## Setting Up the Kubernetes Cluster
+
+## Kubernetes Cluster setup
 
 ### Prerequisites
 
-- **Operating System**: macOS or Linux
+- **Host Operating System**: macOS or Linux
 - **Virtualization**: VirtualBox
 - **Provisioning Tools**: Vagrant and Ansible
 
 ### Install and Run
 
-1. Clone the repository:
+1. Clone this repository:
 
    ```bash
     git clone https://github.com/remla25-team12/operation.git
-    cd operation
    ```
 
-2. Start the virtual environment:
-
-   ```bash
-    vagrant up
-    vagrant provision
-   ```
-
-3. Reset host-only networks in VirtualBox:
-
-   Before continuing, **open the VirtualBox GUI** and:
-
-   - Go to `Tools > Network`
-   - **Remove any existing "Host-only Networks"** listed under that section
+2. Before continuing, it is important to reset the host-only networks in VirtualBox. To do this, **open the VirtualBox GUI**, go to `Tools > Network`, and **remove any existing "Host-only Networks"** listed under that section.
 
    > This prevents conflicts with stale or broken network configurations from previous VirtualBox setups.
 
-4. Run the Ansible playbook
+2. Start the virtual environment from the repository's root folder:
 
-   Once the VM is up, run the following Ansible playbook to finalize the Kubernetes setup:
+   ```bash
+    cd operation
+    vagrant up
+   ```
+   This operation may take a while to complete.
+
+4. Once the VMs are up and provisioned, run the following Ansible playbook to finalize the Kubernetes setup:
 
    ```bash
     ansible-playbook -u vagrant -i 192.168.56.100, provisioning/finalization.yml
    ```
 
-   When running this command, you can receive an error. For example, in the **Check if ingress-nginx is already installed** step, below error could occur:
+5. To access the Kubernetes dashboard, do the following on your host machine:
 
-   ```
-   fatal: [192.168.56.100]: FAILED! => {"changed": true, "cmd": ["helm", "status", "ingress-nginx", "-n", "ingress-nginx"], "delta": "0:00:00.048696", "end": "2025-05-13 09:13:26.349148", "msg": "non-zero return code", "rc": 1, "start": "2025-05-13 09:13:26.300452", "stderr": "Error: release: not found", "stderr_lines": ["Error: release: not found"], "stdout": "", "stdout_lines": []}.
-   ```
-
-   We hypothesize that the VM takes some time to set everything from the backend. In such a case, just re-run the command.
-
-   ```bash
-    ansible-playbook -u vagrant -i 192.168.56.100, provisioning/finalization.yml
-   ```
-
-5. Access the Kubernetes Dashboard
-
-   Once provisioning is complete, the Kubernetes Dashboard will be available at:
-
-   ```bash
-    dashboard.local
-   ```
-
-   > Open this URL in your browser.
-
-6. Add host entry
-
-   To resolve `dashboard.local`, you must update your `/etc/hosts` file by running:
-
-   ```bash
-    sudo nano /etc/hosts/
-   ```
-
-   Then append below text to the file.
-
+   - Edit the `/etc/hosts` file to resolve https://dashboard.local, by adding the following line to the file: 
    ```plaintext
     192.168.56.91 dashboard.local
    ```
 
-7. Log in to the Dashboard
+   - Navigate to https://dashboard.local and enter the token displayed in the terminal.
 
-   Access the control node by running:
+   > **Note**: If you cannot find this token, run `vagrant ssh ctrl`, followed by `kubectl -n kubernetes-dashboard create token admin-user` to generate a new one.
 
-   ```
-    vagrant ssh ctrl
-   ```
-
-   Generate a token with:
-
-   ```bash
-    kubectl -n kubernetes-dashboard create token admin-user
-   ```
-
-   > Or check the logs of the RBAC YAML used to provision `admin-user` to find the pre-generated token.
-
-   Paste the token into the dashboard login screen.
-
-   > **Note:** Logging in via browser may display the UI but result in `401 Unauthorized`. This is a known issue.
-   >
-   > However, login using the token **via `kubectl` works correctly.**
+ 
 
 ## Setting up the Application with Helm
 
@@ -183,9 +136,6 @@ Ensure you have the following components ready in your environment:
 
    > Navigate to `http://localhost:8080` to access the application.
 
-## Config
-
-The .env file in this repository allows you to choose which version of the `app` and `model-service` container you'd like to use. If none are specified, the latest images will be pulled by default.
 
 # Continuous Progress Log
 
@@ -202,3 +152,6 @@ The Kubernetes-based deployment infrastructure is fully operational. MetalLB and
 In Step 14, coping config to hosts is not done fully. While the current ctrl.yaml copies it to privisioning folder, the step in the assignment **"config should be usable from the host via KUBECONFIG environment variable or through --kubeconfig argument:"** will still need to be implemented.
 
 Please closely follow the steps described under **Setting Up the Kubernetes Cluster** section of this README to test the functionality of our Kubernetes-based deployment infrastructure.
+
+## Assignment 3
+All issues and pending solutions described in Assignment 2 have been resolved. 
