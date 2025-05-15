@@ -3,3 +3,4 @@
 **/.vault_pass.txt
 **/vault_pass.txt
 provisioning/admin.conf
+provisioning/inventory.cfg

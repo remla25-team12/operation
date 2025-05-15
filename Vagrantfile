@@ -3,10 +3,16 @@
 
 # Variables
 NUM_WORKERS = 2
-WORKER_CPU = 2
-WORKER_MEMORY = 6144
+
 CTRL_CPU = 1
 CTRL_MEMORY = 4096
+CTRL_IP = "192.168.56.100"
+
+WORKER_CPU = 2
+WORKER_MEMORY = 6144
+WORKER_IP_BASE = "192.168.56."
+WORKER_IP_LIST = (1..NUM_WORKERS).map { |num| "#{WORKER_IP_BASE}#{100 + num}" }
+
 GENERAL_PLAYBOOK_PATH = "provisioning/general.yaml"
 CTRL_PLAYBOOK_PATH = "provisioning/ctrl.yaml"
 NODE_PLAYBOOK_PATH = "provisioning/node.yaml"
@@ -52,16 +58,12 @@ end
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 Vagrant.configure("2") do |config|
-  # The most common configuration options are documented and commented below.
-  # For a complete reference, please see the online documentation at
-  # https://docs.vagrantup.com.
-
   # Define the control node
   config.vm.define "ctrl" do |ctrl|
     vm_setup(
       ctrl,
       name: "ctrl",
-      ip: "192.168.56.100",
+      ip: CTRL_IP,
       cpus: CTRL_CPU,
       memory: CTRL_MEMORY,
       playbook: CTRL_PLAYBOOK_PATH,
@@ -69,18 +71,34 @@ Vagrant.configure("2") do |config|
   end
 
   # Define the worker nodes 
-  # Number of workers is configurable through the NUM_WORKERS variable to enable scaling up and down
   (1..NUM_WORKERS).each do |num|
     config.vm.define "node-#{num}" do |node|
       vm_setup(
         node,
         name: "node-#{num}",
-        ip: "192.168.56.#{100 + num}",
+        ip: "#{WORKER_IP_BASE}#{100 + num}",
         cpus: WORKER_CPU,
         memory: WORKER_MEMORY,
         playbook: NODE_PLAYBOOK_PATH,
       )
     end
+
+    # Generate inventory.cfg
+    config.trigger.before :up do |trigger|
+      trigger.ruby do
+        file = File.join(File.dirname(__FILE__), "provisioning", "inventory.cfg")
+        File.open(file, 'w') do |f|
+          f.puts "[ctrl]"
+          f.puts "#{CTRL_IP}"
+          f.puts ""          
+          f.puts "[nodes]"
+          WORKER_IP_LIST.each do |ip|
+            f.puts "#{ip}"
+          end
+        end
+      end
+    end
+
   end
   
 
@@ -144,4 +162,6 @@ Vagrant.configure("2") do |config|
   #   apt-get update
   #   apt-get install -y apache2
   # SHELL
+
+
 end
