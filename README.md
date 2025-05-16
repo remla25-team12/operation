@@ -135,61 +135,90 @@ then continue normally:
 
 > **Note:** Cleaning up any previous Minikube instance is recommended with the `minikube delete` command described above.
 
-### Deploying the Application using the Helm Chart
+# Deploying the Application using the Helm Chart
 
-1.  Install kube-prometheus-stack using Helm if on YOUR SYSTEM
+> **Note:** It is recommended to clean up any previous Minikube instance before proceeding, using:  
+> ```bash
+> minikube delete
+> ```
 
-    ```bash
-     helm repo add prom-repo https://prometheus-community.github.io/helm-charts
-     helm repo update
-     helm install myprom prom-repo/kube-prometheus-stack
-    ```
+---
 
-    only then:
+## 1. Installing kube-prometheus-stack and Deploying the App
 
-    ```bash
-     helm install myapp-dev ./helm/myapp \
-     --set app.image.tag=latest \
-     --set model.image.tag=latest \
-     --set model.port=5000 \
-     --set app.port=8080
-    ```
+### On Your Local System (e.g., Minikube)
 
-1.1
-   IF you're on Vagrant VM's
-   vagrant ssh ctrl after vagrant up or vagrant provision and running provisioning/finalization.yml
+```bash
+helm repo add prom-repo https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install myprom prom-repo/kube-prometheus-stack
+```
 
-      ```bash
-      cd /mnt/shared/
-      ```
+Then deploy your app:
 
-    ```bash
-     helm repo add prom-repo https://prometheus-community.github.io/helm-charts
-     helm repo update
-     helm install myprom prom-repo/kube-prometheus-stack
-    ```
+```bash
+helm install myapp-dev ./helm/myapp \
+  --set app.image.tag=latest \
+  --set model.image.tag=latest \
+  --set model.port=5000 \
+  --set app.port=8080 \
+  --set useHostPathSharedFolder=false
+```
 
-    only then:
+---
 
-    ```bash
-     helm install myapp-dev ./helm/myapp \
-     --set app.image.tag=latest \
-     --set model.image.tag=latest \
-     --set model.port=5000 \
-     --set app.port=8080
-    ```
-2.  (Optional) Upgrading or re-running the Helm chart:
-    If you make changes to your Helm chart or need to update the deployed application with new configurations, you can run the below `helm upgrade` command.
+### On Vagrant VM(s)
 
-    ```bash
-     helm upgrade --install myapp-dev ./helm/myapp \
-     --set model.image.tag=latest \
-     --set app.image.tag=latest \
-     --set model.port=5000 \
-     --set app.port=8080
-    ```
+1. SSH into your Vagrant control node:
 
-3.  Access the deployed application:
+```bash
+vagrant ssh ctrl
+```
+
+2. Change directory to shared folder:
+
+```bash
+cd /mnt/shared/
+```
+
+3. Install kube-prometheus-stack:
+
+```bash
+helm repo add prom-repo https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install myprom prom-repo/kube-prometheus-stack
+```
+
+4. Deploy your app with the **hostPath shared folder enabled**:
+
+```bash
+helm install myapp-dev ./helm/myapp \
+  --set app.image.tag=latest \
+  --set model.image.tag=latest \
+  --set model.port=5000 \
+  --set app.port=8080 \
+  --set useHostPathSharedFolder=true
+```
+
+---
+
+## 2. Upgrading or Reinstalling the Helm Release
+
+If you make changes to your Helm chart or want to update the deployment, use:
+
+```bash
+helm upgrade --install myapp-dev ./helm/myapp \
+  --set app.image.tag=latest \
+  --set model.image.tag=latest \
+  --set model.port=5000 \
+  --set app.port=8080 \
+  --set useHostPathSharedFolder=<true-or-false-based-on-env>
+```
+
+- Set `useHostPathSharedFolder=true` if running on Vagrant (to enable hostPath volume).  
+- Set `useHostPathSharedFolder=false` if running on Minikube or local system.
+
+## 3. Access the deployed application:
 
     ```bash
      kubectl port-forward svc/myapp-dev-myapp-app 8080:8080
@@ -197,7 +226,7 @@ then continue normally:
 
     > Navigate to `http://localhost:8080` to access the application.
 
-4.  Access Prometheus
+## 4. Access Prometheus
 
     ```bash
      minikube service myprom-kube-prometheus-sta-prometheus --url
