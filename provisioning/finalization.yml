@@ -1,15 +1,69 @@
-- name: Install MetalLB
+# ansible-playbook -u vagrant -i 192.168.56.100, provisioning/finalization.yml
+- name: Finalize initialization of Kubernetes cluster
   hosts: all
   become: yes
+  become_user: vagrant
+  vars:
+    dashboard_admin_yaml: | 
+      apiVersion: v1
+      kind: ServiceAccount
+      metadata:
+        name: admin-user
+        namespace: kubernetes-dashboard
+      ---
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRoleBinding
+      metadata:
+        name: admin-user
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: ClusterRole
+        name: cluster-admin
+      subjects:
+      - kind: ServiceAccount
+        name: admin-user
+        namespace: kubernetes-dashboard
+    dashboard_ingress_yaml: |
+      apiVersion: networking.k8s.io/v1
+      kind: Ingress
+      metadata:
+        name: dashboard-ingress
+        namespace: kubernetes-dashboard
+        annotations:
+          nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+          # nginx.ingress.kubernetes.io/secure-backends: "true"
+          # nginx.ingress.kubernetes.io/ssl-redirect: "true"
+          # nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+      spec:
+        ingressClassName: nginx
+        rules:
+          - host: "dashboard.local"
+            http:
+              paths:
+                - path: /
+                  pathType: Prefix
+                  backend:
+                    service:
+                      name: kubernetes-dashboard-kong-proxy
+                      port:
+                        number: 443
 
   tasks:
+    # Step 20: Install MetalLB
+    - name: Download MetalLB yaml file
+      get_url:
+        url: https://raw.githubusercontent.com/metallb/metallb/v0.14.9/config/manifests/metallb-native.yaml
+        dest: "/tmp/metallb-native.yaml"
+
     - name: Apply MetalLB CRDs
-      command: kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.9/config/manifests/metallb-native.yaml
+      shell: kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.9/config/manifests/metallb-native.yaml
 
     - name: Wait for MetalLB controller pod to be ready
-      command: >
-        kubectl wait -n metallb-system -l app=metallb,component=controller
-        --for=condition=ready pod --timeout=60s
+      shell: >
+        kubectl wait -n metallb-system 
+        -l app=metallb,component=controller
+        --for=condition=ready pod 
+        --timeout=300s
 
     - name: Configure IPAddressPool
       copy:
@@ -41,144 +95,101 @@
     - name: Apply L2Advertisement
       command: kubectl apply -f /tmp/metallb-l2.yaml
 
-- name: Install NGINX Ingress Controller
-  hosts: all
-  become: yes
+    # Step 21: Install Nginx Ingress Controller
+    - name: "Add Nginx Ingress repository"
+      kubernetes.core.helm_repository:
+        name: ingress-nginx
+        repo_url: https://kubernetes.github.io/ingress-nginx
+        state: present
 
-  tasks:
-    - name: Add ingress-nginx Helm repo
-      command: helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+    - name: "Install Nginx Ingress controller chart"
+      kubernetes.core.helm:
+        name: ingress-nginx
+        chart_ref: ingress-nginx/ingress-nginx
+        release_namespace: ingress-nginx
+        create_namespace: yes
+        state: present
+        values:
+          controller:
+            service:
+              loadBalancerIP: 192.168.56.91
 
-    - name: Update Helm repositories
-      command: helm repo update
+    # - name: Wait for ingress-nginx controller to be ready
+    #   shell: >
+    #     kubectl wait -n ingress-nginx 
+    #     -l app.kubernetes.io/component=controller 
+    #     --for=condition=ready pod 
+    #     --timeout=60s
 
-    - name: Check if ingress-nginx is already installed
-      command: helm status ingress-nginx -n ingress-nginx
-      register: nginx_status
-      ignore_errors: yes
+    # Step 22: Install Kubernetes Dashboard
+    - name: "Add Kubernetes dashboard repository"
+      kubernetes.core.helm_repository:
+        name: "kubernetes-dashboard"
+        repo_url: https://kubernetes.github.io/dashboard/
+        state: present
 
-    - name: Install ingress-nginx via Helm
-      command: >
-        helm install ingress-nginx ingress-nginx/ingress-nginx
-        --namespace ingress-nginx --create-namespace
-        --set controller.service.loadBalancerIP=192.168.56.91
-      when: nginx_status.rc != 0
+    - name: "Install Kubernetes dashboard chart"
+      kubernetes.core.helm:
+        name: "kubernetes-dashboard"
+        chart_ref: "kubernetes-dashboard/kubernetes-dashboard"
+        release_namespace: kubernetes-dashboard 
+        create_namespace: yes        
+        state: present       
 
-- name: Install Kubernetes Dashboard
-  hosts: all
-  become: yes
-
-  tasks:
-    - name: Add dashboard Helm repo
-      command: helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
-
-    - name: Update Helm repositories
-      command: helm repo update
-
-    - name: Check if kubernetes-dashboard is already installed
-      command: helm status kubernetes-dashboard -n kubernetes-dashboard
-      register: dashboard_status
-      ignore_errors: yes
-
-    - name: Install dashboard via Helm
-      command: >
-        helm install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard
-        --namespace kubernetes-dashboard --create-namespace
-      when: dashboard_status.rc != 0
-
-    - name: Create admin user and ClusterRoleBinding
+    - name: Create 'admin user config' (ServiceAccount & ClusterRoleBinding)
       copy:
         dest: /tmp/dashboard-admin.yaml
-        content: |
-          apiVersion: v1
-          kind: ServiceAccount
-          metadata:
-            name: admin-user
-            namespace: kubernetes-dashboard
-          ---
-          apiVersion: rbac.authorization.k8s.io/v1
-          kind: ClusterRoleBinding
-          metadata:
-            name: admin-user
-          roleRef:
-            apiGroup: rbac.authorization.k8s.io
-            kind: ClusterRole
-            name: cluster-admin
-          subjects:
-          - kind: ServiceAccount
-            name: admin-user
-            namespace: kubernetes-dashboard
-
+        content: "{{ dashboard_admin_yaml }}"
+          
     - name: Apply admin user config
       command: kubectl apply -f /tmp/dashboard-admin.yaml
 
     - name: Create dashboard Ingress
       copy:
         dest: /tmp/dashboard-ingress.yaml
-        content: |
-          apiVersion: networking.k8s.io/v1
-          kind: Ingress
-          metadata:
-            name: dashboard-ingress
-            namespace: kubernetes-dashboard
-            annotations:
-              nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
-              nginx.ingress.kubernetes.io/secure-backends: "true"
-              nginx.ingress.kubernetes.io/ssl-redirect: "true"
-              nginx.ingress.kubernetes.io/ssl-passthrough: "true"
-          spec:
-            ingressClassName: nginx
-            rules:
-              - host: dashboard.local
-                http:
-                  paths:
-                    - path: /
-                      pathType: Prefix
-                      backend:
-                        service:
-                          name: kubernetes-dashboard-kong-proxy
-                          port:
-                            number: 8443
+        content: "{{ dashboard_ingress_yaml }}"
 
     - name: Apply dashboard ingress
       command: kubectl apply -f /tmp/dashboard-ingress.yaml
 
-- name: Generate Kubernetes Dashboard token
-  hosts: all
-  become: yes
-  tasks:
-    - name: Create admin token
+    - name: Generate dashboard admin token
       command: kubectl -n kubernetes-dashboard create token admin-user
       register: dashboard_token
 
-    - name: Show dashboard login token
+    - name: Show dashboard login token and next steps
       debug:
-        msg: "Dashboard token: {{ dashboard_token.stdout }}"
+        msg: 
+          - "Kubernetes dashboard ready. Next steps:"
+          - ">> Add the line '192.168.56.91 dashboard.local' to your host's hostfile"
+          - ">> Go to https://dashboard.local and enter the following token: {{ dashboard_token.stdout }}"
 
-- name: Install Istio
-  hosts: all
-  become: yes
-  tasks:
+    # Step 23: Install Istio
     - name: Download Istio 1.25.2
       get_url:
         url: https://github.com/istio/istio/releases/download/1.25.2/istio-1.25.2-linux-amd64.tar.gz
         dest: /tmp/istio.tar.gz
+        mode: '0644'
+      become: true
 
     - name: Extract Istio
-      unarchive:
+      ansible.builtin.unarchive:
         src: /tmp/istio.tar.gz
-        dest: /opt/
+        dest: /home/vagrant/
         remote_src: yes
+      become: true
+      args:
+        creates: /home/vagrant/istio-1.25.2/manifests
 
     - name: Add istioctl to PATH
       lineinfile:
         path: /home/vagrant/.bashrc
-        line: 'export PATH=$PATH:/opt/istio-1.25.2/bin'
+        line: 'export PATH=$PATH:/home/vagrant/istio-1.25.2/bin'
         insertafter: EOF
-      become_user: vagrant
+        state: present
 
     - name: Run istioctl install (demo profile)
       shell: |
-        /opt/istio-1.25.2/bin/istioctl install --set profile=demo -y
+        istioctl install --set profile=demo -y
       args:
-        creates: /opt/istio-1.25.2/manifests
+        creates: /home/vagrant/istio-1.25.2/manifests
+
