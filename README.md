@@ -176,9 +176,9 @@ then continue normally:
 
 4.  Access Prometheus
 
-        ```bash
-          minikube service myprom-kube-prometheus-sta-prometheus --url
-        ```
+    ```bash
+     minikube service myprom-kube-prometheus-sta-prometheus --url
+    ```
 
     There should be a ServiceMonitor/default/myapp-dev-myapp/0 under status->TargetHealth that is greent/up.
 
