@@ -48,7 +48,7 @@ Approved PR: https://github.com/remla25-team12/operation/pull/11
 
 
 **Ayush Kuruvilla:**\
-Created PR: https://github.com/remla25-team12/operation/pull/24
+Created PR: https://github.com/remla25-team12/operation/pull/24 \
 Approved PR: https://github.com/remla25-team12/operation/pull/25
 
 
