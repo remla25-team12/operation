@@ -137,7 +137,7 @@ then continue normally:
 
 ### Deploying the Application using the Helm Chart
 
-1.  Install kube-prometheus-stack using Helm
+1.  Install kube-prometheus-stack using Helm if on YOUR SYSTEM
 
     ```bash
      helm repo add prom-repo https://prometheus-community.github.io/helm-charts
@@ -155,6 +155,29 @@ then continue normally:
      --set app.port=8080
     ```
 
+1.1
+   IF you're on Vagrant VM's
+   vagrant ssh ctrl after vagrant up or vagrant provision and running provisioning/finalization.yml
+
+      ```bash
+      cd /mnt/shared/
+      ```
+
+    ```bash
+     helm repo add prom-repo https://prometheus-community.github.io/helm-charts
+     helm repo update
+     helm install myprom prom-repo/kube-prometheus-stack
+    ```
+
+    only then:
+
+    ```bash
+     helm install myapp-dev ./helm/myapp \
+     --set app.image.tag=latest \
+     --set model.image.tag=latest \
+     --set model.port=5000 \
+     --set app.port=8080
+    ```
 2.  (Optional) Upgrading or re-running the Helm chart:
     If you make changes to your Helm chart or need to update the deployed application with new configurations, you can run the below `helm upgrade` command.
 
