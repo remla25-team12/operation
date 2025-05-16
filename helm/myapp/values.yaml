@@ -28,3 +28,17 @@ service:
     name: http
     port: 5000          # <-- FIXED from 8080 to 5000
     targetPort: 5000    # <-- FIXED from 8080 to 5000
+
+alertmanager:
+  config:
+    global:
+      smtp_smarthost: 'smtp.example.com:587'
+      smtp_from: 'our-app@gmail.com'
+      smtp_auth_username: 'pipe.henry@gmail.com'
+      smtp_auth_password_file: /etc/alertmanager/secrets/smtp_auth_password
+    route:
+      receiver: 'email-notifications'     # Correct singular form
+    receivers:
+      - name: 'email-notifications'
+        email_configs:
+          - to: 'pahenry@tudelft.nl'

@@ -1,0 +1,11 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Alertmanager
+metadata:
+  name: alertmanager-main
+  namespace: monitoring
+spec:
+  replicas: 1
+  alertmanagerConfig:
+    {{ .Values.alertmanager.config | toYaml | indent 4 }}
+  secrets:
+    - alertmanager-smtp-secret
