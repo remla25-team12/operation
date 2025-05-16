@@ -2,10 +2,24 @@ apiVersion: monitoring.coreos.com/v1
 kind: Alertmanager
 metadata:
   name: alertmanager-main
-  namespace: monitoring
 spec:
   replicas: 1
-  alertmanagerConfig:
-    {{ .Values.alertmanager.config | toYaml | indent 4 }}
+  config:
+    global:
+      smtp_smarthost: 'smtp.gmail.com:587'
+      smtp_from: 'remla12.notifs@gmail.com'
+      smtp_auth_username: 'remla12.notifs@gmail.com'
+      smtp_auth_password_file: /etc/alertmanager/secrets/alertmanager-smtp-secret/smtp_auth_password
+      smtp_require_tls: true
+
+    route:
+      receiver: 'email-notifications'
+
+    receivers:
+      - name: 'email-notifications'
+        email_configs:
+          - to: 'remla12.notifs@gmail.com'
+            send_resolved: true
+
   secrets:
     - alertmanager-smtp-secret

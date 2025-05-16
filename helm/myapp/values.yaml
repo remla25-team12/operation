@@ -3,7 +3,7 @@ app:
     repository: ghcr.io/remla25-team12/app
     tag: latest
     pullPolicy: Always
-  port: 8080  # <-- FIXED from 8080 to 5000
+  port: 8080
 
 model:
   image:
@@ -26,19 +26,19 @@ service:
     app: myapp
   port:
     name: http
-    port: 5000          # <-- FIXED from 8080 to 5000
-    targetPort: 5000    # <-- FIXED from 8080 to 5000
+    port: 5000
+    targetPort: 5000
 
 alertmanager:
-  config:
-    global:
-      smtp_smarthost: 'smtp.example.com:587'
-      smtp_from: 'our-app@gmail.com'
-      smtp_auth_username: 'pipe.henry@gmail.com'
-      smtp_auth_password_file: /etc/alertmanager/secrets/smtp_auth_password
-    route:
-      receiver: 'email-notifications'     # Correct singular form
-    receivers:
-      - name: 'email-notifications'
-        email_configs:
-          - to: 'pahenry@tudelft.nl'
+  enabled: true
+  replicas: 1
+  smtp:
+    smarthost: "smtp.gmail.com:587"
+    from: "remla12.notifs@gmail.com"
+    authUsername: "remla12.notifs@gmail.com"
+    authPassword: "your-gmail-password-or-app-specific-password"
+    requireTLS: true
+  receivers:
+    email:
+      to: "remla12.notifs@gmail.com"
+      sendResolved: true

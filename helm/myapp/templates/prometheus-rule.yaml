@@ -9,8 +9,10 @@ spec:
     - name: high-traffic
       rules:
         - alert: HighTraffic
-          expr: sum(rate(kubelet_http_requests_total[1m])) > 10
-          for: 1m
+{{/*          expr: sum(rate(kubelet_http_requests_total[1m])) > 10*/}}
+          expr: vector(1)
+          for: 10s
+
           labels:
             severity: warning
           annotations:
