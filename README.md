@@ -169,7 +169,7 @@ then continue normally:
 3.  Access the deployed application:
 
     ```bash
-     kubectl port-forward svc/myapp-dev-myapp-app 8080:8080
+     kubectl port-forward svc/myapp-dev-myapp 8080:8080
     ```
 
     > Navigate to `http://localhost:8080` to access the application.
