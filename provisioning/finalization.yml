@@ -5,6 +5,7 @@
   become_user: vagrant
   vars:
     venv_path: /opt/ansible-venv
+    ansible_python_interpreter: "{{ venv_path }}/bin/python"
     dashboard_admin_yaml: | 
       apiVersion: v1
       kind: ServiceAccount
@@ -50,41 +51,6 @@
                         number: 443
 
   tasks:
-    # intermezzo: create venv for kubernetes.core ansible
-    # TODO: move entire block to general.yaml or ctrl.yaml since we need it for flannel
-    - name: Set up venv for kubernetes.core
-      become_user: root
-      block:
-      - name: Ensure Python venv module is installed
-        ansible.builtin.package:
-          name: python3-venv
-          state: present
-        
-      - name: Create virtual environment
-        ansible.builtin.command: python3 -m venv --upgrade {{ venv_path }}
-        args:
-          creates: "{{ venv_path }}/bin/activate"
-
-      - name: Upgrade pip
-        pip: 
-          name: pip
-          state: latest
-          virtualenv: "{{ venv_path }}"
-          virtualenv_command: python3 -m venv
-
-      - name: Upgrade setuptools
-        pip: 
-          name: setuptools
-          state: latest
-          virtualenv: "{{ venv_path }}"
-          virtualenv_command: python3 -m venv
-
-      - name: Install kubernetes client in venv
-        ansible.builtin.pip:
-          name: kubernetes
-          virtualenv: "{{ venv_path }}"
-          virtualenv_command: python3 -m venv
-
     # Step 20 - Install MetalLB
     - name: Download MetalLB yaml file
       get_url:
@@ -95,9 +61,7 @@
       kubernetes.core.k8s:
         state: present
         src: "/tmp/metallb-native.yaml"
-      vars:
-        ansible_python_interpreter: "{{ venv_path }}/bin/python"
-
+     
     - name: Waiting for MetalLB controller pod to be ready
       kubernetes.core.k8s_info:
         kind: Pod
@@ -108,9 +72,7 @@
           - component=controller
         wait_sleep: 5
         wait_timeout: 150
-      vars:
-        ansible_python_interpreter: "{{ venv_path }}/bin/python"
-
+      
     - name: Configure IPAddressPool
       copy:
         dest: /tmp/metallb-pool.yaml
@@ -125,13 +87,10 @@
               - 192.168.56.90-192.168.56.99
 
     - name: Apply IPAddressPool
-      # command: kubectl apply -f /tmp/metallb-pool.yaml
       kubernetes.core.k8s:
         state: present
         src: "/tmp/metallb-pool.yaml"
-      vars:
-        ansible_python_interpreter: "{{ venv_path }}/bin/python"
-
+     
     - name: Configure L2Advertisement
       copy:
         dest: /tmp/metallb-l2.yaml
@@ -144,13 +103,10 @@
           spec: {}
 
     - name: Apply L2Advertisement
-      #command: kubectl apply -f /tmp/metallb-l2.yaml
       kubernetes.core.k8s:
         state: present
         src: "/tmp/metallb-l2.yaml"
-      vars:
-        ansible_python_interpreter: "{{ venv_path }}/bin/python"
-
+      
     # Step 21: Install Nginx Ingress Controller
     - name: "Add Nginx Ingress repository"
       kubernetes.core.helm_repository:
@@ -191,13 +147,10 @@
         content: "{{ dashboard_admin_yaml }}"
           
     - name: Apply admin user config
-      # command: kubectl apply -f /tmp/dashboard-admin.yaml
       kubernetes.core.k8s:
         state: present
         src: "/tmp/dashboard-admin.yaml"
-      vars:
-        ansible_python_interpreter: "{{ venv_path }}/bin/python"
-
+      
     - name: Create dashboard Ingress
       copy:
         dest: /tmp/dashboard-ingress.yaml
@@ -212,17 +165,12 @@
           - app.kubernetes.io/component=controller
         wait_sleep: 5
         wait_timeout: 150
-      vars:
-        ansible_python_interpreter: "{{ venv_path }}/bin/python"
-
+      
     - name: Apply dashboard ingress
-      # command: kubectl apply -f /tmp/dashboard-ingress.yaml
       kubernetes.core.k8s:
         state: present
         src: "/tmp/dashboard-ingress.yaml"
-      vars:
-        ansible_python_interpreter: "{{ venv_path }}/bin/python"
-
+      
     - name: Generate dashboard admin token
       command: kubectl -n kubernetes-dashboard create token admin-user
       register: dashboard_token

@@ -56,7 +56,7 @@ This repository serves as the central point of the project, containing the Docke
     git clone https://github.com/remla25-team12/operation.git
    ```
 
-2. Navigate into the repository's root folder and install the required Ansible components:
+2. Navigate into the repository's root folder and install the required Ansible collections:
    ```bash
    ansible-galaxy collection install -r requirements.yml 
    ```
