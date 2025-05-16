@@ -49,6 +49,10 @@ spec:
         - name: feedback
           emptyDir: {}
         - name: shared-folder
+          {{- if .Values.useHostPathSharedFolder }}
           hostPath:
             path: /mnt/shared
             type: Directory
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
