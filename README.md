@@ -122,7 +122,7 @@ Ensure you have the following components ready in your environment:
 If you are using Fedora, you may need to run the following command to allow Minikube to use the Docker driver:
 
 ```bash
-sudo setenforce 0
+ sudo setenforce 0
 ```
 
 then continue normally:
@@ -137,8 +137,7 @@ then continue normally:
 
 ### Deploying the Application using the Helm Chart
 
-1.  Install Helm chart:
-    Install kube-prometheus-stack using helm
+1.  Install kube-prometheus-stack using Helm
 
     ```bash
      helm repo add prom-repo https://prometheus-community.github.io/helm-charts
