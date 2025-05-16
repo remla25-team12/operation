@@ -53,6 +53,30 @@ Approved PR: https://github.com/remla25-team12/operation/pull/25
 
 
 # A3:
+**Selin Ceydeli:** \
+Created PR:  \
+Approved PR: 
+
+
+**Mees Chammat:**\
+Created PR: https://github.com/remla25-team12/operation/pull/35 \
+Approved PR: https://github.com/remla25-team12/operation/pull/32
+
+
+**Philippe Henry:**\
+Created PR: \
+Approved PR: 
+
+
+**Pengxuan (Peter) Huang:**\
+Created PR:  \
+Approved PR: 
+
+
+**Ayush Kuruvilla:**\
+Created PR: \
+Approved PR: h\
+
 
 # A4:
 
