@@ -56,9 +56,10 @@ This repository serves as the central point of the project, containing the Docke
     git clone https://github.com/remla25-team12/operation.git
    ```
 
-2. Before continuing, it is important to reset the host-only networks in VirtualBox. To do this, **open the VirtualBox GUI**, go to `Tools > Network`, and **remove any existing "Host-only Networks"** listed under that section.
+2. Before continuing, it is important to reset the host-only networks in VirtualBox. This prevents conflicts with stale or broken network configurations from previous VirtualBox setups.
+To do this, **open the VirtualBox GUI**, go to `Tools > Network`, and **remove any existing "Host-only Networks"** listed under that section. The list should now be empty:
+![Empty host-only adapter list](imgs/vb_empty.png)
 
-   > This prevents conflicts with stale or broken network configurations from previous VirtualBox setups.
 
 2. Start the virtual environment from the repository's root folder:
 
@@ -74,18 +75,20 @@ This repository serves as the central point of the project, containing the Docke
     ansible-playbook -u vagrant -i 192.168.56.100, provisioning/finalization.yml
    ```
 
-5. To access the Kubernetes dashboard, do the following on your host machine:
+5. To access the Kubernetes dashboard, do the following **on your host machine**:
 
    - Edit the `/etc/hosts` file to resolve https://dashboard.local, by adding the following line to the file: 
    ```plaintext
     192.168.56.91 dashboard.local
    ```
 
-   - Navigate to https://dashboard.local and enter the token displayed in the terminal.
+   - Navigate to https://dashboard.local (note the https) and enter the token displayed in the terminal.
 
-   > **Note**: If you cannot find this token, run `vagrant ssh ctrl`, followed by `kubectl -n kubernetes-dashboard create token admin-user` to generate a new one.
+   ![Token as shown in the terminal](imgs/terminal_token.png)
 
- 
+   > **Note**: The token is generated in the previous step. If you cannot find the token in the terminal output, run `vagrant ssh ctrl`, followed by `kubectl -n kubernetes-dashboard create token admin-user` to generate a new one.
+
+
 
 ## Setting up the Application with Helm
 
