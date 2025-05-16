@@ -142,24 +142,41 @@ $ docker compose up -d
 
 Optional for Minikube:
 
+If you are using Fedora, you may need to run the following command to allow Minikube to use the Docker driver:
+```bash
+sudo setenforce 0
+```
+then continue normally:
 ```bash
 minikube start --driver=docker
 minikube addons enable ingress
 ```
-### Install the helm chart
-helm install myapp-dev ./helm/myapp  --set app.image.tag=latest   --set model.image.tag=latest   --set model.port=5000   --set app.port=8080
-
-if you want to change after making any changes, do 
-helm upgrade --install myapp-dev ./helm/myapp   --set model.image.tag=latest   --set app.image.tag=latest   --set model.port=5000   --set app.port=8080
-
-### Access Prometheus
-
+### Install the helm chart and prometheus dependency
+Install kube-prometheus-stack using helm
 ```bash
-↪ kubectl port-forward svc/myapp-dev-myapp 8080:8080
+helm repo add prom-repo https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install myprom prom-repo/kube-prometheus-stack
 ```
 
-then:
 ```bash
+helm install myapp-dev ./helm/myapp  --set app.image.tag=latest   --set model.image.tag=latest   --set model.port=5000   --set app.port=8080
+
+```
+
+if you want to change after making any changes, do 
+```bash
+helm upgrade --install myapp-dev ./helm/myapp   --set model.image.tag=latest   --set app.image.tag=latest   --set model.port=5000   --set app.port=8080
+```
+### Access Prometheus
+
+If you havent done the port forwarding in the previous step do it (you may have to wait for it to be up and running)
+```bash
+ kubectl port-forward svc/myapp-dev-myapp 8080:8080
+```
+
+Then, to access the Prometheus UI, run the following command (in a new terminal):
+```bash  
 minikube service myprom-kube-prometheus-sta-prometheus --url
 ```
 There should be a ServiceMonitor/default/myapp-dev-myapp/0 under status->TargetHealth that is greent/up.
