@@ -3,7 +3,7 @@ app:
     repository: ghcr.io/remla25-team12/app
     tag: latest
     pullPolicy: Always
-  port: 8080
+  port: 8080  # <-- FIXED from 8080 to 5000
 
 model:
   image:
@@ -17,3 +17,14 @@ model:
 ingress:
   enabled: true
   host: myapp.local
+
+monitoring:
+  enabled: true
+
+service:
+  labels:
+    app: myapp
+  port:
+    name: http
+    port: 5000          # <-- FIXED from 8080 to 5000
+    targetPort: 5000    # <-- FIXED from 8080 to 5000

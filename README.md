@@ -109,6 +109,11 @@ Ensure you have the following components ready in your environment:
 
 - **Running Kubernetes Cluster:** A functional Kubernetes cluster is essential for deploying applications using Helm. To provision a local Kubernetes cluster with Minikube and enable the ingress controller, you can run these commands:
 
+If you are using Fedora, you may need to run the following command to allow Minikube to use the Docker driver:
+```bash
+sudo setenforce 0
+```
+then continue normally:
   ```bash
    minikube delete
    minikube start --driver=docker
@@ -120,7 +125,13 @@ Ensure you have the following components ready in your environment:
 ### Deploying the Application using the Helm Chart
 
 1. Install Helm chart:
-
+    Install kube-prometheus-stack using helm
+   ```bash
+    helm repo add prom-repo https://prometheus-community.github.io/helm-charts
+    helm repo update
+    helm install myprom prom-repo/kube-prometheus-stack
+   ```
+   only then: 
    ```bash
     helm install myapp-dev ./helm/myapp \
     --set app.image.tag=latest \
@@ -148,6 +159,12 @@ Ensure you have the following components ready in your environment:
 
    > Navigate to `http://localhost:8080` to access the application.
 
+4. Access Prometheus
+
+    ```bash  
+      minikube service myprom-kube-prometheus-sta-prometheus --url
+    ```
+There should be a ServiceMonitor/default/myapp-dev-myapp/0 under status->TargetHealth that is greent/up.
 
 # Continuous Progress Log
 
