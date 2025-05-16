@@ -4,6 +4,8 @@
   become: yes
   become_user: vagrant
   vars:
+    venv_path: /opt/ansible-venv
+    ansible_python_interpreter: "{{ venv_path }}/bin/python"
     dashboard_admin_yaml: | 
       apiVersion: v1
       kind: ServiceAccount
@@ -49,22 +51,28 @@
                         number: 443
 
   tasks:
-    # Step 20: Install MetalLB
+    # Step 20 - Install MetalLB
     - name: Download MetalLB yaml file
       get_url:
         url: https://raw.githubusercontent.com/metallb/metallb/v0.14.9/config/manifests/metallb-native.yaml
         dest: "/tmp/metallb-native.yaml"
 
     - name: Apply MetalLB CRDs
-      shell: kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.9/config/manifests/metallb-native.yaml
-
-    - name: Wait for MetalLB controller pod to be ready
-      shell: >
-        kubectl wait -n metallb-system 
-        -l app=metallb,component=controller
-        --for=condition=ready pod 
-        --timeout=300s
-
+      kubernetes.core.k8s:
+        state: present
+        src: "/tmp/metallb-native.yaml"
+     
+    - name: Waiting for MetalLB controller pod to be ready
+      kubernetes.core.k8s_info:
+        kind: Pod
+        wait: true
+        namespace: metallb-system
+        label_selectors:
+          - app=metallb
+          - component=controller
+        wait_sleep: 5
+        wait_timeout: 150
+      
     - name: Configure IPAddressPool
       copy:
         dest: /tmp/metallb-pool.yaml
@@ -79,8 +87,10 @@
               - 192.168.56.90-192.168.56.99
 
     - name: Apply IPAddressPool
-      command: kubectl apply -f /tmp/metallb-pool.yaml
-
+      kubernetes.core.k8s:
+        state: present
+        src: "/tmp/metallb-pool.yaml"
+     
     - name: Configure L2Advertisement
       copy:
         dest: /tmp/metallb-l2.yaml
@@ -93,8 +103,10 @@
           spec: {}
 
     - name: Apply L2Advertisement
-      command: kubectl apply -f /tmp/metallb-l2.yaml
-
+      kubernetes.core.k8s:
+        state: present
+        src: "/tmp/metallb-l2.yaml"
+      
     # Step 21: Install Nginx Ingress Controller
     - name: "Add Nginx Ingress repository"
       kubernetes.core.helm_repository:
@@ -114,13 +126,6 @@
             service:
               loadBalancerIP: 192.168.56.91
 
-    # - name: Wait for ingress-nginx controller to be ready
-    #   shell: >
-    #     kubectl wait -n ingress-nginx 
-    #     -l app.kubernetes.io/component=controller 
-    #     --for=condition=ready pod 
-    #     --timeout=60s
-
     # Step 22: Install Kubernetes Dashboard
     - name: "Add Kubernetes dashboard repository"
       kubernetes.core.helm_repository:
@@ -130,7 +135,7 @@
 
     - name: "Install Kubernetes dashboard chart"
       kubernetes.core.helm:
-        name: "kubernetes-dashboard"
+        name: kubernetes-dashboard
         chart_ref: "kubernetes-dashboard/kubernetes-dashboard"
         release_namespace: kubernetes-dashboard 
         create_namespace: yes        
@@ -142,19 +147,34 @@
         content: "{{ dashboard_admin_yaml }}"
           
     - name: Apply admin user config
-      command: kubectl apply -f /tmp/dashboard-admin.yaml
-
+      kubernetes.core.k8s:
+        state: present
+        src: "/tmp/dashboard-admin.yaml"
+      
     - name: Create dashboard Ingress
       copy:
         dest: /tmp/dashboard-ingress.yaml
         content: "{{ dashboard_ingress_yaml }}"
 
+    - name: Waiting for dashboard ingress to be ready
+      kubernetes.core.k8s_info:
+        kind: Pod
+        wait: true
+        namespace: ingress-nginx
+        label_selectors:
+          - app.kubernetes.io/component=controller
+        wait_sleep: 5
+        wait_timeout: 150
+      
     - name: Apply dashboard ingress
-      command: kubectl apply -f /tmp/dashboard-ingress.yaml
-
+      kubernetes.core.k8s:
+        state: present
+        src: "/tmp/dashboard-ingress.yaml"
+      
     - name: Generate dashboard admin token
       command: kubectl -n kubernetes-dashboard create token admin-user
       register: dashboard_token
+      changed_when: false
 
     - name: Show dashboard login token and next steps
       debug:

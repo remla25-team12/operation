@@ -56,12 +56,17 @@ This repository serves as the central point of the project, containing the Docke
     git clone https://github.com/remla25-team12/operation.git
    ```
 
-2. Before continuing, it is important to reset the host-only networks in VirtualBox. This prevents conflicts with stale or broken network configurations from previous VirtualBox setups.
+2. Navigate into the repository's root folder and install the required Ansible collections:
+   ```bash
+   ansible-galaxy collection install -r requirements.yml 
+   ```
+
+3. Before continuing, it is important to reset the host-only networks in VirtualBox. This prevents conflicts with stale or broken network configurations from previous VirtualBox setups.
 To do this, **open the VirtualBox GUI**, go to `Tools > Network`, and **remove any existing "Host-only Networks"** listed under that section. The list should now be empty:
 ![Empty host-only adapter list](imgs/vb_empty.png)
 
 
-2. Start the virtual environment from the repository's root folder:
+4. Start the virtual environment from the repository's root folder:
 
    ```bash
     cd operation
@@ -69,13 +74,13 @@ To do this, **open the VirtualBox GUI**, go to `Tools > Network`, and **remove a
    ```
    This operation may take a while to complete.
 
-4. Once the VMs are up and provisioned, run the following Ansible playbook to finalize the Kubernetes setup:
+5. Once the VMs are up and provisioned, run the following Ansible playbook to finalize the Kubernetes setup:
 
    ```bash
     ansible-playbook -u vagrant -i 192.168.56.100, provisioning/finalization.yml
    ```
 
-5. To access the Kubernetes dashboard, do the following **on your host machine**:
+6. To access the Kubernetes dashboard, do the following **on your host machine**:
 
    - Edit the `/etc/hosts` file to resolve https://dashboard.local, by adding the following line to the file: 
    ```plaintext
@@ -88,7 +93,7 @@ To do this, **open the VirtualBox GUI**, go to `Tools > Network`, and **remove a
 
    > **Note**: The token is generated in the previous step. If you cannot find the token in the terminal output, run `vagrant ssh ctrl`, followed by `kubectl -n kubernetes-dashboard create token admin-user` to generate a new one.
 
-6. To communicate with the cluster from the host, a kubeconfig file (`admin.conf`) has been exported by Ansible. For example, you can run:
+7. To communicate with the cluster from the host, a kubeconfig file (`admin.conf`) has been exported by Ansible. For example, you can run:
    ```bash
    kubectl get ns --kubeconfig ./provisioning/admin.conf
    ```
