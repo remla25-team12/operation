@@ -88,6 +88,15 @@ To do this, **open the VirtualBox GUI**, go to `Tools > Network`, and **remove a
 
    > **Note**: The token is generated in the previous step. If you cannot find the token in the terminal output, run `vagrant ssh ctrl`, followed by `kubectl -n kubernetes-dashboard create token admin-user` to generate a new one.
 
+6. To communicate with the cluster from the host, a kubeconfig file (`admin.conf`) has been exported by Ansible. For example, you can run:
+   ```bash
+   kubectl get ns --kubeconfig ./provisioning/admin.conf
+   ```
+   You can also set the filepath as an environment variable, so that you do not need to use the `--kubeconfig` flag every time:
+   ```bash
+   export KUBECONFIG="./provisioning/admin.conf"
+   ```
+
 
 
 ## Setting up the Application with Helm
