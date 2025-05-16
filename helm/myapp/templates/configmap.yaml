@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: {{ include "myapp.fullname" . }}-config
 data:
-  MODEL_HOST: "http://{{ include 'myapp.fullname' . }}-model:{{ .Values.model.port }}"
+  MODEL_HOST: "{{ printf "http://%s-model:%d" (include "myapp.fullname" .) .Values.model.port }}"

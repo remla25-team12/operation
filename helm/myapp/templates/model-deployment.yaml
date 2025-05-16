@@ -36,6 +36,13 @@ spec:
               value: {{ .Values.model.cachePath }}
             - name: FEEDBACK_FILE_PATH
               value: {{ .Values.model.feedbackPath }}/feedback_dump.tsv
+          volumeMounts:
+            - name: cache
+              mountPath: {{ .Values.model.cachePath }}
+            - name: feedback
+              mountPath: {{ .Values.model.feedbackPath }}
+            - name: shared-folder
+              mountPath: /mnt/shared
       volumes:
         - name: cache
           emptyDir: {}
@@ -45,4 +52,3 @@ spec:
           hostPath:
             path: /mnt/shared
             type: Directory
-

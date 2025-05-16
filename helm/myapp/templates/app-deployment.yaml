@@ -24,3 +24,11 @@ spec:
               value: "http://{{ include "myapp.fullname" . }}-model:{{ .Values.model.port }}/new_data"
             - name: VERSION_URL
               value: "http://{{ include "myapp.fullname" . }}-model:{{ .Values.model.port }}/version"
+          volumeMounts:
+            - name: shared-folder
+              mountPath: /mnt/shared
+      volumes:
+        - name: shared-folder
+          hostPath:
+            path: /mnt/shared
+            type: Directory
