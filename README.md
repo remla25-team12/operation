@@ -7,7 +7,6 @@ REMLA Group 12
 This project is an adaptation of the [Restaurant Sentiment Analysis](https://github.com/proksch/restaurant-sentiment) project.
 This repository serves as the central point of the project, containing the Docker and Kubernetes deployment configurations, installation instructions, and links to other components.
 
-
 ## Relevant Repositories
 
 | Repository                                                         | Purpose                                                                                   |
@@ -18,7 +17,6 @@ This repository serves as the central point of the project, containing the Docke
 | [lib-version](https://github.com/remla25-team12/lib-version)       | A simple version-aware libary that reports its own version.                               |
 | [app](https://github.com/remla25-team12/app)                       | Webapp (frontend + service) to interface with the model.                                  |
 
-
 ## Deployment with Docker
 
 ### Requirements
@@ -27,6 +25,7 @@ This repository serves as the central point of the project, containing the Docke
 - Docker and Docker Compose
 
 ### Install and Run
+
 1. Clone this repository.
    ```bash
     git clone https://github.com/remla25-team12/operation.git
@@ -38,7 +37,6 @@ This repository serves as the central point of the project, containing the Docke
    ```
 
 3. Navigate to http://localhost:8080 to access the application homepage.
-
 
 ## Kubernetes Cluster setup
 
@@ -57,21 +55,23 @@ This repository serves as the central point of the project, containing the Docke
    ```
 
 2. Navigate into the repository's root folder and install the required Ansible collections:
+
    ```bash
-   ansible-galaxy collection install -r requirements.yml 
+    ansible-galaxy collection install -r requirements.yml
    ```
 
 3. Before continuing, it is important to reset the host-only networks in VirtualBox. This prevents conflicts with stale or broken network configurations from previous VirtualBox setups.
-To do this, **open the VirtualBox GUI**, go to `Tools > Network`, and **remove any existing "Host-only Networks"** listed under that section. The list should now be empty:
-![Empty host-only adapter list](imgs/vb_empty.png)
-
+   To do this, **open the VirtualBox GUI**, go to `Tools > Network`, and **remove any existing "Host-only Networks"** listed under that section. The list should now be empty:
+   ![Empty host-only adapter list](imgs/vb_empty.png)
 
 4. Start the virtual environment from the repository's root folder:
 
    ```bash
     cd operation
     vagrant up
+    vagrant provision
    ```
+
    This operation may take a while to complete.
 
 5. Once the VMs are up and provisioned, run the following Ansible playbook to finalize the Kubernetes setup:
@@ -82,7 +82,14 @@ To do this, **open the VirtualBox GUI**, go to `Tools > Network`, and **remove a
 
 6. To access the Kubernetes dashboard, do the following **on your host machine**:
 
-   - Edit the `/etc/hosts` file to resolve https://dashboard.local, by adding the following line to the file: 
+   - Edit the `/etc/hosts` file to resolve https://dashboard.local, by running:
+
+   ```bash
+    sudo nano /etc/hosts/
+   ```
+
+   - Then append below text to the file.
+
    ```plaintext
     192.168.56.91 dashboard.local
    ```
@@ -102,8 +109,6 @@ To do this, **open the VirtualBox GUI**, go to `Tools > Network`, and **remove a
    export KUBECONFIG="./provisioning/admin.conf"
    ```
 
-
-
 ## Setting up the Application with Helm
 
 ### Prerequisites for Helm Deployment
@@ -115,61 +120,68 @@ Ensure you have the following components ready in your environment:
 - **Running Kubernetes Cluster:** A functional Kubernetes cluster is essential for deploying applications using Helm. To provision a local Kubernetes cluster with Minikube and enable the ingress controller, you can run these commands:
 
 If you are using Fedora, you may need to run the following command to allow Minikube to use the Docker driver:
+
 ```bash
 sudo setenforce 0
 ```
-then continue normally:
-  ```bash
-   minikube delete
-   minikube start --driver=docker
-   minikube addons enable ingress
-  ```
 
-  > **Note:** Cleaning up any previous Minikube instance is recommended with the `minikube delete` command described above.
+then continue normally:
+
+```bash
+ minikube delete
+ minikube start --driver=docker
+ minikube addons enable ingress
+```
+
+> **Note:** Cleaning up any previous Minikube instance is recommended with the `minikube delete` command described above.
 
 ### Deploying the Application using the Helm Chart
 
-1. Install Helm chart:
+1.  Install Helm chart:
     Install kube-prometheus-stack using helm
-   ```bash
-    helm repo add prom-repo https://prometheus-community.github.io/helm-charts
-    helm repo update
-    helm install myprom prom-repo/kube-prometheus-stack
-   ```
-   only then: 
-   ```bash
-    helm install myapp-dev ./helm/myapp \
-    --set app.image.tag=latest \
-    --set model.image.tag=latest \
-    --set model.port=5000 \
-    --set app.port=8080
-   ```
 
-2. (Optional) Upgrading or re-running the Helm chart:
-   If you make changes to your Helm chart or need to update the deployed application with new configurations, you can run the below `helm upgrade` command.
-
-   ```bash
-    helm upgrade --install myapp-dev ./helm/myapp \
-    --set model.image.tag=latest \
-    --set app.image.tag=latest \
-    --set model.port=5000 \
-    --set app.port=8080
-   ```
-
-3. Access the deployed application:
-
-   ```bash
-    kubectl port-forward svc/myapp-dev-myapp-app 8080:8080
-   ```
-
-   > Navigate to `http://localhost:8080` to access the application.
-
-4. Access Prometheus
-
-    ```bash  
-      minikube service myprom-kube-prometheus-sta-prometheus --url
+    ```bash
+     helm repo add prom-repo https://prometheus-community.github.io/helm-charts
+     helm repo update
+     helm install myprom prom-repo/kube-prometheus-stack
     ```
-There should be a ServiceMonitor/default/myapp-dev-myapp/0 under status->TargetHealth that is greent/up.
+
+    only then:
+
+    ```bash
+     helm install myapp-dev ./helm/myapp \
+     --set app.image.tag=latest \
+     --set model.image.tag=latest \
+     --set model.port=5000 \
+     --set app.port=8080
+    ```
+
+2.  (Optional) Upgrading or re-running the Helm chart:
+    If you make changes to your Helm chart or need to update the deployed application with new configurations, you can run the below `helm upgrade` command.
+
+    ```bash
+     helm upgrade --install myapp-dev ./helm/myapp \
+     --set model.image.tag=latest \
+     --set app.image.tag=latest \
+     --set model.port=5000 \
+     --set app.port=8080
+    ```
+
+3.  Access the deployed application:
+
+    ```bash
+     kubectl port-forward svc/myapp-dev-myapp-app 8080:8080
+    ```
+
+    > Navigate to `http://localhost:8080` to access the application.
+
+4.  Access Prometheus
+
+        ```bash
+          minikube service myprom-kube-prometheus-sta-prometheus --url
+        ```
+
+    There should be a ServiceMonitor/default/myapp-dev-myapp/0 under status->TargetHealth that is greent/up.
 
 # Continuous Progress Log
 
@@ -188,4 +200,5 @@ In Step 14, coping config to hosts is not done fully. While the current ctrl.yam
 Please closely follow the steps described under **Setting Up the Kubernetes Cluster** section of this README to test the functionality of our Kubernetes-based deployment infrastructure.
 
 ## Assignment 3
-All issues and pending solutions described in Assignment 2 have been resolved. 
+
+All issues and pending solutions described in Assignment 2 have been resolved.
