@@ -2,8 +2,44 @@
   hosts: ctrl
   become: yes
   gather_facts: yes
+  vars:
+    venv_path: /opt/ansible-venv
 
   tasks:
+    # intermezzo: create venv for kubernetes.core ansible
+    - name: Set up venv for kubernetes.core
+      become_user: root
+      block:
+      - name: Ensure Python venv module is installed
+        ansible.builtin.package:
+          name: python3-venv
+          state: present
+        
+      - name: Create virtual environment
+        ansible.builtin.command: python3 -m venv --upgrade {{ venv_path }}
+        args:
+          creates: "{{ venv_path }}/bin/activate"
+
+      - name: Upgrade pip
+        pip: 
+          name: pip
+          state: latest
+          virtualenv: "{{ venv_path }}"
+          virtualenv_command: python3 -m venv
+
+      - name: Upgrade setuptools
+        pip: 
+          name: setuptools
+          state: latest
+          virtualenv: "{{ venv_path }}"
+          virtualenv_command: python3 -m venv
+
+      - name: Install kubernetes client in venv
+        ansible.builtin.pip:
+          name: kubernetes
+          virtualenv: "{{ venv_path }}"
+          virtualenv_command: python3 -m venv
+
     # Step 13: Init cluster
     - name: Check if kubernetes is already initialized
       stat:
@@ -42,7 +78,6 @@
         src: /etc/kubernetes/admin.conf
         dest: ./
         flat: yes
-      #when: not kube_config.stat.exists
 
     # Step 15: Create Pod network
     - name: Download Flannel config
@@ -57,10 +92,12 @@
         replace: 'args:\n        - --iface=eth1\n\1'
 
     - name: Apply Flannel network 
-      command: kubectl apply -f /tmp/kube-flannel.yml
       become_user: vagrant
-      # environment:
-      #   KUBECONFIG: /home/vagrant/.kube/config
+      kubernetes.core.k8s:
+        state: present
+        src: "/tmp/kube-flannel.yml"
+      vars:
+        ansible_python_interpreter: "{{ venv_path }}/bin/python"
 
     # Step 16: Install Helm
     - name: Add Helm GPG key
