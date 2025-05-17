@@ -33,7 +33,7 @@ Approved PR: https://github.com/remla25-team12/operation/pull/12
 
 
 **Mees Chammat:**\
-Created PR: https://github.com/remla25-team12/operation/pull/10 (related to A2) \
+Created PR: https://github.com/remla25-team12/operation/pull/14 (related to A2) \
 Approved PR: https://github.com/remla25-team12/operation/pull/9
 
 
