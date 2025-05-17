@@ -28,3 +28,5 @@ service:
     name: http
     port: 5000          # <-- FIXED from 8080 to 5000
     targetPort: 5000    # <-- FIXED from 8080 to 5000
+
+useHostPathSharedFolder: false

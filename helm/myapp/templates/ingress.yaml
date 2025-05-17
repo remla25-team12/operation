@@ -4,6 +4,7 @@ kind: Ingress
 metadata:
   name: {{ include "myapp.fullname" . }}-ingress
 spec:
+  ingressClassName: nginx       # ← add this line
   rules:
     - host: {{ .Values.ingress.host }}
       http:
