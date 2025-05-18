@@ -109,7 +109,13 @@ This repository serves as the central point of the project, containing the Docke
    export KUBECONFIG="./provisioning/admin.conf"
    ```
 
-## Setting up the Application with Helm
+## Deploying the Application using the Helm Chart
+
+> **Note:** It is recommended to clean up any previous Minikube instance before proceeding, using:
+>
+> ```bash
+> minikube delete
+> ```
 
 ### Prerequisites for Helm Deployment
 
@@ -128,25 +134,17 @@ If you are using Fedora, you may need to run the following command to allow Mini
 then continue normally:
 
 ```bash
- minikube delete
  minikube start --driver=docker
  minikube addons enable ingress
 ```
 
-> **Note:** Cleaning up any previous Minikube instance is recommended with the `minikube delete` command described above.
-
-# Deploying the Application using the Helm Chart
-
-> **Note:** It is recommended to clean up any previous Minikube instance before proceeding, using:  
-> ```bash
-> minikube delete
-> ```
-
 ---
 
-## 1. Installing kube-prometheus-stack and Deploying the App
+### 1. Installing kube-prometheus-stack and Deploying the App
 
-### On Your Local System (e.g., Minikube)
+#### On Your Local System (e.g., Minikube)
+
+1. Install kube-prometheus-stack:
 
 ```bash
 helm repo add prom-repo https://prometheus-community.github.io/helm-charts
@@ -154,7 +152,7 @@ helm repo update
 helm install myprom prom-repo/kube-prometheus-stack
 ```
 
-Then deploy your app:
+2. Deploy your app:
 
 ```bash
 helm install myapp-dev ./helm/myapp \
@@ -167,7 +165,7 @@ helm install myapp-dev ./helm/myapp \
 
 ---
 
-### On Vagrant VM(s)
+#### On Vagrant VM(s)
 
 1. SSH into your Vagrant control node:
 
@@ -202,7 +200,7 @@ helm install myapp-dev ./helm/myapp \
 
 ---
 
-## 2. Upgrading or Reinstalling the Helm Release
+### 2. Upgrading or Reinstalling the Helm Release
 
 If you make changes to your Helm chart or want to update the deployment, use:
 
@@ -215,24 +213,30 @@ helm upgrade --install myapp-dev ./helm/myapp \
   --set useHostPathSharedFolder=<true-or-false-based-on-env>
 ```
 
-- Set `useHostPathSharedFolder=true` if running on Vagrant (to enable hostPath volume).  
+- Set `useHostPathSharedFolder=true` if running on Vagrant (to enable hostPath volume).
 - Set `useHostPathSharedFolder=false` if running on Minikube or local system.
 
-## 3. Access the deployed application:
+---
 
-    ```bash
-     kubectl port-forward svc/myapp-dev-myapp 8080:8080
-    ```
+### 3. Access the Deployed Application
 
-    > Navigate to `http://localhost:8080` to access the application.
+```bash
+ kubectl port-forward svc/myapp-dev-myapp 8080:8080
+```
 
-## 4. Access Prometheus
+Navigate to `http://localhost:8080` to access the application.
 
-    ```bash
-     minikube service myprom-kube-prometheus-sta-prometheus --url
-    ```
+---
 
-    There should be a ServiceMonitor/default/myapp-dev-myapp/0 under status->TargetHealth that is greent/up.
+### 4. Access Prometheus
+
+```bash
+ minikube service myprom-kube-prometheus-sta-prometheus --url
+```
+
+There should be a ServiceMonitor/default/myapp-dev-myapp/0 under status->TargetHealth that is greent/up.
+
+---
 
 # Continuous Progress Log
 
