@@ -361,6 +361,7 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "Restaurant sentiment analysis",
+  "tags": ["myapp"],
   "uid": "a808a8a4-ee6b-4689-9d50-adceefe24bfe",
   "version": 7
 }
