@@ -26,9 +26,13 @@ REMLA Group 12
         <li><a href="#deployment-on-kubernetes-cluster-helm">Deployment on Kubernetes Cluster (Helm)</a></li>
       </ul>
     </li>
-    <li><a href="#app-usage">App Usage</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
+    <li><a href="#app-usage-minikube">App Usage (Minikube)</a></li>
+    <li><a href="#continuous-progress-log">Continuous Progress Log</a></li>
+      <ul>
+        <li><a href="#assignment-1">Assignment 1</a></li>
+        <li><a href="#assignment-2">Assignment 2</a></li>
+        <li><a href="#assignment-3">Assignment 3</a></li>
+      </ul>
   </ol>
 </details>
 
@@ -48,6 +52,7 @@ This repository serves as the central point of the project, containing the Docke
 
 
 ---
+# Getting Started
 ## Deployment with Docker
 
 ### Prerequisites
@@ -145,7 +150,7 @@ This repository serves as the central point of the project, containing the Docke
    ```
 
 ---
-## Deployment on Kubernetes cluster
+## Deployment on Kubernetes Cluster (Helm)
 
 ### Prerequisites
 - macOS or Linux (host operating system)
@@ -256,7 +261,6 @@ If done correctly, you'll now see a dashboard like this:
 ---
 
 # Continuous Progress Log
-
 _Add a new paragraph for each assignment as a continuous progress log that (briefly) describes which assignment parts have been implemented to support the peer-review process._
 
 ## Assignment 1
