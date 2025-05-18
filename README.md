@@ -2,10 +2,39 @@
 
 REMLA Group 12
 
-## About
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary><b>Table of Contents</b></summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About the Project</a>
+      <ul>
+        <li>
+          <a href="#relevant-repositories">Relevant Repositories</a>
+        </li>
+      </ul>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#deployment-with-docker">Deployment with Docker</a></li>
+        <!-- <ul>
+          <li><a href="#prerequisites-for-docker">Prerequisites</a></li>
+          <li><a href="#install-and-run-with-docker">Install and run</a></li>
+        </ul> -->
+        <li><a href="#kubernetes-cluster-setup">Kubernetes Cluster setup</a></li>
+        <li><a href="#deployment-on-kubernetes-cluster-helm">Deployment on Kubernetes Cluster (Helm)</a></li>
+      </ul>
+    </li>
+    <li><a href="#app-usage">App Usage</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#acknowledgments">Acknowledgments</a></li>
+  </ol>
+</details>
 
-This project is an adaptation of the [Restaurant Sentiment Analysis](https://github.com/proksch/restaurant-sentiment) project.
-This repository serves as the central point of the project, containing the Docker and Kubernetes deployment configurations, installation instructions, and links to other components.
+# About the Project
+This is an adaptation and application of the [Restaurant Sentiment Analysis](https://github.com/proksch/restaurant-sentiment) project.
+This repository serves as the central point of the project, containing the Docker and Kubernetes deployment configurations, installation instructions, and links to other relevant components and repositories.
 
 ## Relevant Repositories
 
@@ -17,18 +46,21 @@ This repository serves as the central point of the project, containing the Docke
 | [lib-version](https://github.com/remla25-team12/lib-version)       | A simple version-aware libary that reports its own version.                               |
 | [app](https://github.com/remla25-team12/app)                       | Webapp (frontend + service) to interface with the model.                                  |
 
+
+---
 ## Deployment with Docker
 
-### Requirements
+### Prerequisites
 
-- Linux or macOS
-- Docker and Docker Compose
+- Linux or macOS (recommended host operating system)
+- [Docker Compose](https://docs.docker.com/compose/install/) (included with Docker Desktop)
 
 ### Install and Run
 
-1. Clone this repository.
+1. Clone this repository and navigate into the root folder.
    ```bash
-    git clone https://github.com/remla25-team12/operation.git
+   git clone https://github.com/remla25-team12/operation.git
+   cd operation
    ```
 2. Deploy the project using Docker Compose by running this command in the project's root folder.
 
@@ -38,13 +70,15 @@ This repository serves as the central point of the project, containing the Docke
 
 3. Navigate to http://localhost:8080 to access the application homepage.
 
+---
 ## Kubernetes Cluster setup
 
 ### Prerequisites
 
-- **Host Operating System**: macOS or Linux
-- **Virtualization**: VirtualBox
-- **Provisioning Tools**: Vagrant and Ansible
+- macOS or Linux (host operating system)
+- [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
+- [Vagrant](https://developer.hashicorp.com/vagrant/install) and [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html) (provisioning tools)
+- kubectl (for controlling the cluster from the host)
 
 ### Install and Run
 
@@ -57,6 +91,7 @@ This repository serves as the central point of the project, containing the Docke
 2. Navigate into the repository's root folder and install the required Ansible collections:
 
    ```bash
+    cd operation
     ansible-galaxy collection install -r requirements.yml
    ```
 
@@ -82,23 +117,23 @@ This repository serves as the central point of the project, containing the Docke
 
 6. To access the Kubernetes dashboard, do the following **on your host machine**:
 
-   - Edit the `/etc/hosts` file to resolve https://dashboard.local, by running:
+   - Edit the `/etc/hosts` file to resolve https://dashboard.local. First, open the file by running:
 
-   ```bash
-    sudo nano /etc/hosts/
-   ```
+      ```bash
+      sudo nano /etc/hosts/
+      ```
 
-   - Then append below text to the file.
+      Then append the following line to the file.
 
-   ```plaintext
-    192.168.56.91 dashboard.local
-   ```
+      ```plaintext
+      192.168.56.91 dashboard.local
+      ```
 
    - Navigate to https://dashboard.local (note the https) and enter the token displayed in the terminal.
 
-   ![Token as shown in the terminal](imgs/terminal_token.png)
+      ![Token as shown in the terminal](imgs/terminal_token.png)
 
-   > **Note**: The token is generated in the previous step. If you cannot find the token in the terminal output, run `vagrant ssh ctrl`, followed by `kubectl -n kubernetes-dashboard create token admin-user` to generate a new one.
+      > **Note**: The token is generated in the previous step. If you cannot find the token in the terminal output, run `vagrant ssh ctrl`, followed by `kubectl -n kubernetes-dashboard create token admin-user` to generate a new one.
 
 7. To communicate with the cluster from the host, a kubeconfig file (`admin.conf`) has been exported by Ansible. For example, you can run:
    ```bash
@@ -109,132 +144,114 @@ This repository serves as the central point of the project, containing the Docke
    export KUBECONFIG="./provisioning/admin.conf"
    ```
 
-## Deploying the Application using the Helm Chart
-
-> **Note:** It is recommended to clean up any previous Minikube instance before proceeding, using:
->
-> ```bash
-> minikube delete
-> ```
-
-### Prerequisites for Helm Deployment
-
-Ensure you have the following components ready in your environment:
-
-- **Helm 3 Installed:** You'll need the Helm 3 command-line interface (CLI) installed on your local machine. Helm is the package manager for Kubernetes.
-
-- **Running Kubernetes Cluster:** A functional Kubernetes cluster is essential for deploying applications using Helm. To provision a local Kubernetes cluster with Minikube and enable the ingress controller, you can run these commands:
-
-If you are using Fedora, you may need to run the following command to allow Minikube to use the Docker driver:
-
-```bash
- sudo setenforce 0
-```
-
-then continue normally:
-
-```bash
- minikube start --driver=docker
- minikube addons enable ingress
-```
-
 ---
+## Deployment on Kubernetes cluster
 
-### 1. Installing kube-prometheus-stack and Deploying the App
+### Prerequisites
+- macOS or Linux (host operating system)
+- [Helm 3 CLI](https://helm.sh/docs/intro/install/)
+- A functional Kubernetes cluster. 
+   - See the [Kubernetes Cluster setup](#kubernetes-cluster-setup) instructions above for a VM-based cluster.
+   - Alternatively, you can install and use [Minikube](https://minikube.sigs.k8s.io/docs/start/) for a local Kubernetes cluster. 
 
-#### On Your Local System (e.g., Minikube)
 
-1. Install kube-prometheus-stack:
 
+### Install and run
+1. Clone this repository and navigate into the root folder:
+   ```bash
+   git clone https://github.com/remla25-team12/operation.git
+   cd operation
+   ```
+
+
+2. Prepare the cluster for app installation.
+   1. For **Minikube**, it is recommended to first clean up any previous Minikube instance and launch a new cluster by running the following commands:
+      ```bash
+      minikube delete
+      minikube start --driver=docker
+      minikube addons enable ingress
+      ```
+      > **Note:** If you are using Fedora, you may need to run the following command first to allow Minikube to use the Docker driver:
+      ```bash
+      sudo setenforce 0
+      ```
+
+   2. For the **Kubernetes VM cluster**, SSH into the control node and navigate to the shared folder directory.
+      ```bash
+      vagrant ssh ctrl
+      cd /mnt/shared/
+      ```
+
+3. Install and deploy the Prometheus stack:
+   ```bash
+   helm repo add prom-repo https://prometheus-community.github.io/helm-charts
+   helm repo update
+   helm install myprom prom-repo/kube-prometheus-stack
+   ```
+
+4. Install and deploy our application. One of the flags used in this command will differ depending on your cluster setup.
+   i. For the **Kubernetes VM cluster**, use `useHostPathSharedFolder=true`:
+      ```bash
+      helm install myapp-dev ./helm/myapp \
+      --set app.image.tag=latest \
+      --set model.image.tag=latest \
+      --set model.port=5000 \
+      --set app.port=8080 \
+      --set useHostPathSharedFolder=true
+      ```
+   ii. For **Minikube**, use `useHostPathSharedFolder=false`:
+      ```bash
+      helm install myapp-dev ./helm/myapp \
+      --set app.image.tag=latest \
+      --set model.image.tag=latest \
+      --set model.port=5000 \
+      --set app.port=8080 \
+      --set useHostPathSharedFolder=false
+      ```
+
+4. If you make changes to the Helm chart or want to update the deployment, use the following command:
+   ```bash
+   helm upgrade --install myapp-dev ./helm/myapp \
+   --set app.image.tag=latest \
+   --set model.image.tag=latest \
+   --set model.port=5000 \
+   --set app.port=8080 \
+   --set useHostPathSharedFolder=<true-or-false-based-on-env>
+   ```
+   > Do not forget to set `useHostPathSharedFolder` based on your type of cluster (see previous step)
+
+## App Usage (Minikube)
+### Webapp
+To access the deployed application at http://localhost:8080 (through a port-forward):
 ```bash
-helm repo add prom-repo https://prometheus-community.github.io/helm-charts
-helm repo update
-helm install myprom prom-repo/kube-prometheus-stack
+kubectl port-forward svc/myapp-dev-myapp-app 8080:8080
+```
+Metrics are available at http://localhost:8080/metrics
+
+### Prometheus
+To access Prometheus, use the URL generated by the following command:
+```bash
+minikube service myprom-kube-prometheus-sta-prometheus --url
+```
+> There should be a ServiceMonitor/default/myapp-dev-myapp/0 under status->TargetHealth that is greent/up.
+
+### Grafana
+To access Grafana, use the URL generated by the following command:
+```bash
+minikube service myprom-grafana --url
+```
+The password for Grafana's `admin` account can be generated with:
+```bash
+kubectl --namespace default get secrets myprom-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo
 ```
 
-2. Deploy your app:
+The Grafana dashboard is configurable. Go to Dashboard > New > Import and select the `grafana/grafana.json` file included in this repository. 
+![Grafana new>import](imgs/grafana_import.png)
+Leave all options to their default values, and click 'import' again:
+![Grafana import options](imgs/grafana_options.png)
+If done correctly, you'll now see a dashboard like this:
+![Grafana Dashboard](imgs/grafana_dashboard.png)
 
-```bash
-helm install myapp-dev ./helm/myapp \
-  --set app.image.tag=latest \
-  --set model.image.tag=latest \
-  --set model.port=5000 \
-  --set app.port=8080 \
-  --set useHostPathSharedFolder=false
-```
-
----
-
-#### On Vagrant VM(s)
-
-1. SSH into your Vagrant control node:
-
-```bash
-vagrant ssh ctrl
-```
-
-2. Change directory to shared folder:
-
-```bash
-cd /mnt/shared/
-```
-
-3. Install kube-prometheus-stack:
-
-```bash
-helm repo add prom-repo https://prometheus-community.github.io/helm-charts
-helm repo update
-helm install myprom prom-repo/kube-prometheus-stack
-```
-
-4. Deploy your app with the **hostPath shared folder enabled**:
-
-```bash
-helm install myapp-dev ./helm/myapp \
-  --set app.image.tag=latest \
-  --set model.image.tag=latest \
-  --set model.port=5000 \
-  --set app.port=8080 \
-  --set useHostPathSharedFolder=true
-```
-
----
-
-### 2. Upgrading or Reinstalling the Helm Release
-
-If you make changes to your Helm chart or want to update the deployment, use:
-
-```bash
-helm upgrade --install myapp-dev ./helm/myapp \
-  --set app.image.tag=latest \
-  --set model.image.tag=latest \
-  --set model.port=5000 \
-  --set app.port=8080 \
-  --set useHostPathSharedFolder=<true-or-false-based-on-env>
-```
-
-- Set `useHostPathSharedFolder=true` if running on Vagrant (to enable hostPath volume).
-- Set `useHostPathSharedFolder=false` if running on Minikube or local system.
-
----
-
-### 3. Access the Deployed Application
-
-```bash
- kubectl port-forward svc/myapp-dev-myapp 8080:8080
-```
-
-Navigate to `http://localhost:8080` to access the application.
-
----
-
-### 4. Access Prometheus
-
-```bash
- minikube service myprom-kube-prometheus-sta-prometheus --url
-```
-
-There should be a ServiceMonitor/default/myapp-dev-myapp/0 under status->TargetHealth that is greent/up.
 
 ---
 
