@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 30,
+  "id": 29,
   "links": [],
   "panels": [
     {
@@ -127,7 +127,7 @@
           "disableTextWrap": false,
           "editorMode": "builder",
           "exemplar": false,
-          "expr": "correct_predictions_total",
+          "expr": "total_correct_predictions_total",
           "format": "time_series",
           "fullMetaSearch": false,
           "hide": false,
@@ -145,7 +145,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "incorrect_predictions_total",
+          "expr": "total_incorrect_predictions_total",
           "fullMetaSearch": false,
           "hide": false,
           "includeNullMetadata": true,
@@ -162,7 +162,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "reviews_submitted_total",
+          "expr": "total_reviews_submitted_total",
           "fullMetaSearch": false,
           "hide": false,
           "includeNullMetadata": true,
@@ -309,8 +309,8 @@
       "gridPos": {
         "h": 8,
         "w": 12,
-        "x": 12,
-        "y": 0
+        "x": 0,
+        "y": 8
       },
       "id": 1,
       "options": {
@@ -335,205 +335,22 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "exemplar": false,
-          "expr": "rate(reviews_submitted_total[$__rate_interval])",
-          "format": "time_series",
-          "fullMetaSearch": false,
-          "includeNullMetadata": false,
-          "instant": true,
-          "interval": "",
-          "legendFormat": "Number of reviews",
-          "range": false,
-          "refId": "A",
-          "useBackend": false
-        }
-      ],
-      "title": "Rate of change of total reviews submitted",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "decimals": 0,
-          "fieldMinMax": false,
-          "mappings": [
-            {
-              "options": {
-                ".0": {
-                  "index": 0
-                }
-              },
-              "type": "value"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "reviews"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 13,
-        "x": 0,
-        "y": 8
-      },
-      "id": 4,
-      "options": {
-        "displayMode": "gradient",
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
-        "maxVizHeight": 300,
-        "minVizHeight": 16,
-        "minVizWidth": 8,
-        "namePlacement": "top",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "last"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showUnfilled": true,
-        "sizing": "auto",
-        "valueMode": "color"
-      },
-      "pluginVersion": "12.0.0",
-      "targets": [
-        {
-          "disableTextWrap": false,
-          "editorMode": "code",
-          "exemplar": true,
-          "expr": "(all_review_length_histogram_bucket)",
-          "format": "heatmap",
+          "expr": "total_reviews_submitted_total",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
-          "instant": false,
           "legendFormat": "__auto",
           "range": true,
           "refId": "A",
           "useBackend": false
         }
       ],
-      "title": "Number of reviews by review length (number of characters)",
-      "transformations": [
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Time": true
-            },
-            "includeByName": {},
-            "indexByName": {},
-            "renameByName": {
-              "+Inf": ">500 characters",
-              "100.0": "50 - 100 characters",
-              "200.0": "100 - 200 characters",
-              "50.0": "<50 characters",
-              "500.0": "200 - 500 characters"
-            }
-          }
-        }
-      ],
-      "type": "bargauge"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "%"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 5,
-        "x": 13,
-        "y": 8
-      },
-      "id": 3,
-      "options": {
-        "minVizHeight": 75,
-        "minVizWidth": 75,
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "/^Memory usage \\(%\\)$/",
-          "values": true
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "sizing": "auto"
-      },
-      "pluginVersion": "12.0.0",
-      "targets": [
-        {
-          "disableTextWrap": false,
-          "editorMode": "builder",
-          "exemplar": false,
-          "expr": "memory_usage_percent_gauge",
-          "format": "time_series",
-          "fullMetaSearch": false,
-          "includeNullMetadata": true,
-          "instant": true,
-          "legendFormat": "Memory usage (%)",
-          "range": false,
-          "refId": "A",
-          "useBackend": false
-        }
-      ],
-      "title": "Memory usage",
-      "type": "gauge"
+      "title": "Total reviews submitted",
+      "type": "timeseries"
     }
   ],
   "preload": false,
   "schemaVersion": 41,
-  "tags": [
-    "myapp"
-  ],
+  "tags": [],
   "templating": {
     "list": []
   },
@@ -544,6 +361,7 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "Restaurant sentiment analysis",
+  "tags": ["myapp"],
   "uid": "a808a8a4-ee6b-4689-9d50-adceefe24bfe",
-  "version": 2
+  "version": 7
 }
