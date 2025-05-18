@@ -241,6 +241,9 @@ Password for Grafana's `admin` account can be generated with:
 kubectl --namespace default get secrets myprom-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo
 ```
 
+The Grafana dashboard can be configured using the `grafana/grafana.json` file included in this repository. In Grafana, go to Dashboard > New > Import and select the .json file. Leave all options to their default values, and click 'import' again:
+![Grafana Dashboard new>import](imgs/grafana_import.png)
+![Grafana Dashboard import options](imgs/grafana_options.png)
 
 
 # Continuous Progress Log
