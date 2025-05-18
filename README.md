@@ -109,7 +109,13 @@ This repository serves as the central point of the project, containing the Docke
    export KUBECONFIG="./provisioning/admin.conf"
    ```
 
-## Setting up the Application with Helm
+## Deploying the Application using the Helm Chart
+
+> **Note:** It is recommended to clean up any previous Minikube instance before proceeding, using:
+>
+> ```bash
+> minikube delete
+> ```
 
 ### Prerequisites for Helm Deployment
 
@@ -128,59 +134,109 @@ If you are using Fedora, you may need to run the following command to allow Mini
 then continue normally:
 
 ```bash
- minikube delete
  minikube start --driver=docker
  minikube addons enable ingress
 ```
 
-> **Note:** Cleaning up any previous Minikube instance is recommended with the `minikube delete` command described above.
+---
 
-### Deploying the Application using the Helm Chart
+### 1. Installing kube-prometheus-stack and Deploying the App
 
-1.  Install kube-prometheus-stack using Helm
+#### On Your Local System (e.g., Minikube)
 
-    ```bash
-     helm repo add prom-repo https://prometheus-community.github.io/helm-charts
-     helm repo update
-     helm install myprom prom-repo/kube-prometheus-stack
-    ```
+1. Install kube-prometheus-stack:
 
-    only then:
+```bash
+helm repo add prom-repo https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install myprom prom-repo/kube-prometheus-stack
+```
 
-    ```bash
-     helm install myapp-dev ./helm/myapp \
-     --set app.image.tag=latest \
-     --set model.image.tag=latest \
-     --set model.port=5000 \
-     --set app.port=8080
-    ```
+2. Deploy your app:
 
-2.  (Optional) Upgrading or re-running the Helm chart:
-    If you make changes to your Helm chart or need to update the deployed application with new configurations, you can run the below `helm upgrade` command.
+```bash
+helm install myapp-dev ./helm/myapp \
+  --set app.image.tag=latest \
+  --set model.image.tag=latest \
+  --set model.port=5000 \
+  --set app.port=8080 \
+  --set useHostPathSharedFolder=false
+```
 
-    ```bash
-     helm upgrade --install myapp-dev ./helm/myapp \
-     --set model.image.tag=latest \
-     --set app.image.tag=latest \
-     --set model.port=5000 \
-     --set app.port=8080
-    ```
+---
 
-3.  Access the deployed application:
+#### On Vagrant VM(s)
 
-    ```bash
-     kubectl port-forward svc/myapp-dev-myapp-app 8080:8080
-    ```
+1. SSH into your Vagrant control node:
 
-    > Navigate to `http://localhost:8080` to access the application.
+```bash
+vagrant ssh ctrl
+```
 
-4.  Access Prometheus
+2. Change directory to shared folder:
 
-    ```bash
-     minikube service myprom-kube-prometheus-sta-prometheus --url
-    ```
+```bash
+cd /mnt/shared/
+```
 
-    There should be a ServiceMonitor/default/myapp-dev-myapp/0 under status->TargetHealth that is greent/up.
+3. Install kube-prometheus-stack:
+
+```bash
+helm repo add prom-repo https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install myprom prom-repo/kube-prometheus-stack
+```
+
+4. Deploy your app with the **hostPath shared folder enabled**:
+
+```bash
+helm install myapp-dev ./helm/myapp \
+  --set app.image.tag=latest \
+  --set model.image.tag=latest \
+  --set model.port=5000 \
+  --set app.port=8080 \
+  --set useHostPathSharedFolder=true
+```
+
+---
+
+### 2. Upgrading or Reinstalling the Helm Release
+
+If you make changes to your Helm chart or want to update the deployment, use:
+
+```bash
+helm upgrade --install myapp-dev ./helm/myapp \
+  --set app.image.tag=latest \
+  --set model.image.tag=latest \
+  --set model.port=5000 \
+  --set app.port=8080 \
+  --set useHostPathSharedFolder=<true-or-false-based-on-env>
+```
+
+- Set `useHostPathSharedFolder=true` if running on Vagrant (to enable hostPath volume).
+- Set `useHostPathSharedFolder=false` if running on Minikube or local system.
+
+---
+
+### 3. Access the Deployed Application
+
+```bash
+ kubectl port-forward svc/myapp-dev-myapp 8080:8080
+```
+
+Navigate to `http://localhost:8080` to access the application.
+
+---
+
+### 4. Access Prometheus
+
+```bash
+ minikube service myprom-kube-prometheus-sta-prometheus --url
+```
+
+There should be a ServiceMonitor/default/myapp-dev-myapp/0 under status->TargetHealth that is greent/up.
+
+---
 
 # Continuous Progress Log
 

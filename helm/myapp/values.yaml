@@ -42,3 +42,5 @@ alertmanager:
     email:
       to: "remla12.notifs@gmail.com"
       sendResolved: true
+
+useHostPathSharedFolder: false
