@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-alertmanager
+  labels:
+    app: {{ .Release.Name }}-alertmanager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-alertmanager
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-alertmanager
+    spec:
+      containers:
+      - name: alertmanager
+        image: prom/alertmanager:v0.26.0
+        args:
+        - "--config.file=/etc/alertmanager/alertmanager.yml"
+        - "--storage.path=/alertmanager"
+        ports:
+        - containerPort: 9093
+          name: alertmanager
+        env:
+        - name: SMTP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "myapp.fullname" . }}-secret
+              key: SMTP_PASSWORD
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/alertmanager
+        - name: storage-volume
+          mountPath: /alertmanager
+      volumes:
+      - name: config-volume
+        configMap:
+          name: {{ .Release.Name }}-alertmanager-config
+      - name: storage-volume
+        emptyDir: {}

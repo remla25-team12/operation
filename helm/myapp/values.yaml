@@ -29,32 +29,4 @@ service:
     port: 5000
     targetPort: 5000
 
-alertmanager:
-  enabled: true
-
-  alertmanagerSpec:
-
-    secrets:
-      - alertmanager-smtp-secret
-
-    config:
-      global:
-        smtp_smarthost: "smtp.gmail.com:587"
-        smtp_from:     "remla12.notifs@gmail.com"
-        smtp_auth_username: "remla12.notifs@gmail.com"
-        smtp_auth_password_file: "/etc/alertmanager/secrets/alertmanager-smtp-secret/SMTP_PASSWORD"
-
-      route:
-        receiver: "email"
-        group_by: ["alertname", "instance"]
-        group_wait: "30s"
-        group_interval: "5m"
-        repeat_interval: "1h"
-
-      receivers:
-        - name: "email"
-          email_configs:
-            - to: "remla12.notifs@gmail.com"
-              send_resolved: true
-
 useHostPathSharedFolder: false

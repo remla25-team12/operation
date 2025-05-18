@@ -4,6 +4,7 @@ metadata:
   name: {{ include "myapp.fullname" . }}-alert
   labels:
     release: myprom
+    app: {{ include "myapp.fullname" . }}
 spec:
   groups:
     - name: high-traffic
