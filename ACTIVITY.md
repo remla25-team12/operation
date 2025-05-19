@@ -75,8 +75,8 @@ Approved PR:
 
 
 **Ayush Kuruvilla:**\
-Created PR: (related to A_) \
-Approved PR: \
+Created PR: https://github.com/remla25-team12/operation/pull/29 (related to A_3) \
+Approved PR: https://github.com/remla25-team12/operation/pull/38
 
 
 # Week 5:
