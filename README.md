@@ -255,7 +255,7 @@ This repository serves as the central point of the project, containing the Docke
    --set model.image.tag=latest \
    --set model.port=5000 \
    --set app.port=8080 \
-   --set useHostPathSharedFolder=<true-or-false-based-on-env>
+   --set useHostPathSharedFolder=true
    ```
    > Do not forget to set `useHostPathSharedFolder` based on your type of cluster (see previous step)
 
@@ -295,6 +295,8 @@ The password for Grafana's `admin` account can be generated with:
 kubectl --namespace default get secrets myprom-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo
 ```
 
+As the username, enter `admin`. As the password, enter the generated password.
+
 The dashboard configuration (`helm/myapp/grafana/dashboard.json`) is automatically imported through a ConfigMap, so no manual installation is required. Simply go to the Dashboards tab in Grafana and load the 'Restaurant sentiment analysis' dashboard:
 
 ![Grafana dashboards tab showing our dashboard](imgs/grafana_load_dashboard.png)
@@ -324,3 +326,12 @@ Please closely follow the steps described under **Setting Up the Kubernetes Clus
 ## Assignment 3
 
 All issues and pending solutions described in Assignment 2 have been resolved.
+
+Our project status for Assignment 3 is as follows:
+
+| Category          | Expected Rating | Notes                                                                                                              |
+| ----------------- | --------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Kubernetes Usage  | **Excellent**   | All criteria described in the Assignment 3 rubric is implemented.                                                  |
+| Helm Installation | **Excellent**   | All criteria described in the Assignment 3 rubric is implemented.                                                  |
+| App Monitoring    | **Good**        | Our AlertManager implementation is not yet fully functional. We are currently having troubles with sending emails. |
+| Grafana           | **Excellent**   | All criteria described in the Assignment 3 rubric is implemented.                                                  |
