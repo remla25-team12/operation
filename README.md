@@ -104,7 +104,29 @@ This repository serves as the central point of the project, containing the Docke
    To do this, **open the VirtualBox GUI**, go to `Tools > Network`, and **remove any existing "Host-only Networks"** listed under that section. The list should now be empty:
    ![Empty host-only adapter list](imgs/vb_empty.png)
 
-4. Start the virtual environment from the repository's root folder:
+
+4. Register SSH Key
+
+   Follow the below steps to register SSH key:
+   Let's say my name is: **abc**.
+   Add SSH key under the directory **provisioning/keys/abc.pub**.
+
+   The format of the file should be:
+   **“abc_key: ssh-rsa <my_ssh_key>”**. Run the encryption command, replacing abc with your name: 
+
+   ``` bash
+   ansible-vault encrypt provisioning/keys/abc.pub
+   ```
+
+   When prompted, the vault password you need to use is: **remla25-team12-vagrant**.
+
+   Then save the password file in your home directory with the following commands, as it is accessed by the Vagrantfile.
+   ```bash
+   echo 'remla25-team12-vagrant' > ~/.vault_pass.txt
+   chmod 600 ~/.vault_pass.txt
+   ```
+
+5. Start the virtual environment from the repository's root folder:
 
    ```bash
     cd operation
@@ -114,10 +136,13 @@ This repository serves as the central point of the project, containing the Docke
 
    This operation may take a while to complete.
 
-5. Once the VMs are up and provisioned, run the following Ansible playbook to finalize the Kubernetes setup:
-
+6. Once the VMs are up and provisioned, run the following Ansible playbook to finalize the Kubernetes setup:
    ```bash
-    ansible-playbook -u vagrant -i 192.168.56.100, provisioning/finalization.yml
+ansible-playbook \
+  -u vagrant \
+  -i 192.168.56.100, \
+  --private-key=.vagrant/machines/ctrl/virtualbox/private_key \
+  provisioning/finalization.yml
    ```
 
 6. To access the Kubernetes dashboard, do the following **on your host machine**:

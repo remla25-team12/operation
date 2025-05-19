@@ -70,8 +70,8 @@ Approved PR:
 
 
 **Pengxuan (Peter) Huang:**\
-Created PR: (related to A_) \
-Approved PR: 
+Created PR: https://github.com/remla25-team12/app/pull/9 (related to A3) \
+Approved PR:  https://github.com/remla25-team12/app/pull/8
 
 
 **Ayush Kuruvilla:**\

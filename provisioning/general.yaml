@@ -4,12 +4,8 @@
   become: yes
   collections:
     - community.general
-  vars_files:
-    - "{{ playbook_dir }}/keys/selin.pub"
-    - "{{ playbook_dir }}/keys/mees.pub"
-    - "{{ playbook_dir }}/keys/ayush.pub"
-    - "{{ playbook_dir }}/keys/peter.pub"
-    - "{{ playbook_dir }}/keys/phil.pub"
+  vars:
+    ssh_key_files: "{{ lookup('fileglob', playbook_dir + '/keys/*.pub', wantlist=True) }}"
 
   tasks:
     # Step 4: Register SSH keys
@@ -18,12 +14,11 @@
         user: vagrant
         state: present
         key: "{{ item }}"
-      loop:
-        - "{{ selin_key }}" 
-        - "{{ mees_key }}" 
-        - "{{ ayush_key }}" 
-        - "{{ peter_key }}"
-        - "{{ phil_key }}"
+        key: "{{ lookup('file', item) }}"
+      loop: "{{ ssh_key_files }}"
+
+
+
 
     # Step 5: Disable SWAP
     - name: Disable SWAP
