@@ -106,9 +106,10 @@ This repository serves as the central point of the project, containing the Docke
 
 
 4. Register SSH Key
-Follow the below steps to register SSH key:
-Let's say my name is: **abc**.
-Add SSH key under the directory **provisioning/keys/abc.pub**.
+
+   Follow the below steps to register SSH key:
+   Let's say my name is: **abc**.
+   Add SSH key under the directory **provisioning/keys/abc.pub**.
 
    The format of the file should be:
    **“abc_key: ssh-rsa <my_ssh_key>”**. Run the encryption command, replacing abc with your name: 
@@ -118,7 +119,8 @@ Add SSH key under the directory **provisioning/keys/abc.pub**.
    ```
 
    When prompted, the vault password you need to use is: **remla25-team12-vagrant**.
-   Save the password file in your home directory with the following commands, as it is accessed by the Vagrantfile.
+
+   Then save the password file in your home directory with the following commands, as it is accessed by the Vagrantfile.
    ```bash
    echo 'remla25-team12-vagrant' > ~/.vault_pass.txt
    chmod 600 ~/.vault_pass.txt
