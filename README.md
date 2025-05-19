@@ -250,13 +250,10 @@ The password for Grafana's `admin` account can be generated with:
 kubectl --namespace default get secrets myprom-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo
 ```
 
-The Grafana dashboard is configurable. Go to Dashboard > New > Import and select the `grafana/grafana.json` file included in this repository. 
-![Grafana new>import](imgs/grafana_import.png)
-Leave all options to their default values, and click 'import' again:
-![Grafana import options](imgs/grafana_options.png)
-If done correctly, you'll now see a dashboard like this:
-![Grafana Dashboard](imgs/grafana_dashboard.png)
-
+The dashboard configuration (`helm/myapp/grafana/dashboard.json`) is automatically imported through a ConfigMap, so no manual installation is required. Simply go to the Dashboards tab in Grafana and load the 'Restaurant sentiment analysis' dashboard:
+![Grafana dashboards tab showing our dashboard](imgs/grafana_load_dashboard.png)
+It should look like this:
+![Grafana dashboard](imgs/grafana_dashboard.png)
 
 ---
 
