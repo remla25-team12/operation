@@ -45,7 +45,7 @@ Approved PR: https://github.com/remla25-team12/operation/pull/25
 # Week 4:
 
 **Selin Ceydeli:** \
-Created PR: https://github.com/remla25-team12/app/pull/7 & https://github.com/remla25-team12/app/pull/8 (related to A3) \
+Created PR: [app#7](https://github.com/remla25-team12/app/pull/7) & [app#8](https://github.com/remla25-team12/app/pull/8) (related to A3) \
 Approved PR: https://github.com/remla25-team12/operation/pull/39
 
 **Mees Chammat:**\
