@@ -73,5 +73,3 @@ Approved PR: https://github.com/remla25-team12/operation/pull/38
 # Week 8:
 
 # Week 9:
-
-# A5:
