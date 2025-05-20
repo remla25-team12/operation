@@ -53,8 +53,8 @@ Created PR: https://github.com/remla25-team12/operation/pull/35 (related to A3) 
 Approved PR: https://github.com/remla25-team12/operation/pull/32
 
 **Philippe Henry:**\
-Created PR: (related to A\_) \
-Approved PR:
+Created PR: https://github.com/remla25-team12/operation/pull/32 (related to A\_) \
+Approved PR: https://github.com/remla25-team12/app/pull/7 
 
 **Pengxuan (Peter) Huang:**\
 Created PR: https://github.com/remla25-team12/app/pull/9 (related to A3) \
