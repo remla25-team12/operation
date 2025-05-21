@@ -61,7 +61,7 @@ Created PR: https://github.com/remla25-team12/app/pull/9 (related to A3) \
 Approved PR: https://github.com/remla25-team12/app/pull/8
 
 **Ayush Kuruvilla:**\
-Created PR: https://github.com/remla25-team12/operation/pull/29 (related to A3) \
+Created PR: https://github.com/remla25-team12/operation/pull/36 (related to A3) \
 Approved PR: https://github.com/remla25-team12/operation/pull/38
 
 # Week 5:
