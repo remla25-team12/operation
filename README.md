@@ -149,7 +149,7 @@ This repository serves as the central point of the project, containing the Docke
    - Edit the `/etc/hosts` file to resolve https://dashboard.local. First, open the file by running:
 
      ```bash
-      sudo nano /etc/hosts/
+      sudo nano /etc/hosts
      ```
 
      Then append the following line to the file.
