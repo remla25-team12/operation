@@ -71,7 +71,7 @@ Created PR: https://github.com/remla25-team12/model-training/pull/5 (related to 
 Approved PR: 
 
 **Mees Chammat:**\
-Created PR: (related to A_) \
+Created PR: https://github.com/remla25-team12/model-training/pull/6 (related to A4) \
 Approved PR: https://github.com/remla25-team12/model-training/pull/5#pullrequestreview-2860151089
 
 **Philippe Henry:**\
