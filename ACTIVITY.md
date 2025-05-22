@@ -68,7 +68,7 @@ Approved PR: https://github.com/remla25-team12/operation/pull/38
 
 **Selin Ceydeli:** \
 Created PR: https://github.com/remla25-team12/model-training/pull/5 (related to A4) \
-Approved PR: 
+Approved PR: https://github.com/remla25-team12/model-training/pull/8 
 
 **Mees Chammat:**\
 Created PR: https://github.com/remla25-team12/model-training/pull/6 (related to A4) \
