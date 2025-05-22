@@ -66,6 +66,27 @@ Approved PR: https://github.com/remla25-team12/operation/pull/38
 
 # Week 5:
 
+**Selin Ceydeli:** \
+Created PR: https://github.com/remla25-team12/model-training/pull/5 (related to A4) \
+Approved PR: 
+
+**Mees Chammat:**\
+Created PR: (related to A_) \
+Approved PR: https://github.com/remla25-team12/model-training/pull/5#pullrequestreview-2860151089
+
+**Philippe Henry:**\
+Created PR: (related to A3) \
+Approved PR: 
+
+**Pengxuan (Peter) Huang:**\
+Created PR: (related to A_) \
+Approved PR: 
+
+**Ayush Kuruvilla:**\
+Created PR: (related to A3) \
+Approved PR: 
+
+
 # Week 6:
 
 # Week 7:
