@@ -28,6 +28,12 @@ spec:
                 secretKeyRef:
                   name: {{ include "myapp.fullname" . }}-secret
                   key: SMTP_PASSWORD
+          {{- with .Values.model.env }}
+          {{- range $key, $value := . }}
+            - name: {{ $key }}
+              value: "{{ $value }}"
+          {{- end }}
+          {{- end }}
             - name: MODEL_URL
               value: "https://github.com/remla25-team12/model-training/releases/download/v0.1.0/Classifier_Sentiment_Model.joblib"
             - name: VEC_URL
