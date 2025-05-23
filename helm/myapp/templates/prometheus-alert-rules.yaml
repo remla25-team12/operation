@@ -1,0 +1,22 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "myapp.fullname" . }}-alert
+  labels:
+    release: myprom
+    app: {{ include "myapp.fullname" . }}
+spec:
+  groups:
+    - name: high-traffic
+      rules:
+        - alert: HighTraffic
+#          expr: sum(rate(kubelet_http_requests_total[1m])) > 10
+          expr: vector(1)
+          for: 20s
+
+          labels:
+            severity: warning
+          annotations:
+            summary: "High traffic detected"
+            description: "High traffic detected on {{ include "myapp.fullname" . }} for more than 10 requests in a minute."
+
