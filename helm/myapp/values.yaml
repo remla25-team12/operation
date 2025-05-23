@@ -1,32 +1,27 @@
-app:
-  image:
-    repository: ghcr.io/remla25-team12/app
-    tag: latest
-    pullPolicy: Always
-  port: 8080  # <-- FIXED from 8080 to 5000
+namespace: sentiment-app
 
-model:
-  image:
-    repository: ghcr.io/remla25-team12/model-service
-    tag: latest
-    pullPolicy: Always
+app:
+  image: ghcr.io/remla25-team12/app:latest
+  port: 8080
+  servicePort: 80
+  env:
+    MODEL_SERVICE_URL: "http://model-service.sentiment-app.svc.cluster.local:5000/predict"
+    NEW_DATA_URL: "http://model-service.sentiment-app.svc.cluster.local:5000/new_data"
+    VERSION_URL: "http://model-service.sentiment-app.svc.cluster.local:5000/version"
+
+modelService:
+  image: ghcr.io/remla25-team12/model-service:latest
   port: 5000
-  cachePath: /app/cache
-  feedbackPath: /app/feedback
+  env:
+    MODEL_URL: "https://github.com/remla25-team12/model-training/releases/download/v0.1.0/Classifier_Sentiment_Model.joblib"
+    VEC_URL: "https://github.com/remla25-team12/model-training/releases/download/v0.1.0/c1_BoW_Sentiment_Model.pkl"
+    MODEL_CACHE_DIR: "/app/cache"
+    FEEDBACK_FILE_PATH: "/app/feedback/feedback_dump.tsv"
 
 ingress:
-  enabled: true
-  host: myapp.local
+  host: sentiment.local
 
 monitoring:
   enabled: true
-
-service:
-  labels:
-    app: myapp
-  port:
-    name: http
-    port: 5000          # <-- FIXED from 8080 to 5000
-    targetPort: 5000    # <-- FIXED from 8080 to 5000
 
 useHostPathSharedFolder: false

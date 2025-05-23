@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 
 # Variables
-NUM_WORKERS = 2
+NUM_WORKERS = 1
 
 CTRL_CPU = 1
 CTRL_MEMORY = 4096

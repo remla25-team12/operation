@@ -1,38 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "myapp.fullname" . }}-app
+  name: sentiment-app
+  namespace: {{ .Values.namespace }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: app
+      app: sentiment-app
   template:
     metadata:
       labels:
-        app: app
+        app: sentiment-app
     spec:
       containers:
         - name: app
-          image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
+          image: {{ .Values.app.image }}
           ports:
-            - containerPort: 5000
+            - containerPort: {{ .Values.app.port }}
           env:
-            - name: MODEL_SERVICE_URL
-              value: "http://{{ include "myapp.fullname" . }}-model:{{ .Values.model.port }}/predict"
-            - name: NEW_DATA_URL
-              value: "http://{{ include "myapp.fullname" . }}-model:{{ .Values.model.port }}/new_data"
-            - name: VERSION_URL
-              value: "http://{{ include "myapp.fullname" . }}-model:{{ .Values.model.port }}/version"
-          volumeMounts:
-            - name: shared-folder
-              mountPath: /mnt/shared
-      volumes:
-        - name: shared-folder
-          {{- if .Values.useHostPathSharedFolder }}
-          hostPath:
-            path: /mnt/shared
-            type: Directory
-          {{- else }}
-          emptyDir: {}
-          {{- end }}
+            {{- range $key, $value := .Values.app.env }}
+            - name: {{ $key }}
+              value: {{ quote $value }}
+            {{- end }}

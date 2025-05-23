@@ -1,10 +1,11 @@
-{{- if .Values.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "myapp.fullname" . }}-ingress
+  name: sentiment-app-ingress
+  namespace: {{ .Values.namespace }}
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
-  ingressClassName: nginx       # ← add this line
   rules:
     - host: {{ .Values.ingress.host }}
       http:
@@ -13,7 +14,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ include "myapp.fullname" . }}-app
+                name: sentiment-app
                 port:
-                  number: {{ .Values.app.port }}
-{{- end }}
+                  number: {{ .Values.app.servicePort }}

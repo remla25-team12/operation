@@ -1,58 +1,35 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "myapp.fullname" . }}-model
+  name: model-service
+  namespace: {{ .Values.namespace }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: model
+      app: model-service
   template:
     metadata:
       labels:
-        app: model
+        app: model-service
     spec:
       containers:
-        - name: model
-          image: "{{ .Values.model.image.repository }}:{{ .Values.model.image.tag }}"
+        - name: model-service
+          image: {{ .Values.modelService.image }}
           ports:
-            - containerPort: {{ .Values.model.port }}
+            - containerPort: {{ .Values.modelService.port }}
           env:
-            - name: MODEL_HOST
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ include "myapp.fullname" . }}-config
-                  key: MODEL_HOST
-            - name: SMTP_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "myapp.fullname" . }}-secret
-                  key: SMTP_PASSWORD
-            - name: MODEL_URL
-              value: "https://github.com/remla25-team12/model-training/releases/download/v0.1.0/Classifier_Sentiment_Model.joblib"
-            - name: VEC_URL
-              value: "https://github.com/remla25-team12/model-training/releases/download/v0.1.0/c1_BoW_Sentiment_Model.pkl"
-            - name: MODEL_CACHE_DIR
-              value: {{ .Values.model.cachePath }}
-            - name: FEEDBACK_FILE_PATH
-              value: {{ .Values.model.feedbackPath }}/feedback_dump.tsv
+            {{- range $key, $value := .Values.modelService.env }}
+            - name: {{ $key }}
+              value: {{ quote $value }}
+            {{- end }}
           volumeMounts:
-            - name: cache
-              mountPath: {{ .Values.model.cachePath }}
-            - name: feedback
-              mountPath: {{ .Values.model.feedbackPath }}
-            - name: shared-folder
-              mountPath: /mnt/shared
+            - name: cache-volume
+              mountPath: /app/cache
+            - name: feedback-volume
+              mountPath: /app/feedback
       volumes:
-        - name: cache
+        - name: cache-volume
           emptyDir: {}
-        - name: feedback
+        - name: feedback-volume
           emptyDir: {}
-        - name: shared-folder
-          {{- if .Values.useHostPathSharedFolder }}
-          hostPath:
-            path: /mnt/shared
-            type: Directory
-          {{- else }}
-          emptyDir: {}
-          {{- end }}

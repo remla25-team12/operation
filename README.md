@@ -14,7 +14,7 @@ REMLA Group 12
         </li>
       </ul>
     </li>
-    <li>
+    <li>v
       <a href="#getting-started">Getting Started</a>
       <ul>
         <li><a href="#deployment-with-docker">Deployment with Docker</a></li>
@@ -221,7 +221,9 @@ This repository serves as the central point of the project, containing the Docke
    ```bash
    helm repo add prom-repo https://prometheus-community.github.io/helm-charts
    helm repo update
-   helm install myprom prom-repo/kube-prometheus-stack
+   helm install myprom prom-repo/kube-prometheus-stack \
+     --set prometheus.prometheusSpec.maximumStartupDurationSeconds=300
+     ## This override fixes a bug beyond our control: this value is 0 in the default CRD, but it must be larger than 60 to avoid install errors. 
    ```
 
 4. Install and deploy our application. One of the flags used in this command will differ depending on your cluster setup.
@@ -236,7 +238,6 @@ This repository serves as the central point of the project, containing the Docke
    --set app.port=8080 \
    --set useHostPathSharedFolder=true
    ```
-
    ii. For **Minikube**, use `useHostPathSharedFolder=false`:
 
    ```bash
