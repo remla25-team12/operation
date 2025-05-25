@@ -67,15 +67,15 @@ Approved PR: https://github.com/remla25-team12/operation/pull/38
 # Week 5:
 
 **Selin Ceydeli:** \
-Created PR: https://github.com/remla25-team12/model-training/pull/5 (related to A5) \
+Created PR: https://github.com/remla25-team12/model-training/pull/5 (related to A4) \
 Approved PR: https://github.com/remla25-team12/model-training/pull/8 
 
 **Mees Chammat:**\
-Created PR: https://github.com/remla25-team12/model-training/pull/6 (related to A5) \
+Created PR: https://github.com/remla25-team12/model-training/pull/6 (related to A4) \
 Approved PR: https://github.com/remla25-team12/model-training/pull/5#pullrequestreview-2860151089
 
 **Philippe Henry:**\
-Created PR: https://github.com/remla25-team12/model-training/pull/9 (related to A5) \
+Created PR: https://github.com/remla25-team12/model-training/pull/9 (related to A4) \
 Approved PR: https://github.com/remla25-team12/model-training/pull/10
 
 **Pengxuan (Peter) Huang:**\
