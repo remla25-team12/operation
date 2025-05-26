@@ -79,8 +79,8 @@ Created PR: https://github.com/remla25-team12/model-training/pull/9 (related to 
 Approved PR: https://github.com/remla25-team12/model-training/pull/10
 
 **Pengxuan (Peter) Huang:**\
-Created PR: (related to A_) \
-Approved PR: 
+Created PR: https://github.com/remla25-team12/model-training/pull/10 (related to A4) \
+Approved PR: https://github.com/remla25-team12/model-training/pull/6
 
 **Ayush Kuruvilla:**\
 Created PR: https://github.com/remla25-team12/model-training/pull/12 (related to A4) \

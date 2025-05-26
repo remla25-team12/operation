@@ -111,7 +111,7 @@ This repository serves as the central point of the project, containing the Docke
 
    Follow the below steps to register your SSH key:
 
-   - Let's say my name is: **abc**.
+   <!-- - Let's say my name is: **abc**.
    - Add SSH key under the directory **provisioning/keys/abc.pub**. The format of the file should be: **“abc_key: <my_ssh_key>”**.
    - Run the encryption command, replacing abc with your name:
      ```bash
@@ -122,7 +122,16 @@ This repository serves as the central point of the project, containing the Docke
      ```bash
       echo 'remla25-team12-vagrant' > ~/.vault_pass.txt
       chmod 600 ~/.vault_pass.txt
+     ``` -->
+     First generate the key 
+     ```bash
+      ssh-keygen -t rsa -b 4096 -f ~/.ssh/ansible-provision-key -C "ansible provision key"
      ```
+
+      Move your public key to provisioning/keys folder with your name:
+      ```bash
+      mv ~/.ssh/ansible-provision-key.pub provisioning/keys/<name>-key.pub
+      ```
 
 5. Start the virtual environment from the repository's root folder:
 
