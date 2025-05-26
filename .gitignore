@@ -5,3 +5,4 @@
 provisioning/admin.conf
 provisioning/inventory.cfg
 .DS_Store
+feedback/
