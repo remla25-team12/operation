@@ -29,9 +29,9 @@ services:
     ports:
       - 8080:5000
     environment:
-      - MODEL_SERVICE_URL=http://model-service:${MODEL_SERVICE_PORT}/predict
-      - NEW_DATA_URL=http://model-service:${MODEL_SERVICE_PORT}/new_data
-      - VERSION_URL=http://model-service:${MODEL_SERVICE_PORT}/version
+      - MODEL_SERVICE_URL=http://model-service:${MODEL_SERVICE_PORT:-5000}/predict
+      - NEW_DATA_URL=http://model-service:${MODEL_SERVICE_PORT:-5000}/new_data
+      - VERSION_URL=http://model-service:${MODEL_SERVICE_PORT:-5000}/version
     networks:
       - backend
     restart: unless-stopped
