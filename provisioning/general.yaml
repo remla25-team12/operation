@@ -5,7 +5,7 @@
   collections:
     - community.general
   vars:
-    ssh_key_files: "{{ lookup('fileglob', playbook_dir + '/keys/*.pub', wantlist=True) }}"
+    ssh_key_files: "{{ lookup('fileglob', playbook_dir + '/keys/*-key.pub', wantlist=True) }}"
 
   tasks:
     # Step 4: Register SSH keys

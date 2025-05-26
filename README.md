@@ -111,7 +111,7 @@ This repository serves as the central point of the project, containing the Docke
 
    Follow the below steps to register your SSH key:
 
-   - Let's say my name is: **abc**.
+   <!-- - Let's say my name is: **abc**.
    - Add SSH key under the directory **provisioning/keys/abc.pub**. The format of the file should be: **“abc_key: <my_ssh_key>”**.
    - Run the encryption command, replacing abc with your name:
      ```bash
@@ -122,7 +122,16 @@ This repository serves as the central point of the project, containing the Docke
      ```bash
       echo 'remla25-team12-vagrant' > ~/.vault_pass.txt
       chmod 600 ~/.vault_pass.txt
+     ``` -->
+     First generate the key 
+     ```bash
+      ssh-keygen -t rsa -b 4096 -f ~/.ssh/ansible-provision-key -C "ansible provision key"
      ```
+
+      Move your public key to provisioning/keys folder with your name:
+      ```bash
+      mv ~/.ssh/ansible-provision-key.pub provisioning/keys/<name>-key.pub
+      ```
 
 5. Start the virtual environment from the repository's root folder:
 
@@ -335,3 +344,17 @@ Our project status for Assignment 3 is as follows:
 | Helm Installation | **Excellent**   | All criteria described in the Assignment 3 rubric is implemented.                                                  |
 | App Monitoring    | **Good**        | Our AlertManager implementation is not yet fully functional. We are currently having troubles with sending emails. |
 | Grafana           | **Excellent**   | All criteria described in the Assignment 3 rubric is implemented.                                                  |
+
+## Assignment 4
+
+For A4, all criteria described in the rubric is implemented for our [model-training](https://github.com/remla25-team12/model-training/tree/a4) pipeline.
+
+Our project status for Assignment 4 is as follows:
+
+| Category                     | Expected Rating | Notes                                                                                    |
+| ---------------------------- | --------------- | ---------------------------------------------------------------------------------------- |
+| Project Organization         | **Excellent**   | The model-training reporsitory is rearranged based on the Cookiecutter template.         |
+| Pipeline Management with DVC | **Excellent**   | Our model-training pipeline is managed by DVC and uses a cloud-based remote storage.     |
+| Code Quality                 | **Excellent**   | Our project applies multiple linters and implements at least one custom pylint rule.     |
+| Automated Tests              | **Excellent**   | Test coverage is automatically measured.                                                 |
+| Continuous Training          | **Excellent**   | Test adequacy score and test coverage are added and automatically updated in the README. |
