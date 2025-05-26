@@ -83,8 +83,8 @@ Created PR: (related to A_) \
 Approved PR: 
 
 **Ayush Kuruvilla:**\
-Created PR: (related to A3) \
-Approved PR: 
+Created PR: https://github.com/remla25-team12/model-training/pull/12 (related to A4) \
+Approved PR: https://github.com/remla25-team12/model-training/pull/11
 
 
 # Week 6:
