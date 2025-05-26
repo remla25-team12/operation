@@ -344,3 +344,17 @@ Our project status for Assignment 3 is as follows:
 | Helm Installation | **Excellent**   | All criteria described in the Assignment 3 rubric is implemented.                                                  |
 | App Monitoring    | **Good**        | Our AlertManager implementation is not yet fully functional. We are currently having troubles with sending emails. |
 | Grafana           | **Excellent**   | All criteria described in the Assignment 3 rubric is implemented.                                                  |
+
+## Assignment 4
+
+For A4, all criteria described in the rubric is implemented for our [model-training](https://github.com/remla25-team12/model-training/tree/a4) pipeline.
+
+Our project status for Assignment 4 is as follows:
+
+| Category                     | Expected Rating | Notes                                                                                    |
+| ---------------------------- | --------------- | ---------------------------------------------------------------------------------------- |
+| Project Organization         | **Excellent**   | The model-training reporsitory is rearranged based on the Cookiecutter template.         |
+| Pipeline Management with DVC | **Excellent**   | Our model-training pipeline is managed by DVC and uses a cloud-based remote storage.     |
+| Code Quality                 | **Excellent**   | Our project applies multiple linters and implements at least one custom pylint rule.     |
+| Automated Tests              | **Excellent**   | Test coverage is automatically measured.                                                 |
+| Continuous Training          | **Excellent**   | Test adequacy score and test coverage are added and automatically updated in the README. |
