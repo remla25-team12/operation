@@ -69,6 +69,7 @@ This repository serves as the central point of the project, containing the Docke
    git clone https://github.com/remla25-team12/operation.git
    cd operation
    ```
+
 2. Deploy the project using Docker Compose by running this command in the project's root folder.
 
    ```bash
@@ -76,6 +77,11 @@ This repository serves as the central point of the project, containing the Docke
    ```
 
 3. Navigate to http://localhost:8080 to access the application homepage.
+   
+4. When you're done, stop the running containers and clean up resources.
+   ```bash
+   docker compose down
+   ```
 
 ---
 
@@ -123,15 +129,18 @@ This repository serves as the central point of the project, containing the Docke
       echo 'remla25-team12-vagrant' > ~/.vault_pass.txt
       chmod 600 ~/.vault_pass.txt
      ``` -->
-     First generate the key 
-     ```bash
-      ssh-keygen -t rsa -b 4096 -f ~/.ssh/ansible-provision-key -C "ansible provision key"
-     ```
 
-      Move your public key to provisioning/keys folder with your name:
-      ```bash
-      mv ~/.ssh/ansible-provision-key.pub provisioning/keys/<name>-key.pub
-      ```
+   First generate the key:
+
+   ```bash
+    ssh-keygen -t rsa -b 4096 -f ~/.ssh/ansible-provision-key -C "ansible provision key"
+   ```
+
+   Move your public key to provisioning/keys folder with your name:
+
+   ```bash
+    mv ~/.ssh/ansible-provision-key.pub provisioning/keys/<name>-key.pub
+   ```
 
 5. Start the virtual environment from the repository's root folder:
 
@@ -276,6 +285,12 @@ To access the deployed application at http://localhost:8080 (through a port-forw
 
 ```bash
 kubectl port-forward svc/myapp-dev-myapp-app 8080:8080
+```
+
+> Make sure that none of the pods are in a pending state before port forwarding. You can check the status of your pods with:
+
+```bash
+kubectl get pods
 ```
 
 Metrics are available at http://localhost:8080/metrics
