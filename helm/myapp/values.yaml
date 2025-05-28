@@ -32,3 +32,9 @@ service:
     targetPort: 5000 # <-- FIXED from 8080 to 5000
 
 useHostPathSharedFolder: false
+
+rateLimit:
+  enabled: true
+  maxTokens: 2
+  tokensPerFill: 1
+  fillInterval: 10s
