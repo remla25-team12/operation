@@ -3,14 +3,32 @@ kind: ConfigMap
 metadata:
   name: alertmanager-config
   labels:
-    app: {{ include "myapp.fullname" . }}
+    release: myprom
+    app: alertmanager
 data:
   alertmanager.yaml: |
     global:
       resolve_timeout: 5m
+      smtp_smarthost: 'smtp.gmail.com:587'
+      smtp_from: 'remla12.notifs@gmail.com'
+      smtp_auth_username: 'remla12.notifs@gmail.com'
+      smtp_auth_password: 'sewu ypcj blrf honb'
+      smtp_require_tls: true
+
     route:
-      receiver: 'default'
+      group_by: ['alertname', 'job']
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 4h
+      receiver: 'gmail-notifications'
+      routes:
+      - match:
+          severity: critical
+        receiver: 'gmail-notifications'
+        continue: true
+
     receivers:
-      - name: 'default'
-        email_configs:
-          - to: 'your-email@example.com'
+    - name: 'gmail-notifications'
+      email_configs:
+      - to: 'remla12.notifs@gmail.com'
+        send_resolved: true
