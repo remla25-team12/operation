@@ -24,7 +24,3 @@ spec:
       response:
         set:
           x-version-route: "true"
-    consistentHash:
-      httpCookie:
-        name: user-session
-        ttl: 3600s 
