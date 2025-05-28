@@ -118,7 +118,7 @@ This repository serves as the central point of the project, containing the Docke
    Follow the below steps to register your SSH key:
 
    <!-- - Let's say my name is: **abc**.
-   - Add SSH key under the directory **provisioning/keys/abc.pub**. The format of the file should be: **“abc_key: <my_ssh_key>”**.
+   - Add SSH key under the directory **provisioning/keys/abc.pub**. The format of the file should be: **"abc_key: <my_ssh_key>"**.
    - Run the encryption command, replacing abc with your name:
      ```bash
       ansible-vault encrypt provisioning/keys/abc.pub
@@ -234,7 +234,26 @@ This repository serves as the central point of the project, containing the Docke
       cd /mnt/shared/
       ```
 
-3. Install and deploy the Prometheus stack:
+3. Install Istio (Required for service mesh features):
+
+   1. Download and Install Istio:
+   ```bash
+   curl -L https://istio.io/downloadIstio | sh -
+   cd istio-*
+   export PATH=$PWD/bin:$PATH
+   ```
+
+   2. Install Istio to your cluster:
+   ```bash
+   istioctl install --set profile=demo -y
+   ```
+
+   3. Enable Istio injection for your namespace:
+   ```bash
+   kubectl label namespace default istio-injection=enabled
+   ```
+
+4. Install and deploy the Prometheus stack:
 
    ```bash
    helm repo add prom-repo https://prometheus-community.github.io/helm-charts
@@ -242,7 +261,7 @@ This repository serves as the central point of the project, containing the Docke
    helm install myprom prom-repo/kube-prometheus-stack
    ```
 
-4. Install and deploy our application. One of the flags used in this command will differ depending on your cluster setup.
+5. Install and deploy our application. One of the flags used in this command will differ depending on your cluster setup.
 
    i. For the **Kubernetes VM cluster**, use `useHostPathSharedFolder=true`:
 
@@ -266,7 +285,7 @@ This repository serves as the central point of the project, containing the Docke
    --set useHostPathSharedFolder=false
    ```
 
-5. If you make changes to the Helm chart or want to update the deployment, use the following command:
+6. If you make changes to the Helm chart or want to update the deployment, use the following command:
    ```bash
    helm upgrade --install myapp-dev ./helm/myapp \
    --set app.image.tag=latest \
@@ -373,3 +392,9 @@ Our project status for Assignment 4 is as follows:
 | Code Quality                 | **Excellent**   | Our project applies multiple linters and implements at least one custom pylint rule.     |
 | Automated Tests              | **Excellent**   | Test coverage is automatically measured.                                                 |
 | Continuous Training          | **Excellent**   | Test adequacy score and test coverage are added and automatically updated in the README. |
+
+## Assignment 5
+
+### Installing Istio
+
+Note: The Helm chart has Istio configurations enabled (gateway, virtual service, and destination rules) but Istio itself must be installed first using the steps above.
