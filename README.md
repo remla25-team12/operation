@@ -118,7 +118,7 @@ This repository serves as the central point of the project, containing the Docke
    Follow the below steps to register your SSH key:
 
    <!-- - Let's say my name is: **abc**.
-   - Add SSH key under the directory **provisioning/keys/abc.pub**. The format of the file should be: **“abc_key: <my_ssh_key>”**.
+   - Add SSH key under the directory **provisioning/keys/abc.pub**. The format of the file should be: **"abc_key: <my_ssh_key>"**.
    - Run the encryption command, replacing abc with your name:
      ```bash
       ansible-vault encrypt provisioning/keys/abc.pub
@@ -212,70 +212,47 @@ This repository serves as the central point of the project, containing the Docke
    cd operation
    ```
 
-2. Prepare the cluster for app installation.
-
-   1. For **Minikube**, it is recommended to first clean up any previous Minikube instance and launch a new cluster by running the following commands:
-
-      ```bash
-      minikube delete
-      minikube start --driver=docker
-      minikube addons enable ingress
-      ```
-
-      > **Note:** If you are using Fedora, you may need to run the following command first to allow Minikube to use the Docker driver:
-
-      ```bash
-      sudo setenforce 0
-      ```
-
-   2. For the **Kubernetes VM cluster**, SSH into the control node and navigate to the shared folder directory.
-      ```bash
-      vagrant ssh ctrl
-      cd /mnt/shared/
-      ```
-
-3. Install and deploy the Prometheus stack:
-
-   ```bash
-   helm repo add prom-repo https://prometheus-community.github.io/helm-charts
-   helm repo update
-   helm install myprom prom-repo/kube-prometheus-stack
-   ```
-
-4. Install and deploy our application. One of the flags used in this command will differ depending on your cluster setup.
-
-   i. For the **Kubernetes VM cluster**, use `useHostPathSharedFolder=true`:
-
+2. Install the Helm chart with rate limiting enabled:
    ```bash
    helm install myapp-dev ./helm/myapp \
    --set app.image.tag=latest \
    --set model.image.tag=latest \
    --set model.port=5000 \
    --set app.port=8080 \
-   --set useHostPathSharedFolder=true
+   --set useHostPathSharedFolder=false \
+   --set rateLimit.enabled=true \
+   --set rateLimit.maxTokens=2 \
+   --set rateLimit.tokensPerFill=1 \
+   --set rateLimit.fillInterval=10s
    ```
 
-   ii. For **Minikube**, use `useHostPathSharedFolder=false`:
+   The rate limit configuration above means:
+   - Maximum of 2 requests can be made in burst
+   - After the burst, 1 request is allowed every 10 seconds
+   - Requests exceeding these limits will receive a 429 (Too Many Requests) response
 
+3. Verify the rate limiting:
    ```bash
-   helm install myapp-dev ./helm/myapp \
-   --set app.image.tag=latest \
-   --set model.image.tag=latest \
-   --set model.port=5000 \
-   --set app.port=8080 \
-   --set useHostPathSharedFolder=false
+   # Make multiple requests in quick succession
+   for i in {1..5}; do
+     echo "Request $i:"
+     curl -v -H "Host: myapp.local" http://localhost:8080/ 2>&1 | grep "< HTTP"
+     sleep 1
+   done
    ```
 
-5. If you make changes to the Helm chart or want to update the deployment, use the following command:
+   You should see:
+   - First 2 requests succeed (HTTP 200)
+   - Subsequent requests fail (HTTP 429) until the rate limit resets
+   - The response will include an `x-rate-limit: true` header when rate limiting is active
+
+4. If you need to modify the rate limit settings:
    ```bash
-   helm upgrade --install myapp-dev ./helm/myapp \
-   --set app.image.tag=latest \
-   --set model.image.tag=latest \
-   --set model.port=5000 \
-   --set app.port=8080 \
-   --set useHostPathSharedFolder=true
+   helm upgrade myapp-dev ./helm/myapp \
+   --reuse-values \
+   --set rateLimit.maxTokens=5 \
+   --set rateLimit.fillInterval=5s
    ```
-   > Do not forget to set `useHostPathSharedFolder` based on your type of cluster (see previous step)
 
 ## App Usage (Minikube)
 
