@@ -5,7 +5,7 @@
   collections:
     - community.general
   vars:
-    ssh_key_files: "{{ lookup('fileglob', playbook_dir + '/keys/*-key.pub', wantlist=True) }}"
+    ssh_key_files: "{{ lookup('fileglob', playbook_dir + '/keys/*.pub', wantlist=True) }}"
 
   tasks:
     # Step 4: Register SSH keys
@@ -13,12 +13,8 @@
       ansible.posix.authorized_key:
         user: vagrant
         state: present
-        key: "{{ item }}"
         key: "{{ lookup('file', item) }}"
       loop: "{{ ssh_key_files }}"
-
-
-
 
     # Step 5: Disable SWAP
     - name: Disable SWAP
