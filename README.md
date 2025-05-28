@@ -118,7 +118,7 @@ This repository serves as the central point of the project, containing the Docke
    Follow the below steps to register your SSH key:
 
    <!-- - Let's say my name is: **abc**.
-   - Add SSH key under the directory **provisioning/keys/abc.pub**. The format of the file should be: **“abc_key: <my_ssh_key>”**.
+   - Add SSH key under the directory **provisioning/keys/abc.pub**. The format of the file should be: **"abc_key: <my_ssh_key>"**.
    - Run the encryption command, replacing abc with your name:
      ```bash
       ansible-vault encrypt provisioning/keys/abc.pub
@@ -373,3 +373,143 @@ Our project status for Assignment 4 is as follows:
 | Code Quality                 | **Excellent**   | Our project applies multiple linters and implements at least one custom pylint rule.     |
 | Automated Tests              | **Excellent**   | Test coverage is automatically measured.                                                 |
 | Continuous Training          | **Excellent**   | Test adequacy score and test coverage are added and automatically updated in the README. |
+
+# Application Deployment Guide
+
+This repository contains a Helm chart for deploying the application with Istio service mesh, rate limiting capabilities, and monitoring.
+
+## Prerequisites
+
+- Kubernetes cluster (Minikube or a VM provisioned by Vagrant)
+- Helm v3
+- Istio
+- kubectl
+
+## Setup Instructions
+
+### Option 1: Using Minikube
+
+1. Start Minikube with sufficient resources:
+```bash
+minikube start --memory=4096 --cpus=2 --kubernetes-version=v1.26.3
+```
+
+2. Install Prometheus Operator and Grafana:
+```bash
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install monitoring prometheus-community/kube-prometheus-stack \
+  --namespace monitoring \
+  --create-namespace \
+  --set grafana.enabled=true \
+  --set prometheus.enabled=true
+```
+
+3. Install Istio:
+```bash
+curl -L https://istio.io/downloadIstio | sh -
+cd istio-*
+export PATH=$PWD/bin:$PATH
+istioctl install --set profile=demo -y
+```
+
+4. Enable Istio injection:
+```bash
+kubectl label namespace default istio-injection=enabled
+```
+
+### Option 2: Using Vagrant
+
+Follow the same installation steps for Prometheus and Istio as in the Minikube option after your Vagrant environment is ready.
+
+## Deploying the Application
+
+1. Install the Helm chart:
+```bash
+helm install myapp ./helm/myapp \
+  --namespace default \
+  --set istio.enabled=true \
+  --set rateLimit.enabled=true \
+  --set monitoring.enabled=true \
+  --set monitoring.serviceMonitor.release=monitoring
+```
+
+## Verifying the Installation
+
+1. Check if all pods are running:
+```bash
+kubectl get pods
+```
+
+2. Test the application:
+```bash
+# Test v1 (default version)
+curl -H "Host: myapp.local" http://localhost:5000/
+
+# Test v2 (with test user header)
+curl -H "Host: myapp.local" -H "user: test-user" http://localhost:5000/
+```
+
+3. Monitor rate limiting:
+```bash
+# Watch for rate limit headers
+curl -v -H "Host: myapp.local" http://localhost:5000/
+```
+
+## Accessing Monitoring
+
+### Prometheus
+
+1. Port-forward the Prometheus service:
+```bash
+kubectl port-forward -n monitoring svc/monitoring-kube-prometheus-prometheus 9090:9090
+```
+
+2. Access Prometheus at http://localhost:9090
+
+### Grafana
+
+1. Get Grafana admin password:
+```bash
+kubectl get secret -n monitoring monitoring-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+```
+
+2. Port-forward the Grafana service:
+```bash
+kubectl port-forward -n monitoring svc/monitoring-grafana 3000:3000
+```
+
+3. Access Grafana at http://localhost:3000 (username: admin, password: from step 1)
+
+4. The dashboard will be automatically imported via the ConfigMap. You can find it under:
+   - Dashboards → Browse → Restaurant sentiment analysis
+
+## Troubleshooting
+
+1. Check pod status:
+```bash
+kubectl get pods -A
+kubectl describe pod <pod-name> -n <namespace>
+```
+
+2. Check logs:
+```bash
+kubectl logs <pod-name> -n <namespace>
+```
+
+3. Check Prometheus targets:
+```bash
+# Access Prometheus UI and go to Status → Targets
+# Your app's ServiceMonitor should be listed and UP
+```
+
+4. Check Istio configuration:
+```bash
+istioctl analyze
+```
+
+5. Common issues:
+   - If pods are pending, check for resources with `kubectl describe pod <pod-name>`
+   - If ServiceMonitor is not discovering targets, verify the labels match
+   - If rate limiting is not working, check the EnvoyFilter configuration
+   - If Grafana dashboard is not showing, verify the ConfigMap was created properly

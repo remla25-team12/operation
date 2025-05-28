@@ -1,0 +1,23 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ include "myapp.fullname" . }}-vs
+  namespace: {{ .Release.Namespace }}
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - {{ .Values.istio.gateway.name }}
+  http:
+    - match:
+        - headers:
+            user:
+              exact: {{ .Values.istio.headers.userTest | default "test-user" }}
+      route:
+        - destination:
+            host: {{ include "myapp.fullname" . }}-app
+            subset: v2
+    - route:
+        - destination:
+            host: {{ include "myapp.fullname" . }}-app
+            subset: v1 
