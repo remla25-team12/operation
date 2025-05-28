@@ -3,7 +3,14 @@ app:
     repository: ghcr.io/remla25-team12/app
     tag: latest
     pullPolicy: Always
-  port: 8080 # <-- FIXED from 8080 to 5000
+  port: 8080
+  versions:
+    - name: v1
+      weight: 90
+      tag: "0.4.4"
+    - name: v2
+      weight: 10
+      tag: "0.4.0"
 
 model:
   image:
@@ -15,10 +22,26 @@ model:
   feedbackPath: /app/feedback
   env:
     MODEL_SERVICE_PORT: "5000"
+  versions:
+    - name: v1
+      weight: 90
+      tag: "1.1.6"
+    - name: v2
+      weight: 10
+      tag: "1.1.3"
 
 ingress:
   enabled: true
   host: myapp.local
+
+istio:
+  enabled: true
+  gateway:
+    enabled: true
+  virtualService:
+    enabled: true
+  destinationRules:
+    enabled: true
 
 monitoring:
   enabled: true
@@ -28,7 +51,7 @@ service:
     app: myapp
   port:
     name: http
-    port: 5000 # <-- FIXED from 8080 to 5000
-    targetPort: 5000 # <-- FIXED from 8080 to 5000
+    port: 5000
+    targetPort: 5000
 
 useHostPathSharedFolder: false

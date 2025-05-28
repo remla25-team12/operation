@@ -198,18 +198,62 @@
         remote_src: yes
       become: true
       args:
-        creates: /home/vagrant/istio-1.25.2/manifests
+        creates: /home/vagrant/istio-1.25.2
 
     - name: Add istioctl to PATH
-      lineinfile:
-        path: /home/vagrant/.bashrc
-        line: 'export PATH=$PATH:/home/vagrant/istio-1.25.2/bin'
-        insertafter: EOF
-        state: present
+      ansible.builtin.copy:
+        dest: /etc/profile.d/istio.sh
+        content: 'export PATH=$PATH:/home/vagrant/istio-1.25.2/bin'
+        mode: '0644'
+      become: true
 
-    - name: Run istioctl install (demo profile)
+    - name: Install Istio core components
       shell: |
-        istioctl install --set profile=demo -y
+        source /etc/profile.d/istio.sh
+        istioctl install --set profile=default -y
       args:
-        creates: /home/vagrant/istio-1.25.2/manifests
+        executable: /bin/bash
+      become: true
+
+    - name: Enable Istio injection for default namespace
+      command: kubectl label namespace default istio-injection=enabled --overwrite
+      become: true
+
+    # Install Istio addons
+    - name: Install Prometheus
+      kubernetes.core.k8s:
+        state: present
+        src: /home/vagrant/istio-1.25.2/samples/addons/prometheus.yaml
+
+    - name: Install Jaeger
+      kubernetes.core.k8s:
+        state: present
+        src: /home/vagrant/istio-1.25.2/samples/addons/jaeger.yaml
+
+    - name: Install Kiali
+      kubernetes.core.k8s:
+        state: present
+        src: /home/vagrant/istio-1.25.2/samples/addons/kiali.yaml
+
+    - name: Wait for Istio components to be ready
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: Pod
+        namespace: istio-system
+        wait: yes
+        wait_sleep: 5
+        wait_timeout: 300
+        wait_condition:
+          type: Ready
+          status: "True"
+
+    - name: Show Istio installation completion message
+      debug:
+        msg: 
+          - "Istio has been successfully installed with the following components:"
+          - "- Core Istio (with IngressGateway)"
+          - "- Prometheus for monitoring"
+          - "- Jaeger for tracing"
+          - "- Kiali dashboard"
+          - "The default namespace has been configured for automatic Istio injection"
 

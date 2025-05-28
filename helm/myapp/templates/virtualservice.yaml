@@ -1,0 +1,30 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ .Release.Name }}-virtualservice
+spec:
+  gateways:
+  - {{ .Release.Name }}-gateway
+  hosts:
+  - "*"
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: {{ .Release.Name }}-app-service
+        subset: v1
+      weight: 90
+    - destination:
+        host: {{ .Release.Name }}-app-service
+        subset: v2
+      weight: 10
+    headers:
+      response:
+        set:
+          x-version-route: "true"
+    consistentHash:
+      httpCookie:
+        name: user-session
+        ttl: 3600s 

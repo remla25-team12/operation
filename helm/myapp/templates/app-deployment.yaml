@@ -1,38 +1,50 @@
+{{- range .Values.app.versions }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "myapp.fullname" . }}-app
+  name: {{ $.Release.Name }}-app-{{ .name }}
+  labels:
+    app: {{ $.Release.Name }}-app
+    version: {{ .name }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: app
+      app: {{ $.Release.Name }}-app
+      version: {{ .name }}
   template:
     metadata:
       labels:
-        app: app
+        app: {{ $.Release.Name }}-app
+        version: {{ .name }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ $.Values.app.port }}"
     spec:
       containers:
-        - name: app
-          image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
-          ports:
-            - containerPort: 5000
-          env:
-            - name: MODEL_SERVICE_URL
-              value: "http://{{ include "myapp.fullname" . }}-model:{{ .Values.model.port }}/predict"
-            - name: NEW_DATA_URL
-              value: "http://{{ include "myapp.fullname" . }}-model:{{ .Values.model.port }}/new_data"
-            - name: VERSION_URL
-              value: "http://{{ include "myapp.fullname" . }}-model:{{ .Values.model.port }}/version"
-          volumeMounts:
-            - name: shared-folder
-              mountPath: /mnt/shared
-      volumes:
+      - name: app
+        image: "{{ $.Values.app.image.repository }}:{{ .tag }}"
+        imagePullPolicy: {{ $.Values.app.image.pullPolicy }}
+        ports:
+        - containerPort: {{ $.Values.app.port }}
+        env:
+        - name: MODEL_SERVICE_URL
+          value: "http://{{ $.Release.Name }}-model-service:{{ $.Values.model.port }}/predict"
+        - name: NEW_DATA_URL
+          value: "http://{{ $.Release.Name }}-model-service:{{ $.Values.model.port }}/new_data"
+        - name: VERSION_URL
+          value: "http://{{ $.Release.Name }}-model-service:{{ $.Values.model.port }}/version"
+        volumeMounts:
         - name: shared-folder
-          {{- if .Values.useHostPathSharedFolder }}
-          hostPath:
-            path: /mnt/shared
-            type: Directory
-          {{- else }}
-          emptyDir: {}
-          {{- end }}
+          mountPath: /mnt/shared
+      volumes:
+      - name: shared-folder
+        {{- if $.Values.useHostPathSharedFolder }}
+        hostPath:
+          path: /mnt/shared
+          type: Directory
+        {{- else }}
+        emptyDir: {}
+        {{- end }}
+---
+{{- end }}
