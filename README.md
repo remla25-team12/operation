@@ -233,13 +233,24 @@ This repository serves as the central point of the project, containing the Docke
       vagrant ssh ctrl
       cd /mnt/shared/
       ```
+3. Install and deploy the Prometheus stack and Istio:
+```bash
+   helm repo add istio https://istio-release.storage.googleapis.com/charts
+   helm repo update
+   helm install istio-base istio/base -n istio-system --create-namespace
+   helm install istiod istio/istiod -n istio-system 
+   helm install istio-ingress istio/gateway -n istio-system 
+   kubectl label namespace default istio-injection=enabled
+```
 
-3. Install and deploy the Prometheus stack:
+
 
    ```bash
+   kubectl create namespace monitoring
+   kubectl label namespace monitoring istio-injection=disabled
    helm repo add prom-repo https://prometheus-community.github.io/helm-charts
    helm repo update
-   helm install myprom prom-repo/kube-prometheus-stack
+   helm install myprom prom-repo/kube-prometheus-stack -n monitoring
    ```
 
 4. Install and deploy our application. One of the flags used in this command will differ depending on your cluster setup.

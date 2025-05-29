@@ -3,21 +3,27 @@ app:
     repository: ghcr.io/remla25-team12/app
     tag: latest
     pullPolicy: Always
-  port: 8080 # <-- FIXED from 8080 to 5000
+  containerPort: 5000
+  port: 8080
 
 model:
+  v1ReplicaCount: 1
+  v2ReplicaCount: 0  # Set to 0 if you don't want v2 of model service yet
   image:
     repository: ghcr.io/remla25-team12/model-service
     tag: latest
+    v1Tag: latest
+    v2Tag: latest     # Update when you have a new version
     pullPolicy: Always
   port: 5000
+  containerPort: 5000
   cachePath: /app/cache
   feedbackPath: /app/feedback
   env:
     MODEL_SERVICE_PORT: "5000"
 
 ingress:
-  enabled: true
+  enabled: false
   host: myapp.local
 
 monitoring:
@@ -28,7 +34,13 @@ service:
     app: myapp
   port:
     name: http
-    port: 5000 # <-- FIXED from 8080 to 5000
-    targetPort: 5000 # <-- FIXED from 8080 to 5000
+    port: 8080
+    targetPort: 5000
+
+istio:
+  enabled: true
+  modelTrafficSplit:
+    v1Weight: 100
+    v2Weight: 0   # Set to 0 if you don't want v2 traffic yet
 
 useHostPathSharedFolder: false
