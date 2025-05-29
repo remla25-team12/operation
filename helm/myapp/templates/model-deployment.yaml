@@ -34,10 +34,8 @@ spec:
               value: "{{ $value }}"
           {{- end }}
           {{- end }}
-            - name: MODEL_URL
-              value: "https://github.com/remla25-team12/model-training/releases/download/v0.1.0/Classifier_Sentiment_Model.joblib"
-            - name: VEC_URL
-              value: "https://github.com/remla25-team12/model-training/releases/download/v0.1.0/c1_BoW_Sentiment_Model.pkl"
+            - name: TRAINED_MODEL_VERSION=v0.1.2 # model version of the trained classifier and count vectorizer
+              value: v0.1.2
             - name: MODEL_CACHE_DIR
               value: {{ .Values.model.cachePath }}
             - name: FEEDBACK_FILE_PATH
