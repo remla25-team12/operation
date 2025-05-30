@@ -259,11 +259,11 @@ This repository serves as the central point of the project, containing the Docke
 
    ```bash
    helm install myapp-dev ./helm/myapp \
-   --set app.image.tag=latest \
-   --set model.image.tag=latest \
-   --set model.port=5000 \
-   --set app.port=8080 \
-   --set useHostPathSharedFolder=true
+      --set app.image.tag=latest \
+      --set model.image.tag=latest \
+      --set model.port=5000 \
+      --set app.port=8080 \
+      --set useHostPathSharedFolder=true
    ```
 
    ii. For **Minikube**, use `useHostPathSharedFolder=false`:
