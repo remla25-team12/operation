@@ -7,8 +7,7 @@ services:
     # ports:
     #   - "${MODEL_SERVICE_PORT:-5000}:${MODEL_SERVICE_PORT:-5000}"
     environment:
-      - MODEL_URL=https://github.com/remla25-team12/model-training/releases/download/v0.1.0/Classifier_Sentiment_Model.joblib # model URL
-      - VEC_URL=https://github.com/remla25-team12/model-training/releases/download/v0.1.0/c1_BoW_Sentiment_Model.pkl # vectorizer URL
+      - TRAINED_MODEL_VERSION=v0.1.2 # model version of the trained classifier and count vectorizer
       - MODEL_CACHE_DIR=/app/cache
       - FEEDBACK_FILE_PATH=/app/feedback/feedback_dump.tsv
       - MODEL_SERVICE_PORT=${MODEL_SERVICE_PORT}
