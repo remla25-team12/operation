@@ -1,22 +1,28 @@
+# templates/model-deployment.yaml (needs to be versioned like app)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "myapp.fullname" . }}-model
+  name: {{ include "myapp.fullname" . }}-model-v1
+  labels:
+    app: {{ include "myapp.name" . }}-model
+    version: v1
 spec:
-  replicas: 1
+  replicas: {{ .Values.model.v1ReplicaCount }}
   selector:
     matchLabels:
-      app: model
+      app: {{ include "myapp.name" . }}-model
+      version: v1
   template:
     metadata:
       labels:
-        app: model
+        app: {{ include "myapp.name" . }}-model
+        version: v1
     spec:
       containers:
         - name: model
-          image: "{{ .Values.model.image.repository }}:{{ .Values.model.image.tag }}"
+          image: "{{ .Values.model.image.repository }}:latest"
           ports:
-            - containerPort: {{ .Values.model.port }}
+            - containerPort: {{ .Values.model.containerPort }}
           env:
             - name: MODEL_HOST
               valueFrom:
@@ -34,8 +40,82 @@ spec:
               value: "{{ $value }}"
           {{- end }}
           {{- end }}
-            - name: TRAINED_MODEL_VERSION
-              value: v0.1.0 # Model version with Naive Bayes classifier
+            - name: MODEL_URL
+              value: "https://github.com/remla25-team12/model-training/releases/download/{{ .Values.model.image.v1Tag }}/Classifier_Sentiment_Model.joblib"
+            - name: VEC_URL
+              value: "https://github.com/remla25-team12/model-training/releases/download/{{ .Values.model.image.v1Tag }}/c1_BoW_Sentiment_Model.pkl"
+            - name: MODEL_CACHE_DIR
+              value: {{ .Values.model.cachePath }}
+            - name: FEEDBACK_FILE_PATH
+              value: {{ .Values.model.feedbackPath }}/feedback_dump.tsv
+          volumeMounts:
+            - name: cache
+              mountPath: {{ .Values.model.cachePath }}
+            - name: feedback
+              mountPath: {{ .Values.model.feedbackPath }}
+            - name: shared-folder
+              mountPath: /mnt/shared
+      volumes:
+        - name: cache
+          emptyDir: {}
+        - name: feedback
+          emptyDir: {}
+        - name: shared-folder
+          {{- if .Values.useHostPathSharedFolder }}
+          hostPath:
+            path: /mnt/shared
+            type: Directory
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+---
+
+# templates/model-deployment.yaml (needs to be versioned like app)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "myapp.fullname" . }}-model-v2
+  labels:
+    app: {{ include "myapp.name" . }}-model
+    version: v2
+spec:
+  replicas: {{ .Values.model.v2ReplicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "myapp.name" . }}-model
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: {{ include "myapp.name" . }}-model
+        version: v2
+    spec:
+      containers:
+        - name: model
+          image: "{{ .Values.model.image.repository }}:latest"
+          ports:
+            - containerPort: {{ .Values.model.containerPort }}
+          env:
+            - name: MODEL_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "myapp.fullname" . }}-config
+                  key: MODEL_HOST
+            - name: SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "myapp.fullname" . }}-secret
+                  key: SMTP_PASSWORD
+          {{- with .Values.model.env }}
+          {{- range $key, $value := . }}
+            - name: {{ $key }}
+              value: "{{ $value }}"
+          {{- end }}
+          {{- end }}
+            - name: MODEL_URL
+              value: "https://github.com/remla25-team12/model-training/releases/download/{{ .Values.model.image.v2Tag }}/Classifier_Sentiment_Model.joblib"
+            - name: VEC_URL
+              value: "https://github.com/remla25-team12/model-training/releases/download/{{ .Values.model.image.v2Tag }}/c1_BoW_Sentiment_Model.pkl"
             - name: MODEL_CACHE_DIR
               value: {{ .Values.model.cachePath }}
             - name: FEEDBACK_FILE_PATH

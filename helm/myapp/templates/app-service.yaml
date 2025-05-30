@@ -3,12 +3,46 @@ kind: Service
 metadata:
   name: {{ include "myapp.fullname" . }}-app
   labels:
-    app: myapp
+    app: {{ include "myapp.name" . }}-app
 spec:
   selector:
-    app: app  # Match what your Pods use
+    app: {{ include "myapp.name" . }}-app
   ports:
     - name: http
       protocol: TCP
-      port: 8080
-      targetPort: 5000
+      port: {{ .Values.app.port }}
+      targetPort: {{ .Values.app.containerPort }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "myapp.fullname" . }}-app-v1
+  labels:
+    app: {{ include "myapp.name" . }}-app
+    version: v1
+spec:
+  selector:
+    app: {{ include "myapp.name" . }}-app
+    version: v1
+  ports:
+    - name: http
+      protocol: TCP
+      port: {{ .Values.app.port }}
+      targetPort: {{ .Values.app.containerPort }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "myapp.fullname" . }}-app-v2
+  labels:
+    app: {{ include "myapp.name" . }}-app
+    version: v2
+spec:
+  selector:
+    app: {{ include "myapp.name" . }}-app
+    version: v2
+  ports:
+    - name: http
+      protocol: TCP
+      port: {{ .Values.app.port }}
+      targetPort: {{ .Values.app.containerPort }}

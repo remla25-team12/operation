@@ -218,7 +218,7 @@ This repository serves as the central point of the project, containing the Docke
 
       ```bash
       minikube delete
-      minikube start --driver=docker
+      minikube start --memory=4096 --cpus=4 --driver=docker
       minikube addons enable ingress
       ```
 
@@ -233,13 +233,24 @@ This repository serves as the central point of the project, containing the Docke
       vagrant ssh ctrl
       cd /mnt/shared/
       ```
+3. Install and deploy the Prometheus stack and Istio:
+```bash
+   helm repo add istio https://istio-release.storage.googleapis.com/charts
+   helm repo update
+   helm install istio-base istio/base -n istio-system --create-namespace
+   helm install istiod istio/istiod -n istio-system 
+   helm install istio-ingress istio/gateway -n istio-system 
+   kubectl label namespace default istio-injection=enabled
+```
 
-3. Install and deploy the Prometheus stack:
+
 
    ```bash
+   kubectl create namespace monitoring
+   kubectl label namespace monitoring istio-injection=disabled
    helm repo add prom-repo https://prometheus-community.github.io/helm-charts
    helm repo update
-   helm install myprom prom-repo/kube-prometheus-stack
+   helm install myprom prom-repo/kube-prometheus-stack -n monitoring
    ```
 
 4. Install and deploy our application. One of the flags used in this command will differ depending on your cluster setup.
@@ -248,11 +259,11 @@ This repository serves as the central point of the project, containing the Docke
 
    ```bash
    helm install myapp-dev ./helm/myapp \
-   --set app.image.tag=latest \
-   --set model.image.tag=latest \
-   --set model.port=5000 \
-   --set app.port=8080 \
-   --set useHostPathSharedFolder=true
+      --set app.image.tag=latest \
+      --set model.image.tag=latest \
+      --set model.port=5000 \
+      --set app.port=8080 \
+      --set useHostPathSharedFolder=true
    ```
 
    ii. For **Minikube**, use `useHostPathSharedFolder=false`:
