@@ -3,7 +3,7 @@ app:
   v2ReplicaCount: 1
   image:
     repository: ghcr.io/remla25-team12/app
-    v1Tag: latest
+    v1Tag: 0.4.4
     v2Tag: latest
     pullPolicy: Always
   containerPort: 5000
