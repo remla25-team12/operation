@@ -218,7 +218,7 @@ This repository serves as the central point of the project, containing the Docke
 
       ```bash
       minikube delete
-      minikube start --driver=docker
+      minikube start --memory=4096 --cpus=4 --driver=docker
       minikube addons enable ingress
       ```
 
