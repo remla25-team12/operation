@@ -34,8 +34,8 @@ spec:
               value: "{{ $value }}"
           {{- end }}
           {{- end }}
-            - name: TRAINED_MODEL_VERSION=v0.1.2 # model version of the trained classifier and count vectorizer
-              value: v0.1.2
+            - name: TRAINED_MODEL_VERSION
+              value: v0.1.0 # Model version with Naive Bayes classifier
             - name: MODEL_CACHE_DIR
               value: {{ .Values.model.cachePath }}
             - name: FEEDBACK_FILE_PATH
