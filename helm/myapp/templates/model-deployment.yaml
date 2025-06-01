@@ -120,6 +120,8 @@ spec:
               value: {{ .Values.model.cachePath }}
             - name: FEEDBACK_FILE_PATH
               value: {{ .Values.model.feedbackPath }}/feedback_dump.tsv
+            - name: TRAINED_MODEL_VERSION
+              value: {{ .Values.model.v2.trainedModelVersion | quote }}
           volumeMounts:
             - name: cache
               mountPath: {{ .Values.model.cachePath }}

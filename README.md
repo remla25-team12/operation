@@ -292,19 +292,35 @@ This repository serves as the central point of the project, containing the Docke
 
 ### Webapp
 
-To access the deployed application at http://localhost:8080 (through a port-forward):
+To access the deployed application, you have two options:
 
+1. Using curl with Host header:
 ```bash
-kubectl port-forward svc/myapp-dev-myapp-app 8080:8080
+# First, port-forward the Istio ingress
+kubectl port-forward svc/istio-ingress -n istio-system 8080:80
+
+# Then in another terminal:
+# For sticky session to v2 (always v2):
+for i in {1..5}; do curl -s -H "Host: myapp.local" -H "x-newvers: true" -H "x-user-id: testuser" http://localhost:8080 ; done
+
+# For sticky session to v1 (always v1):
+for i in {1..5}; do curl -s -H "Host: myapp.local" -H "x-newvers: false" -H "x-user-id: testuser" http://localhost:8080 ; done
+
+# For normal split (as defined in values.yaml), just omit x-newvers:
+for i in {1..5}; do curl -s -H "Host: myapp.local" http://localhost:8080 ; done
 ```
 
-> Make sure that none of the pods are in a pending state before port forwarding. You can check the status of your pods with:
-
+2. For browser access (recommended):
 ```bash
-kubectl get pods
-```
+# Add the host entry (one-time setup)
+sudo sh -c 'echo "127.0.0.1 myapp.local" >> /etc/hosts'
 
-Metrics are available at http://localhost:8080/metrics
+# Start the port-forward
+kubectl port-forward svc/istio-ingress -n istio-system 8080:80
+```
+Then access the application at http://myapp.local:8080
+
+Metrics are available at http://myapp.local:8080/metrics
 
 ### Prometheus
 
