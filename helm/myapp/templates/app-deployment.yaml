@@ -1,29 +1,34 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "myapp.fullname" . }}-app
+  name: {{ include "myapp.fullname" . }}-app-v1
+  labels:
+    app: {{ include "myapp.name" . }}-app
+    version: v1
 spec:
-  replicas: 1
+  replicas: {{ .Values.app.v1ReplicaCount }}
   selector:
     matchLabels:
-      app: app
+      app: {{ include "myapp.name" . }}-app
+      version: v1
   template:
     metadata:
       labels:
-        app: app
+        app: {{ include "myapp.name" . }}-app
+        version: v1
     spec:
       containers:
         - name: app
-          image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
+          image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.v1Tag }}"
           ports:
             - containerPort: 5000
           env:
             - name: MODEL_SERVICE_URL
-              value: "http://{{ include "myapp.fullname" . }}-model:{{ .Values.model.port }}/predict"
+              value: "http://{{ include "myapp.fullname" . }}-model-v1:{{ .Values.model.port }}/predict"
             - name: NEW_DATA_URL
-              value: "http://{{ include "myapp.fullname" . }}-model:{{ .Values.model.port }}/new_data"
+              value: "http://{{ include "myapp.fullname" . }}-model-v1:{{ .Values.model.port }}/new_data"
             - name: VERSION_URL
-              value: "http://{{ include "myapp.fullname" . }}-model:{{ .Values.model.port }}/version"
+              value: "http://{{ include "myapp.fullname" . }}-model-v1:{{ .Values.model.port }}/version"
           volumeMounts:
             - name: shared-folder
               mountPath: /mnt/shared
@@ -36,3 +41,50 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "myapp.fullname" . }}-app-v2
+  labels:
+    app: {{ include "myapp.name" . }}-app
+    version: v2
+spec:
+  replicas: {{ .Values.app.v2ReplicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "myapp.name" . }}-app
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: {{ include "myapp.name" . }}-app
+        version: v2
+    spec:
+      containers:
+        - name: app
+          image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.v2Tag }}"
+          ports:
+            - containerPort: 5000
+          env:
+            - name: MODEL_SERVICE_URL
+              value: "http://{{ include "myapp.fullname" . }}-model-v2:{{ .Values.model.port }}/predict"
+            - name: NEW_DATA_URL
+              value: "http://{{ include "myapp.fullname" . }}-model-v2:{{ .Values.model.port }}/new_data"
+            - name: VERSION_URL
+              value: "http://{{ include "myapp.fullname" . }}-model-v2:{{ .Values.model.port }}/version"
+          volumeMounts:
+            - name: shared-folder
+              mountPath: /mnt/shared
+      volumes:
+        - name: shared-folder
+          {{- if .Values.useHostPathSharedFolder }}
+          hostPath:
+            path: /mnt/shared
+            type: Directory
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+
+---
