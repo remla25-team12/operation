@@ -50,7 +50,7 @@ Approved PR: https://github.com/remla25-team12/operation/pull/39
 
 **Mees Chammat:**\
 Created PR: https://github.com/remla25-team12/operation/pull/35 (related to A3) \
-Approved PR: https://github.com/remla25-team12/operation/pull/32
+Approved PR: https://github.com/remla25-team12/operation/pull/32#issuecomment-2886754849
 
 **Philippe Henry:**\
 Created PR: https://github.com/remla25-team12/operation/pull/32 (related to A3) \
@@ -94,7 +94,7 @@ Created PR: https://github.com/remla25-team12/model-training/pull/16 (related to
 Approved PR: https://github.com/remla25-team12/operation/pull/58#pullrequestreview-2881946774
 
 **Mees Chammat:**\
-Created PR: (related to A) \
+Created PR: https://github.com/remla25-team12/operation/pull/61 (related to A5) \
 Approved PR: https://github.com/remla25-team12/model-training/pull/16#pullrequestreview-2880636962
 
 **Philippe Henry:**\
