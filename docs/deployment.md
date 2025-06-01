@@ -3,7 +3,7 @@
 This document details the deployment structure and data flow in our application. After reading this, you should be able to understand the overall design of our application to the point where you could contribute to a design discussion with us :)
 
 # Table of contents
-
+TODO
 
 # Overall design
 - six repos, of which two containers, three libraries, and one containing mostly configs (operation, this one)
@@ -17,3 +17,9 @@ This document details the deployment structure and data flow in our application.
 
 ## Dynamic routing
 - Istio
+
+## ML Pipeline
+- Model training is supported by DVC
+- Consists of four stages
+![Visualization of the training pipeline for the restaurant sentiment analysis model.](imgs/ML_pipeline.drawio.png)\
+Figure x: Visualization of the training pipeline for the restaurant sentiment analysis model.
