@@ -218,7 +218,7 @@ This repository serves as the central point of the project, containing the Docke
 
       ```bash
       minikube delete
-      minikube start --driver=docker
+      minikube start --memory=4096 --cpus=4 --driver=docker
       minikube addons enable ingress
       ```
 
@@ -233,13 +233,24 @@ This repository serves as the central point of the project, containing the Docke
       vagrant ssh ctrl
       cd /mnt/shared/
       ```
+3. Install and deploy the Prometheus stack and Istio:
+```bash
+   helm repo add istio https://istio-release.storage.googleapis.com/charts
+   helm repo update
+   helm install istio-base istio/base -n istio-system --create-namespace
+   helm install istiod istio/istiod -n istio-system 
+   helm install istio-ingress istio/gateway -n istio-system 
+   kubectl label namespace default istio-injection=enabled
+```
 
-3. Install and deploy the Prometheus stack:
+
 
    ```bash
+   kubectl create namespace monitoring
+   kubectl label namespace monitoring istio-injection=disabled
    helm repo add prom-repo https://prometheus-community.github.io/helm-charts
    helm repo update
-   helm install myprom prom-repo/kube-prometheus-stack
+   helm install myprom prom-repo/kube-prometheus-stack -n monitoring
    ```
 
 4. Install and deploy our application. One of the flags used in this command will differ depending on your cluster setup.
@@ -248,11 +259,11 @@ This repository serves as the central point of the project, containing the Docke
 
    ```bash
    helm install myapp-dev ./helm/myapp \
-   --set app.image.tag=latest \
-   --set model.image.tag=latest \
-   --set model.port=5000 \
-   --set app.port=8080 \
-   --set useHostPathSharedFolder=true
+      --set app.image.tag=latest \
+      --set model.image.tag=latest \
+      --set model.port=5000 \
+      --set app.port=8080 \
+      --set useHostPathSharedFolder=true
    ```
 
    ii. For **Minikube**, use `useHostPathSharedFolder=false`:
@@ -281,19 +292,35 @@ This repository serves as the central point of the project, containing the Docke
 
 ### Webapp
 
-To access the deployed application at http://localhost:8080 (through a port-forward):
+To access the deployed application, you have two options:
 
+1. Using curl with Host header:
 ```bash
-kubectl port-forward svc/myapp-dev-myapp-app 8080:8080
+# First, port-forward the Istio ingress
+kubectl port-forward svc/istio-ingress -n istio-system 8080:80
+
+# Then in another terminal:
+# For sticky session to v2 (always v2):
+for i in {1..5}; do curl -s -H "Host: myapp.local" -H "x-newvers: true" -H "x-user-id: testuser" http://localhost:8080 ; done
+
+# For sticky session to v1 (always v1):
+for i in {1..5}; do curl -s -H "Host: myapp.local" -H "x-newvers: false" -H "x-user-id: testuser" http://localhost:8080 ; done
+
+# For normal split (as defined in values.yaml), just omit x-newvers:
+for i in {1..5}; do curl -s -H "Host: myapp.local" http://localhost:8080 ; done
 ```
 
-> Make sure that none of the pods are in a pending state before port forwarding. You can check the status of your pods with:
-
+2. For browser access (recommended):
 ```bash
-kubectl get pods
-```
+# Add the host entry (one-time setup)
+sudo sh -c 'echo "127.0.0.1 myapp.local" >> /etc/hosts'
 
-Metrics are available at http://localhost:8080/metrics
+# Start the port-forward
+kubectl port-forward svc/istio-ingress -n istio-system 8080:80
+```
+Then access the application at http://myapp.local:8080
+
+Metrics are available at http://myapp.local:8080/metrics
 
 ### Prometheus
 
