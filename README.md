@@ -406,3 +406,13 @@ For the purpose of traffic management, new versions for both model-service and a
 On the second version of the app, changes on the Frontend design is introduced. A back button is added on the second page instead of the _analyze another review_ button at the bottom of the page. Also, a placeholder text is added to the review submission box to guide the users in their reviews. Check the [app](https://github.com/remla25-team12/app) repository for the updates.
 
 For documentation, a template documentation file is defined but it only satisfies the sufficient criteria for now.
+
+Our project status for Assignment 5 is as follows:
+
+| Category                   | Expected Rating | Notes                                                                                         |
+| -------------------------- | --------------- | --------------------------------------------------------------------------------------------- |
+| Traffic Management         | **Excellent**   | All criteria for this category are implemented (described in detail in the above paragraphs). |
+| Additional Use-case        | **-**           | An additional use-case is not implemented yet.                                                |
+| Continuous Experimentation | **-**           |                                                                                               |
+| Deployment Documentation   | **Sufficient**  | For documentation, a template documentation file is defined.                                  |
+| Extension Proposal         | **-**           |                                                                                               |
