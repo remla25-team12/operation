@@ -409,10 +409,10 @@ For documentation, a template documentation file is defined but it only satisfie
 
 Our project status for Assignment 5 is as follows:
 
-| Category                   | Expected Rating | Notes                                                                                         |
-| -------------------------- | --------------- | --------------------------------------------------------------------------------------------- |
-| Traffic Management         | **Excellent**   | All criteria for this category are implemented (described in detail in the above paragraphs). |
-| Additional Use-case        | **-**           | An additional use-case is not implemented yet.                                                |
-| Continuous Experimentation | **-**           |                                                                                               |
-| Deployment Documentation   | **Sufficient**  | For documentation, a template documentation file is defined. The documentation is still a work-in-progress.                                  |
-| Extension Proposal         | **-**           |                                                                                               |
+| Category                   | Expected Rating   | Notes                                                                                                       |
+| -------------------------- | ----------------- | ----------------------------------------------------------------------------------------------------------- |
+| Traffic Management         | **Excellent**     | All criteria for this category are implemented (described in detail in the above paragraphs).               |
+| Additional Use-case        | **Still a To-do** | An additional use-case is not implemented yet.                                                              |
+| Continuous Experimentation | **Still a To-do** |                                                                                                             |
+| Deployment Documentation   | **Sufficient**    | For documentation, a template documentation file is defined. The documentation is still a work-in-progress. |
+| Extension Proposal         | **Still a To-do** |                                                                                                             |
