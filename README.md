@@ -414,5 +414,5 @@ Our project status for Assignment 5 is as follows:
 | Traffic Management         | **Excellent**   | All criteria for this category are implemented (described in detail in the above paragraphs). |
 | Additional Use-case        | **-**           | An additional use-case is not implemented yet.                                                |
 | Continuous Experimentation | **-**           |                                                                                               |
-| Deployment Documentation   | **Sufficient**  | For documentation, a template documentation file is defined.                                  |
+| Deployment Documentation   | **Sufficient**  | For documentation, a template documentation file is defined. The documentation is still a work-in-progress.                                  |
 | Extension Proposal         | **-**           |                                                                                               |
