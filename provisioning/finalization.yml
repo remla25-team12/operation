@@ -210,6 +210,6 @@
     - name: Run istioctl install (demo profile)
       shell: |
         istioctl install --set profile=demo -y
-      args:
-        creates: /home/vagrant/istio-1.25.2/manifests
+      # args:
+      #   creates: /home/vagrant/istio-1.25.2/manifests
 
