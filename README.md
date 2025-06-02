@@ -65,6 +65,7 @@ This repository serves as the central point of the project, containing the Docke
 ### Install and Run
 
 1. Clone this repository and navigate into the root folder.
+
    ```bash
    git clone https://github.com/remla25-team12/operation.git
    cd operation
@@ -77,7 +78,6 @@ This repository serves as the central point of the project, containing the Docke
    ```
 
 3. Navigate to http://localhost:8080 to access the application homepage.
-   
 4. When you're done, stop the running containers and clean up resources.
    ```bash
    docker compose down
@@ -156,7 +156,7 @@ This repository serves as the central point of the project, containing the Docke
 
    ```bash
     ansible-playbook -u vagrant -i 192.168.56.100, provisioning/finalization.yml \
-    --private-key=.vagrant/machines/ctrl/virtualbox/private_key 
+    --private-key=.vagrant/machines/ctrl/virtualbox/private_key
    ```
 
 7. To access the Kubernetes dashboard, do the following **on your host machine**:
@@ -219,37 +219,44 @@ This repository serves as the central point of the project, containing the Docke
       sudo setenforce 0
       ```
 
-   2. For the **Kubernetes VM cluster**, SSH into the control node and navigate to the shared folder directory.
+   2. For the **Kubernetes VM cluster**, SSH into the control node and navigate to the shared folder directory:
       ```bash
       vagrant ssh ctrl
       cd /mnt/shared/
       ```
-3. Install and deploy Istio and enable sidecar injection in the (default) namespace that our app will be deployed in later:
+
+3. Install and deploy Istio:
 
    ```bash
    helm repo add istio https://istio-release.storage.googleapis.com/charts
    helm repo update
    helm install istio-base istio/base -n istio-system --create-namespace
-   helm install istiod istio/istiod -n istio-system 
+   helm install istiod istio/istiod -n istio-system
    helm install istio-ingress istio/gateway -n istio-system
+   ```
 
+4. Enable sidecar injection in the (default) namespace that our app will be deployed in later:
+
+   ```bash
    kubectl label namespace default istio-injection=enabled
    ```
 
-4. Install and deploy the Prometheus stack (in a different namespace without Istio sidecar injection):
+5. Install and deploy the Prometheus stack (in a different namespace without Istio sidecar injection):
 
    ```bash
    kubectl create namespace monitoring
    kubectl label namespace monitoring istio-injection=disabled
-   
+   ```
+
+   ```bash
    helm repo add prom-repo https://prometheus-community.github.io/helm-charts
    helm repo update
    helm install myprom prom-repo/kube-prometheus-stack -n monitoring \
        --set prometheus.prometheusSpec.maximumStartupDurationSeconds=120
    ```
 
-5. Install and deploy our application. One of the flags used in this command will differ depending on your cluster setup.
-   
+6. Install and deploy our application. One of the flags used in this command will differ depending on your cluster setup.
+
    i. For **Minikube**, use `useHostPathSharedFolder=false`:
 
    ```bash
@@ -278,6 +285,7 @@ This repository serves as the central point of the project, containing the Docke
 To access the deployed application, you have two options:
 
 1. Using curl with Host header:
+
 ```bash
 # First, port-forward the Istio ingress
 kubectl port-forward svc/istio-ingress -n istio-system 8080:80
@@ -294,6 +302,7 @@ for i in {1..5}; do curl -s -H "Host: myapp.local" http://localhost:8080 ; done
 ```
 
 2. For browser access (recommended):
+
 ```bash
 # Add the host entry (one-time setup)
 sudo sh -c 'echo "127.0.0.1 myapp.local" >> /etc/hosts'
@@ -301,6 +310,7 @@ sudo sh -c 'echo "127.0.0.1 myapp.local" >> /etc/hosts'
 # Start the port-forward
 kubectl port-forward svc/istio-ingress -n istio-system 8080:80
 ```
+
 Then access the application at http://myapp.local:8080
 
 Metrics are available at http://myapp.local:8080/metrics
