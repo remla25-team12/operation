@@ -65,6 +65,7 @@ This repository serves as the central point of the project, containing the Docke
 ### Install and Run
 
 1. Clone this repository and navigate into the root folder.
+
    ```bash
    git clone https://github.com/remla25-team12/operation.git
    cd operation
@@ -77,7 +78,6 @@ This repository serves as the central point of the project, containing the Docke
    ```
 
 3. Navigate to http://localhost:8080 to access the application homepage.
-   
 4. When you're done, stop the running containers and clean up resources.
    ```bash
    docker compose down
@@ -156,7 +156,7 @@ This repository serves as the central point of the project, containing the Docke
 
    ```bash
     ansible-playbook -u vagrant -i 192.168.56.100, provisioning/finalization.yml \
-    --private-key=.vagrant/machines/ctrl/virtualbox/private_key 
+    --private-key=.vagrant/machines/ctrl/virtualbox/private_key
    ```
 
 7. To access the Kubernetes dashboard, do the following **on your host machine**:
@@ -219,37 +219,44 @@ This repository serves as the central point of the project, containing the Docke
       sudo setenforce 0
       ```
 
-   2. For the **Kubernetes VM cluster**, SSH into the control node and navigate to the shared folder directory.
+   2. For the **Kubernetes VM cluster**, SSH into the control node and navigate to the shared folder directory:
       ```bash
       vagrant ssh ctrl
       cd /mnt/shared/
       ```
-3. Install and deploy Istio and enable sidecar injection in the (default) namespace that our app will be deployed in later:
+
+3. Install and deploy Istio:
 
    ```bash
    helm repo add istio https://istio-release.storage.googleapis.com/charts
    helm repo update
    helm install istio-base istio/base -n istio-system --create-namespace
-   helm install istiod istio/istiod -n istio-system 
+   helm install istiod istio/istiod -n istio-system
    helm install istio-ingress istio/gateway -n istio-system
+   ```
 
+4. Enable sidecar injection in the (default) namespace that our app will be deployed in later:
+
+   ```bash
    kubectl label namespace default istio-injection=enabled
    ```
 
-4. Install and deploy the Prometheus stack (in a different namespace without Istio sidecar injection):
+5. Install and deploy the Prometheus stack (in a different namespace without Istio sidecar injection):
 
    ```bash
    kubectl create namespace monitoring
    kubectl label namespace monitoring istio-injection=disabled
-   
+   ```
+
+   ```bash
    helm repo add prom-repo https://prometheus-community.github.io/helm-charts
    helm repo update
    helm install myprom prom-repo/kube-prometheus-stack -n monitoring \
        --set prometheus.prometheusSpec.maximumStartupDurationSeconds=120
    ```
 
-5. Install and deploy our application. One of the flags used in this command will differ depending on your cluster setup.
-   
+6. Install and deploy our application. One of the flags used in this command will differ depending on your cluster setup.
+
    i. For **Minikube**, use `useHostPathSharedFolder=false`:
 
    ```bash
@@ -278,6 +285,7 @@ This repository serves as the central point of the project, containing the Docke
 To access the deployed application, you have two options:
 
 1. Using curl with Host header:
+
 ```bash
 # First, port-forward the Istio ingress
 kubectl port-forward svc/istio-ingress -n istio-system 8080:80
@@ -294,13 +302,18 @@ for i in {1..5}; do curl -s -H "Host: myapp.local" http://localhost:8080 ; done
 ```
 
 2. For browser access (recommended):
+
 ```bash
 # Add the host entry (one-time setup)
 sudo sh -c 'echo "127.0.0.1 myapp.local" >> /etc/hosts'
 
+# Check the status of your pods. Make sure that all the pods are running before starting the port-forward
+kubectl get pods
+
 # Start the port-forward
 kubectl port-forward svc/istio-ingress -n istio-system 8080:80
 ```
+
 Then access the application at http://myapp.local:8080
 
 Metrics are available at http://myapp.local:8080/metrics
@@ -383,3 +396,23 @@ Our project status for Assignment 4 is as follows:
 | Code Quality                 | **Excellent**   | Our project applies multiple linters and implements at least one custom pylint rule.     |
 | Automated Tests              | **Excellent**   | Test coverage is automatically measured.                                                 |
 | Continuous Training          | **Excellent**   | Test adequacy score and test coverage are added and automatically updated in the README. |
+
+## Assignment 5
+
+For A5, traffic management is implemented. The app defines a Gateway and VirtualServices. Our application is accessible through the IngressGateway. It uses DestinationRules and weights to enable a 90/10 routing of the app service. The versions of model-service and app are consistent. Also, we implemented the Sticky sessions (excellent criteria). These changes are visible on the [operation repository](https://github.com/remla25-team12/operation).
+
+For the purpose of traffic management, new versions for both model-service and app is defined. The new version of model-service uses a logistic classifier model released by model-training repo to make sentiment predictions. Check the [model-training](https://github.com/remla25-team12/model-training) and [model-service](https://github.com/remla25-team12/model-service) repositories for the updates.
+
+On the second version of the app, changes on the Frontend design is introduced. A back button is added on the second page instead of the _analyze another review_ button at the bottom of the page. Also, a placeholder text is added to the review submission box to guide the users in their reviews. Check the [app](https://github.com/remla25-team12/app) repository for the updates.
+
+For documentation, a template documentation file is defined but it only satisfies the sufficient criteria for now.
+
+Our project status for Assignment 5 is as follows:
+
+| Category                   | Expected Rating   | Notes                                                                                                       |
+| -------------------------- | ----------------- | ----------------------------------------------------------------------------------------------------------- |
+| Traffic Management         | **Excellent**     | All criteria for this category are implemented (described in detail in the above paragraphs).               |
+| Additional Use-case        | **Still a To-do** | An additional use-case is not implemented yet.                                                              |
+| Continuous Experimentation | **Still a To-do** |                                                                                                             |
+| Deployment Documentation   | **Sufficient**    | For documentation, a template documentation file is defined. The documentation is still a work-in-progress. |
+| Extension Proposal         | **Still a To-do** |                                                                                                             |
