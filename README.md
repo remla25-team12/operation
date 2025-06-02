@@ -155,38 +155,29 @@ This repository serves as the central point of the project, containing the Docke
 6. Once the VMs are up and provisioned, run the following Ansible playbook to finalize the Kubernetes setup:
 
    ```bash
-    ansible-playbook \
-    -u vagrant \
-    -i 192.168.56.100, \
-    --private-key=.vagrant/machines/ctrl/virtualbox/private_key \
-    provisioning/finalization.yml
+    ansible-playbook -u vagrant -i 192.168.56.100, provisioning/finalization.yml \
+    --private-key=.vagrant/machines/ctrl/virtualbox/private_key 
    ```
 
 7. To access the Kubernetes dashboard, do the following **on your host machine**:
 
-   - Edit the `/etc/hosts` file to resolve https://dashboard.local. First, open the file by running:
+   - Add `dashboard.local` to your `/etc/hosts` file. For example, use the following command:
 
      ```bash
-      sudo nano /etc/hosts
-     ```
-
-     Then append the following line to the file.
-
-     ```plaintext
-      192.168.56.91 dashboard.local
+     sudo sh -c 'echo "192.168.56.91 dashboard.local >> /etc/hosts'
      ```
 
    - Navigate to https://dashboard.local (note the https) and enter the token displayed in the terminal.
 
      ![Token as shown in the terminal](imgs/terminal_token.png)
 
-     > **Note**: The token is generated in the previous step. If you cannot find the token in the terminal output, run `vagrant ssh ctrl`, followed by `kubectl -n kubernetes-dashboard create token admin-user` to generate a new one.
+     > **Note**: The token was generated during the final provisioning step. If you cannot find the token in the terminal output anymore, run `vagrant ssh ctrl`, followed by `kubectl -n kubernetes-dashboard create token admin-user` to generate a new one.
 
 8. To communicate with the cluster from the host, a kubeconfig file (`admin.conf`) has been exported by Ansible. For example, you can run:
    ```bash
     kubectl get ns --kubeconfig ./provisioning/admin.conf
    ```
-   You can also set the filepath as an environment variable, so that you do not need to use the `--kubeconfig` flag every time:
+   You can also set the filepath as an environment variable or add it to `~/.bashrc`, so that you do not need to use the `--kubeconfig` flag every time:
    ```bash
     export KUBECONFIG="./provisioning/admin.conf"
    ```
@@ -200,7 +191,7 @@ This repository serves as the central point of the project, containing the Docke
 - macOS or Linux (host operating system)
 - [Helm 3 CLI](https://helm.sh/docs/intro/install/)
 - A functional Kubernetes cluster.
-  - See the [Kubernetes Cluster setup](#kubernetes-cluster-setup) instructions above for a VM-based cluster.
+  - See the [Kubernetes Cluster setup](#kubernetes-cluster-setup) instructions above for a VM-based cluster. In the instructions below, it is assumed you already have this cluster up and running.
   - Alternatively, you can install and use [Minikube](https://minikube.sigs.k8s.io/docs/start/) for a local Kubernetes cluster.
 
 ### Install and run
@@ -214,7 +205,7 @@ This repository serves as the central point of the project, containing the Docke
 
 2. Prepare the cluster for app installation.
 
-   1. For **Minikube**, it is recommended to first clean up any previous Minikube instance and launch a new cluster by running the following commands:
+   1. For **Minikube**, it is recommended to first clean up any previous Minikube instance and then launch a new cluster by running the following commands:
 
       ```bash
       minikube delete
@@ -233,60 +224,52 @@ This repository serves as the central point of the project, containing the Docke
       vagrant ssh ctrl
       cd /mnt/shared/
       ```
-3. Install and deploy the Prometheus stack and Istio:
-```bash
+3. Install and deploy Istio and enable sidecar injection in the (default) namespace that our app will be deployed in later:
+
+   ```bash
    helm repo add istio https://istio-release.storage.googleapis.com/charts
    helm repo update
    helm install istio-base istio/base -n istio-system --create-namespace
    helm install istiod istio/istiod -n istio-system 
-   helm install istio-ingress istio/gateway -n istio-system 
+   helm install istio-ingress istio/gateway -n istio-system
+
    kubectl label namespace default istio-injection=enabled
-```
+   ```
 
-
+4. Install and deploy the Prometheus stack (in a different namespace without Istio sidecar injection):
 
    ```bash
    kubectl create namespace monitoring
    kubectl label namespace monitoring istio-injection=disabled
+   
    helm repo add prom-repo https://prometheus-community.github.io/helm-charts
    helm repo update
-   helm install myprom prom-repo/kube-prometheus-stack -n monitoring
+   helm install myprom prom-repo/kube-prometheus-stack -n monitoring \
+       --set prometheus.prometheusSpec.maximumStartupDurationSeconds=120
    ```
 
-4. Install and deploy our application. One of the flags used in this command will differ depending on your cluster setup.
-
-   i. For the **Kubernetes VM cluster**, use `useHostPathSharedFolder=true`:
+5. Install and deploy our application. One of the flags used in this command will differ depending on your cluster setup.
+   
+   i. For **Minikube**, use `useHostPathSharedFolder=false`:
 
    ```bash
    helm install myapp-dev ./helm/myapp \
-      --set app.image.tag=latest \
-      --set model.image.tag=latest \
-      --set model.port=5000 \
-      --set app.port=8080 \
+       --set useHostPathSharedFolder=false
+   ```
+
+   ii. For the **Kubernetes VM cluster**, use `useHostPathSharedFolder=true`:
+
+   ```bash
+   helm install myapp-dev ./helm/myapp \
       --set useHostPathSharedFolder=true
    ```
 
-   ii. For **Minikube**, use `useHostPathSharedFolder=false`:
+   > **Note:** In Values.yaml, `useHostPathSharedFolder` is set to `false` by default.
 
+7. If you make changes to the Helm chart or want to update the deployment, use the following command:
    ```bash
-   helm install myapp-dev ./helm/myapp \
-   --set app.image.tag=latest \
-   --set model.image.tag=latest \
-   --set model.port=5000 \
-   --set app.port=8080 \
-   --set useHostPathSharedFolder=false
+   helm upgrade --install myapp-dev ./helm/myapp
    ```
-
-5. If you make changes to the Helm chart or want to update the deployment, use the following command:
-   ```bash
-   helm upgrade --install myapp-dev ./helm/myapp \
-   --set app.image.tag=latest \
-   --set model.image.tag=latest \
-   --set model.port=5000 \
-   --set app.port=8080 \
-   --set useHostPathSharedFolder=true
-   ```
-   > Do not forget to set `useHostPathSharedFolder` based on your type of cluster (see previous step)
 
 ## App Usage (Minikube)
 
