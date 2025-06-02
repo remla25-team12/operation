@@ -307,6 +307,9 @@ for i in {1..5}; do curl -s -H "Host: myapp.local" http://localhost:8080 ; done
 # Add the host entry (one-time setup)
 sudo sh -c 'echo "127.0.0.1 myapp.local" >> /etc/hosts'
 
+# Check the status of your pods. Make sure that all the pods are running before starting the port-forward
+kubectl get pods
+
 # Start the port-forward
 kubectl port-forward svc/istio-ingress -n istio-system 8080:80
 ```
