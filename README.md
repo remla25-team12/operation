@@ -238,6 +238,9 @@ This repository serves as the central point of the project, containing the Docke
    helm install istio-ingress istio/gateway -n istio-system
    ##################################################################
 
+   # The next line is only for VM cluster
+   istioctl install --set profile=demo -y
+   
    kubectl label namespace default istio-injection=enabled
    ```
 
