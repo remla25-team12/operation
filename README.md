@@ -396,3 +396,13 @@ Our project status for Assignment 4 is as follows:
 | Code Quality                 | **Excellent**   | Our project applies multiple linters and implements at least one custom pylint rule.     |
 | Automated Tests              | **Excellent**   | Test coverage is automatically measured.                                                 |
 | Continuous Training          | **Excellent**   | Test adequacy score and test coverage are added and automatically updated in the README. |
+
+## Assignment 5
+
+For A5, traffic management is implemented. The app defines a Gateway and VirtualServices. Our application is accessible through the IngressGateway. It uses DestinationRules and weights to enable a 90/10 routing of the app service. The versions of model-service and app are consistent. Also, we implemented the Sticky sessions (excellent criteria). These changes are visible on the [operation repository](https://github.com/remla25-team12/operation).
+
+For the purpose of traffic management, new versions for both model-service and app is defined. The new version of model-service uses a logistic classifier model released by model-training repo to make sentiment predictions. Check the [model-training](https://github.com/remla25-team12/model-training) and [model-service](https://github.com/remla25-team12/model-service) repositories for the updates.
+
+On the second version of the app, changes on the Frontend design is introduced. A back button is added on the second page instead of the _analyze another review_ button at the bottom of the page. Also, a placeholder text is added to the review submission box to guide the users in their reviews. Check the [app](https://github.com/remla25-team12/app) repository for the updates.
+
+For documentation, a template documentation file is defined but it only satisfies the sufficient criteria for now.
