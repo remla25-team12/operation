@@ -102,7 +102,23 @@ spec:
   hosts:
   - {{ include "myapp.fullname" . }}-model
   http:
+  - match: #first match is for app labels
+    - sourceLabels:
+        app: {{ include "myapp.name" . }}-app
+        version: v1
+    route:
+    - destination:
+        host: {{ include "myapp.fullname" . }}-model
+        subset: v1
   - match:
+    - sourceLabels:
+        app: {{ include "myapp.name" . }}-app
+        version: v2
+    route:
+    - destination:
+        host: {{ include "myapp.fullname" . }}-model
+        subset: v2
+  - match: #second match is for header
     - headers:
         x-newvers:
           exact: "true"
@@ -110,8 +126,7 @@ spec:
     - destination:
         host: {{ include "myapp.fullname" . }}-model
         subset: v2
-      weight: 100
-  - match:
+  - match:  #third match is fallback to weighted routing
     - headers:
         x-newvers:
           exact: "false"
@@ -119,7 +134,6 @@ spec:
     - destination:
         host: {{ include "myapp.fullname" . }}-model
         subset: v1
-      weight: 100
   - route:
     - destination:
         host: {{ include "myapp.fullname" . }}-model
