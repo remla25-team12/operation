@@ -45,11 +45,11 @@ service:
 istio:
   enabled: true
   modelTrafficSplit:
-    v1Weight: 20
-    v2Weight: 80
+    v1Weight: 100
+    v2Weight: 0
   appTrafficSplit:
-    v1Weight: 80
-    v2Weight: 20
+    v1Weight: 100
+    v2Weight: 0
   ensureVersionConsistency: true
 
 useHostPathSharedFolder: false

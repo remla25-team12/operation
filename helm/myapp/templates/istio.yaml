@@ -24,26 +24,6 @@ spec:
   gateways:
   - {{ include "myapp.fullname" . }}-gateway
   http:
-  - match:
-    - headers:
-        x-newvers:
-          exact: "true"
-    route:
-    - destination:
-        host: {{ include "myapp.fullname" . }}-app
-        subset: v2
-        port:
-          number: {{ .Values.app.port }}
-  - match:
-    - headers:
-        x-newvers:
-          exact: "false"
-    route:
-    - destination:
-        host: {{ include "myapp.fullname" . }}-app
-        subset: v1
-        port:
-          number: {{ .Values.app.port }}
   - route:
     - destination:
         host: {{ include "myapp.fullname" . }}-app
@@ -73,8 +53,7 @@ spec:
       version: v2
   trafficPolicy:
     loadBalancer:
-      consistentHash:
-        httpHeaderName: x-newvers
+      simple: ROUND_ROBIN
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
@@ -89,10 +68,7 @@ spec:
   - name: v2
     labels:
       version: v2
-  trafficPolicy:
-    loadBalancer:
-      consistentHash:
-        httpHeaderName: x-newvers
+
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
@@ -102,7 +78,7 @@ spec:
   hosts:
   - {{ include "myapp.fullname" . }}-model
   http:
-  - match: #first match is for app labels
+  - match:
     - sourceLabels:
         app: {{ include "myapp.name" . }}-app
         version: v1
@@ -118,22 +94,6 @@ spec:
     - destination:
         host: {{ include "myapp.fullname" . }}-model
         subset: v2
-  - match: #second match is for header
-    - headers:
-        x-newvers:
-          exact: "true"
-    route:
-    - destination:
-        host: {{ include "myapp.fullname" . }}-model
-        subset: v2
-  - match:  #third match is fallback to weighted routing
-    - headers:
-        x-newvers:
-          exact: "false"
-    route:
-    - destination:
-        host: {{ include "myapp.fullname" . }}-model
-        subset: v1
   - route:
     - destination:
         host: {{ include "myapp.fullname" . }}-model
