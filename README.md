@@ -249,7 +249,7 @@ To access the deployed application, you need to be able to resolve `myapp.local`
    ```
    > The IP is not fixed: if you restart the cluster, it may have changed, so always check that the EXTERNAL-IP and what's in your host file match. Making IP fixed is TODO (excellent requirement)
 
-- On **Minikube**, we must use a port-forward, so `INGRESS_IP=127.0.0.1` (localhost):
+- On **Minikube**, we use a port-forward, so the IP is `127.0.0.1` (localhost):
    ```bash
    sudo sh -c 'echo "127.0.0.1   myapp.local" >> /etc/hosts'
    kubectl port-forward svc/istio-ingressgateway -n istio-system 8080:80
