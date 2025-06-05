@@ -238,8 +238,8 @@ This repository serves as the central point of the project, containing the Docke
    $ helm upgrade --install myapp-dev ./helm/myapp
    ```
 
-## Usage 
-### Webapp access
+# Usage 
+## Webapp access
 
 To access the deployed application, you need to be able to resolve `myapp.local`. Which IP to use depends on your cluster:
 
@@ -260,7 +260,7 @@ Metrics are available at http://myapp.local/metrics
 <!--If you see "no healthy upstream", please wait for the app pods to initialize. Check with `kubectl get pods`.-->
 
 
-### Traffic management
+## Traffic management
 To test the traffic management and primary/canary release routing, you can use curl with Host header:
 
 ```bash
@@ -279,7 +279,7 @@ for i in {1..5}; do curl -s -H "Host: myapp.local" http://localhost:8080 ; done
 ```
 > Replace https://localhost:8080 with the EXTERNAL-IP of the IngressGateway if you're on VM Cluster instead of Minikube.
 
-### Prometheus and Grafana
+## Prometheus and Grafana
 Access Prometeus at http://localhost:9090 (or the Minikube URL) on your host machine:
 ```bash
 # VM cluster:
