@@ -4,11 +4,7 @@
   become: yes
   become_user: vagrant
   vars:
-    loadBalancerIP: 
-    architectures: 192.168.56.91
-      x86_64: amd64
-      aarch64: arm64
-      armv7l: armv7
+    loadBalancerIP: 192.168.56.91
     venv_path: /opt/ansible-venv
     ansible_python_interpreter: "{{ venv_path }}/bin/python"
     dashboard_admin_yaml: | 
@@ -189,19 +185,19 @@
           - ">> Go to https://dashboard.local and enter the following token: {{ dashboard_token.stdout }}"
 
     # Step 23: Install Istio
-    - name: Set Istio architecture (arm64 or amd64)
+    - name: Determine cluster architecture (arm64 or amd64)
       ansible.builtin.set_fact:
         istio_arch: >-
-          {{ 'arm64' if 'aarch64' in arch_result.stdout else
-            'amd64' if 'x86_64' in arch_result.stdout else
+          {{ 'arm64' if 'aarch64' in ansible_architecture else
+            'amd64' if 'x86_64' in ansible_architecture else
             'unsupported' }}
 
-    - name: Fail if architecture is unsupported
+    - name: Fail if architecture is unsupported by Istio
       ansible.builtin.fail:
         msg: "Unsupported system architecture: {{ arch_result.stdout }}. Istio only supports arm64 and amd64"
       when: istio_arch == 'unsupported'
       
-    - name: Download Istio 1.25.2 for detected architecture
+    - name: Download Istio 1.25.2 for {{istio_arch}}
       ansible.builtin.get_url:
         url: "https://github.com/istio/istio/releases/download/1.25.2/istio-1.25.2-linux-{{ istio_arch }}.tar.gz"
         dest: /tmp/istio.tar.gz
@@ -224,9 +220,24 @@
         insertafter: EOF
         state: present
 
-    - name: Run istioctl install (demo profile)
+    - name: Install Istio default profile (may take a while)
       shell: |
-        istioctl install --set profile=demo -y
-      # args:
-      #   creates: /home/vagrant/istio-1.25.2/manifests
+        export PATH=$PATH:/home/vagrant/istio-1.25.2/bin
+        istioctl install --set profile=default -y
+      register: istio_result
+
+    - name: Get istioctl version
+      shell: |
+        export PATH=$PATH:/home/vagrant/istio-1.25.2/bin
+        istioctl version
+      register: istioctl_version
+
+    - name: Confirm successful Istio installation
+      debug:
+        msg: 
+          - "Result of Istio installation:"
+          - "{{ istio_result.stdout_lines }}, {{ istio_result.stderr }},"
+          - "{{ istioctl_version.stdout_lines }}"
+
+
 
