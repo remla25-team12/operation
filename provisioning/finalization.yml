@@ -4,7 +4,7 @@
   become: yes
   become_user: vagrant
   vars:
-    loadBalancerIP: 192.168.56.91
+    dashboard_ingress_fixed_ip: 192.168.56.91
     venv_path: /opt/ansible-venv
     ansible_python_interpreter: "{{ venv_path }}/bin/python"
     dashboard_admin_yaml: | 
@@ -50,6 +50,7 @@
                       name: kubernetes-dashboard-kong-proxy
                       port:
                         number: 443
+
 
   tasks:
     # Step 20 - Install MetalLB
@@ -125,7 +126,7 @@
         values:
           controller:
             service:
-              loadBalancerIP: "{{ loadBalancerIP }}"
+              loadBalancerIP: "{{ dashboard_ingress_fixed_ip }}"
 
     # Step 22: Install Kubernetes Dashboard
     - name: "Add Kubernetes dashboard repository"
@@ -181,7 +182,7 @@
       debug:
         msg: 
           - "Kubernetes dashboard ready. Next steps:"
-          - ">> Add the line '{{ loadBalancerIP }} dashboard.local' to your host's hostfile"
+          - ">> Add the line '{{ dashboard_ingress_fixed_ip }} dashboard.local' to your host's hostfile"
           - ">> Go to https://dashboard.local and enter the following token: {{ dashboard_token.stdout }}"
 
     # Step 23: Install Istio
@@ -226,18 +227,11 @@
         istioctl install --set profile=default -y
       register: istio_result
 
-    - name: Get istioctl version
-      shell: |
-        export PATH=$PATH:/home/vagrant/istio-1.25.2/bin
-        istioctl version
-      register: istioctl_version
-
     - name: Confirm successful Istio installation
       debug:
         msg: 
           - "Result of Istio installation:"
           - "{{ istio_result.stdout_lines }}, {{ istio_result.stderr }},"
-          - "{{ istioctl_version.stdout_lines }}"
 
 
 
