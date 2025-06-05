@@ -18,30 +18,33 @@ REMLA Group 12
       <a href="#getting-started">Getting Started</a>
       <ul>
         <li><a href="#deployment-with-docker">Deployment with Docker</a></li>
-        <!-- <ul>
-          <li><a href="#prerequisites-for-docker">Prerequisites</a></li>
-          <li><a href="#install-and-run-with-docker">Install and run</a></li>
-        </ul> -->
         <li><a href="#kubernetes-cluster-setup">Kubernetes Cluster setup</a></li>
         <li><a href="#deployment-on-kubernetes-cluster-helm">Deployment on Kubernetes Cluster (Helm)</a></li>
       </ul>
     </li>
-    <li><a href="#app-usage-minikube">App Usage (Minikube)</a></li>
+    <li><a href="#usage">Usage</a></li>
+         <ul>
+        <li><a href="#webapp-access">Webapp Access</a></li>
+        <li><a href="#traffic-management">Traffic Management</a></li>
+        <li><a href="#prometheus-and-grafana">Prometheus and Grafana</a></li>
+      </ul>
     <li><a href="#continuous-progress-log">Continuous Progress Log</a></li>
       <ul>
         <li><a href="#assignment-1">Assignment 1</a></li>
         <li><a href="#assignment-2">Assignment 2</a></li>
         <li><a href="#assignment-3">Assignment 3</a></li>
+        <li><a href="#assignment-4">Assignment 4</a></li>
+        <li><a href="#assignment-5">Assignment 5</a></li>
       </ul>
   </ol>
 </details>
 
-# About the Project
+# 1. About the Project
 
 This is an adaptation and application of the [Restaurant Sentiment Analysis](https://github.com/proksch/restaurant-sentiment) project.
 This repository serves as the central point of the project, containing the Docker and Kubernetes deployment configurations, installation instructions, and links to other relevant components and repositories.
 
-## Relevant Repositories
+## 1.1 Relevant Repositories
 
 | Repository                                                         | Purpose                                                                                   |
 | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
@@ -55,7 +58,7 @@ This repository serves as the central point of the project, containing the Docke
 
 # Getting Started
 
-## Deployment with Docker
+## Deployment with Docker 
 
 ### Prerequisites
 
@@ -190,9 +193,10 @@ This repository serves as the central point of the project, containing the Docke
 
 - macOS or Linux (host operating system)
 - [Helm 3 CLI](https://helm.sh/docs/intro/install/)
+- [Istioctl](https://istio.io/latest/docs/setup/install/istioctl/) 1.25.2 or higher
 - A functional Kubernetes cluster.
-  - See the [Kubernetes Cluster setup](#kubernetes-cluster-setup) instructions above for a VM-based cluster. In the instructions below, it is assumed you already have this cluster up and running.
-  - Alternatively, you can install and use [Minikube](https://minikube.sigs.k8s.io/docs/start/) for a local Kubernetes cluster.
+  - Recommended: VM cluster from the [Kubernetes Cluster setup](#kubernetes-cluster-setup) section. In the instructions below, it is assumed you already have this cluster up and running.
+  - Alternatively, you can install and use [Minikube](https://minikube.sigs.k8s.io/docs/start/) for a local Kubernetes cluster. 
 
 ### Install and run
 
@@ -205,12 +209,19 @@ This repository serves as the central point of the project, containing the Docke
 
 2. Prepare the cluster for app installation.
 
-   1. For **Minikube**, it is recommended to first clean up any previous Minikube instance and then launch a new cluster by running the following commands:
+   1. For the **Kubernetes VM cluster**, SSH into the control node and navigate to the shared folder directory.
+      ```bash
+      vagrant ssh ctrl
+      cd /mnt/shared/
+      ```
+
+   2. For **Minikube**, it is recommended to first clean up any previous Minikube instance and then launch a new cluster by running the following commands:
 
       ```bash
       minikube delete
       minikube start --memory=4096 --cpus=4 --driver=docker
       minikube addons enable ingress
+      istioctl install --set profile=default -y 
       ```
 
       > **Note:** If you are using Fedora, you may need to run the following command first to allow Minikube to use the Docker driver:
@@ -219,28 +230,9 @@ This repository serves as the central point of the project, containing the Docke
       sudo setenforce 0
       ```
 
-   2. For the **Kubernetes VM cluster**, SSH into the control node and navigate to the shared folder directory.
-      ```bash
-      vagrant ssh ctrl
-      cd /mnt/shared/
-      ```
-
-3. Install and deploy Istio and enable sidecar injection in the (default) namespace that our app will be deployed in later:
+3. Enable Istio sidecar injection in the (default) namespace:
 
    ```bash
-   ##################################################################
-   # This codeblock is only needed for Minikube because K8s
-   # provisioning already installs all required istio components
-   helm repo add istio https://istio-release.storage.googleapis.com/charts
-   helm repo update
-   helm install istio-base istio/base -n istio-system --create-namespace
-   helm install istiod istio/istiod -n istio-system 
-   helm install istio-ingress istio/gateway -n istio-system
-   ##################################################################
-
-   # The next line is only for VM cluster
-   istioctl install --set profile=demo -y
-
    kubectl label namespace default istio-injection=enabled
    ```
 
@@ -257,66 +249,55 @@ This repository serves as the central point of the project, containing the Docke
    ```
 
 5. Install and deploy our application. One of the flags used in this command will differ depending on your cluster setup.
-   
-   i. For **Minikube**, use `useHostPathSharedFolder=false`:
-
-   ```bash
-   helm install myapp-dev ./helm/myapp \
-       --set useHostPathSharedFolder=false
-   ```
-
-   ii. For the **Kubernetes VM cluster**, use `useHostPathSharedFolder=true`:
-
+   i. For the **Kubernetes VM cluster**, use `useHostPathSharedFolder=true`:
    ```bash
    helm install myapp-dev ./helm/myapp \
       --set useHostPathSharedFolder=true
    ```
-
    > **Note:** In Values.yaml, `useHostPathSharedFolder` is set to `false` by default.
+
+      
+   ii. For **Minikube**, use `useHostPathSharedFolder=false`:
+   ```bash
+   helm install myapp-dev ./helm/myapp \
+       --set useHostPathSharedFolder=false
+   ```
 
 7. If you make changes to the Helm chart or want to update the deployment, use the following command:
    ```bash
    helm upgrade --install myapp-dev ./helm/myapp
    ```
 
-## App Usage (VM Cluster, recommended)
-### Webapp
-To access the deployed application, you must add `myapp.local` to your `/etc/hosts` file. Run `kubectl get svc istio-ingressgateway -n istio-system` to find the EXTERNAL-IP. For example, you may need to add `192.168.56.92  myapp.local`
-   > Make sure you only have 1 entry for myapp.local in your hosts file!
+## Usage 
+### Webapp access
+**VM Cluster**\
+To access the deployed application, you must add `myapp.local` to your hosts file. 
+- Run `kubectl get svc istio-ingressgateway -n istio-system` 
+- Take note of the EXTERNAL-IP. 
+- Add `EXTERNAL-IP  myapp.local` to your hosts file.
+   > The IP is not fixed: if you restart the cluster, it may have changed, so always check that the EXTERNAL-IP and what's in your host file match. Making IP fixed is TODO (excellent requirement)
 
 Then access the application at http://myapp.local
-
 Metrics are available at http://myapp.local/metrics
 
-### Prometheus & Grafana
-Access Grafana by running the following **on your host**:
+**Minikube**\
+Minikube requires a port forward, so to access the deployed application, you must add `127.0.0.1 myapp.local` to your hosts file.
+
 ```bash
-export POD_NAME=$(kubectl --namespace monitoring get pod -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=myprom" -oname)
-kubectl --namespace monitoring port-forward $POD_NAME 3000:3000
+# Add the host entry (one-time setup)
+sudo sh -c 'echo "127.0.0.1 myapp.local" >> /etc/hosts'
+
+# Start the port-forward
+kubectl port-forward svc/istio-ingressgateway -n istio-system 8080:80
 ```
-Then navigate to http://localhost:3000. As the username, enter `admin`. The password can be generated with:
-```bash
-kubectl --namespace monitoring get secrets myprom-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo
-```
+Then access the application at http://localhost:8080
+Metrics are available at http://localhost:8080/metrics
 
-The dashboard configuration (`helm/myapp/grafana/dashboard.json`) is automatically imported through a ConfigMap, so no manual installation is required. Simply go to the Dashboards tab in Grafana and load the 'Restaurant sentiment analysis' dashboard:
-
-![Grafana dashboards tab showing our dashboard](imgs/grafana_load_dashboard.png)
-
-It should look like this:
-
-![Grafana dashboard](imgs/grafana_dashboard.png)
-
-## App Usage (Minikube)
-
-### Webapp
-
-To access the deployed application, you have two options:
-
-1. Using curl with Host header:
+### Traffic management
+To test the traffic management and primary/canary release routing, you can use curl with Host header:
 ```bash
 # First, port-forward the Istio ingress
-kubectl port-forward svc/istio-ingress -n istio-system 8080:80
+kubectl port-forward svc/istio-ingressgateway -n istio-system 8080:80
 
 # Then in another terminal:
 # For sticky session to v2 (always v2):
@@ -328,42 +309,52 @@ for i in {1..5}; do curl -s -H "Host: myapp.local" -H "x-newvers: false" -H "x-u
 # For normal split (as defined in values.yaml), just omit x-newvers:
 for i in {1..5}; do curl -s -H "Host: myapp.local" http://localhost:8080 ; done
 ```
+> Replace https://localhost:8080 with the EXTERNAL-IP of the IngressGateway if you're on VM Cluster instead of Minikube.
 
-2. For browser access (recommended):
+#### Prometheus and Grafana
+**VM Cluster**
+Access Prometeus by [TODO]
 ```bash
-# Add the host entry (one-time setup)
-sudo sh -c 'echo "127.0.0.1 myapp.local" >> /etc/hosts'
 
-# Start the port-forward
-kubectl port-forward svc/istio-ingress -n istio-system 8080:80
+
 ```
-Then access the application at http://myapp.local:8080
 
-Metrics are available at http://myapp.local:8080/metrics
 
-### Prometheus & Grafana
+Access Grafana by running the following **on your host**:
+```bash
+export POD_NAME=$(kubectl --namespace monitoring get pod -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=myprom" -oname)
+kubectl --namespace monitoring port-forward $POD_NAME 3000:3000
+```
+Then navigate to http://localhost:3000. 
 
-To access Prometheus, use the URL generated by the following command:
+Grafana login credentials:
+- Username: `admin`
+- Password: Run `kubectl --namespace monitoring get secrets myprom-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo`
+
+
+The dashboard configuration (`helm/myapp/grafana/dashboard.json`) is automatically imported through a ConfigMap, so no manual installation is required. Simply go to the Dashboards tab in Grafana and load the 'Restaurant sentiment analysis' dashboard:
+
+![Grafana dashboards tab showing our dashboard](imgs/grafana_load_dashboard.png)
+
+It should look like this:
+
+![Grafana dashboard](imgs/grafana_dashboard.png)
+
+
+**Minikube**
+Access Prometheus through the URL generated by the following command:
 
 ```bash
 minikube service myprom-kube-prometheus-sta-prometheus --url
 ```
 
-<!-->
-> There should be a ServiceMonitor/default/myapp-dev-myapp/0 under status->TargetHealth that is greent/up.
-<-->
-
-To access Grafana, use the URL generated by the following command:
+Access Grafana through the URL generated by the following command:
 
 ```bash
 minikube service myprom-grafana --url
 ```
 
----
-
 # Continuous Progress Log
-
-_Add a new paragraph for each assignment as a continuous progress log that (briefly) describes which assignment parts have been implemented to support the peer-review process._
 
 ## Assignment 1
 
@@ -403,3 +394,6 @@ Our project status for Assignment 4 is as follows:
 | Code Quality                 | **Excellent**   | Our project applies multiple linters and implements at least one custom pylint rule.     |
 | Automated Tests              | **Excellent**   | Test coverage is automatically measured.                                                 |
 | Continuous Training          | **Excellent**   | Test adequacy score and test coverage are added and automatically updated in the README. |
+
+## Assignment 5
+...

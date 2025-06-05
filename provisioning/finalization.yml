@@ -4,6 +4,11 @@
   become: yes
   become_user: vagrant
   vars:
+    loadBalancerIP: 
+    architectures: 192.168.56.91
+      x86_64: amd64
+      aarch64: arm64
+      armv7l: armv7
     venv_path: /opt/ansible-venv
     ansible_python_interpreter: "{{ venv_path }}/bin/python"
     dashboard_admin_yaml: | 
@@ -124,7 +129,7 @@
         values:
           controller:
             service:
-              loadBalancerIP: 192.168.56.91
+              loadBalancerIP: "{{ loadBalancerIP }}"
 
     # Step 22: Install Kubernetes Dashboard
     - name: "Add Kubernetes dashboard repository"
@@ -180,13 +185,25 @@
       debug:
         msg: 
           - "Kubernetes dashboard ready. Next steps:"
-          - ">> Add the line '192.168.56.91 dashboard.local' to your host's hostfile"
+          - ">> Add the line '{{ loadBalancerIP }} dashboard.local' to your host's hostfile"
           - ">> Go to https://dashboard.local and enter the following token: {{ dashboard_token.stdout }}"
 
     # Step 23: Install Istio
-    - name: Download Istio 1.25.2
-      get_url:
-        url: https://github.com/istio/istio/releases/download/1.25.2/istio-1.25.2-linux-amd64.tar.gz
+    - name: Set Istio architecture (arm64 or amd64)
+      ansible.builtin.set_fact:
+        istio_arch: >-
+          {{ 'arm64' if 'aarch64' in arch_result.stdout else
+            'amd64' if 'x86_64' in arch_result.stdout else
+            'unsupported' }}
+
+    - name: Fail if architecture is unsupported
+      ansible.builtin.fail:
+        msg: "Unsupported system architecture: {{ arch_result.stdout }}. Istio only supports arm64 and amd64"
+      when: istio_arch == 'unsupported'
+      
+    - name: Download Istio 1.25.2 for detected architecture
+      ansible.builtin.get_url:
+        url: "https://github.com/istio/istio/releases/download/1.25.2/istio-1.25.2-linux-{{ istio_arch }}.tar.gz"
         dest: /tmp/istio.tar.gz
         mode: '0644'
       become: true
