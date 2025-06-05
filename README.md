@@ -200,7 +200,7 @@ This repository serves as the central point of the project, containing the Docke
 
 ### Install and run
 
-1. Clone this repository and navigate into the root folder:
+1. Clone this repository and navigate into the root folder (if you haven't done so already):
 
    ```bash
    git clone https://github.com/remla25-team12/operation.git
@@ -249,18 +249,14 @@ This repository serves as the central point of the project, containing the Docke
    ```
 
 5. Install and deploy our application. One of the flags used in this command will differ depending on your cluster setup.
-   i. For the **Kubernetes VM cluster**, use `useHostPathSharedFolder=true`:
+   i. For the **Kubernetes VM cluster**, simply use:
    ```bash
-   helm install myapp-dev ./helm/myapp \
-      --set useHostPathSharedFolder=true
+   helm install myapp-dev ./helm/myapp 
    ```
-   > **Note:** In Values.yaml, `useHostPathSharedFolder` is set to `false` by default.
-
       
-   ii. For **Minikube**, use `useHostPathSharedFolder=false`:
+   ii. For **Minikube**, you must disable the shared folder which is only used by the VM cluster:
    ```bash
-   helm install myapp-dev ./helm/myapp \
-       --set useHostPathSharedFolder=false
+   helm install myapp-dev ./helm/myapp --set useHostPathSharedFolder=false
    ```
 
 7. If you make changes to the Helm chart or want to update the deployment, use the following command:
@@ -279,6 +275,7 @@ To access the deployed application, you must add `myapp.local` to your hosts fil
 
 Then access the application at http://myapp.local
 Metrics are available at http://myapp.local/metrics
+<!--If you see "no healthy upstream", please wait for the app pods to initialize. Check with `kubectl get pods`.-->
 
 **Minikube**\
 Minikube requires a port forward, so to access the deployed application, you must add `127.0.0.1 myapp.local` to your hosts file.
