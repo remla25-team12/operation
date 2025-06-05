@@ -182,7 +182,7 @@ This repository serves as the central point of the project, containing the Docke
    ```
    You can also set the filepath as an environment variable or add it to `~/.bashrc`, so that you do not need to use the `--kubeconfig` flag every time:
    ```bash
-    export KUBECONFIG="./provisioning/admin.conf"
+   export KUBECONFIG="./provisioning/admin.conf"
    ```
 
 ---
@@ -202,7 +202,7 @@ This repository serves as the central point of the project, containing the Docke
 
 1. Clone this repository and navigate into the root folder (if you haven't done so already):
 
-   ```bash
+   ```shell
    git clone https://github.com/remla25-team12/operation.git
    cd operation
    ```
@@ -210,14 +210,14 @@ This repository serves as the central point of the project, containing the Docke
 2. Prepare the cluster for app installation.
 
    1. For the **Kubernetes VM cluster**, SSH into the control node and navigate to the shared folder directory.
-      ```bash
+      ```shell
       vagrant ssh ctrl
-      cd /mnt/shared/
+      $ cd /mnt/shared/
       ```
 
    2. For **Minikube**, it is recommended to first clean up any previous Minikube instance and then launch a new cluster by running the following commands:
 
-      ```bash
+      ```shell
       minikube delete
       minikube start --memory=4096 --cpus=4 --driver=docker
       minikube addons enable ingress
@@ -226,69 +226,64 @@ This repository serves as the central point of the project, containing the Docke
 
       > **Note:** If you are using Fedora, you may need to run the following command first to allow Minikube to use the Docker driver:
 
-      ```bash
+      ```shell
       sudo setenforce 0
       ```
 
 3. Enable Istio sidecar injection in the (default) namespace:
 
-   ```bash
-   kubectl label namespace default istio-injection=enabled
+   ```shell
+   $ kubectl label namespace default istio-injection=enabled
    ```
 
 4. Install and deploy the Prometheus stack (in a different namespace, without Istio sidecar injection):
 
    ```bash
-   kubectl create namespace monitoring
-   kubectl label namespace monitoring istio-injection=disabled
+   $ kubectl create namespace monitoring
+   $ kubectl label namespace monitoring istio-injection=disabled
    
-   helm repo add prom-repo https://prometheus-community.github.io/helm-charts
-   helm repo update
-   helm install myprom prom-repo/kube-prometheus-stack -n monitoring \
-       --set prometheus.prometheusSpec.maximumStartupDurationSeconds=120
+   $ helm repo add prom-repo https://prometheus-community.github.io/helm-charts
+   $ helm repo update
+   $ helm install myprom prom-repo/kube-prometheus-stack -n monitoring --set prometheus.prometheusSpec.maximumStartupDurationSeconds=120
    ```
 
 5. Install and deploy our application. One of the flags used in this command will differ depending on your cluster setup.
    i. For the **Kubernetes VM cluster**, simply use:
    ```bash
-   helm install myapp-dev ./helm/myapp 
+   $ helm install myapp-dev ./helm/myapp  # Run this from /mnt/shared
    ```
       
-   ii. For **Minikube**, you must disable the shared folder which is only used by the VM cluster:
+   ii. For **Minikube**, you must disable the VM shared folder:
    ```bash
    helm install myapp-dev ./helm/myapp --set useHostPathSharedFolder=false
    ```
 
 7. If you make changes to the Helm chart or want to update the deployment, use the following command:
    ```bash
-   helm upgrade --install myapp-dev ./helm/myapp
+   $ helm upgrade --install myapp-dev ./helm/myapp
    ```
 
 ## Usage 
 ### Webapp access
-**VM Cluster**\
-To access the deployed application, you must add `myapp.local` to your hosts file. 
-- Run `kubectl get svc istio-ingressgateway -n istio-system` 
-- Take note of the EXTERNAL-IP. 
-- Add `EXTERNAL-IP  myapp.local` to your hosts file.
+
+To access the deployed application, you need to be able to resolve `myapp.local`. Which IP to use depends on your cluster:
+
+-  For the **VM Cluster**, first run `kubectl get svc istio-ingressgateway -n istio-system` to find the EXTERNAL-IP. Then run the following **on your host** (not the ctrl node):
+   ```bash
+   sudo sh -c 'echo "<EXTERNAL-IP>   myapp.local" >> /etc/hosts'
+   ```
    > The IP is not fixed: if you restart the cluster, it may have changed, so always check that the EXTERNAL-IP and what's in your host file match. Making IP fixed is TODO (excellent requirement)
+
+- On **Minikube**, we must use a port-forward, so `INGRESS_IP=127.0.0.1` (localhost):
+   ```bash
+   sudo sh -c 'echo "127.0.0.1   myapp.local" >> /etc/hosts'
+   kubectl port-forward svc/istio-ingressgateway -n istio-system 8080:80
+   ```
 
 Then access the application at http://myapp.local
 Metrics are available at http://myapp.local/metrics
 <!--If you see "no healthy upstream", please wait for the app pods to initialize. Check with `kubectl get pods`.-->
 
-**Minikube**\
-Minikube requires a port forward, so to access the deployed application, you must add `127.0.0.1 myapp.local` to your hosts file.
-
-```bash
-# Add the host entry (one-time setup)
-sudo sh -c 'echo "127.0.0.1 myapp.local" >> /etc/hosts'
-
-# Start the port-forward
-kubectl port-forward svc/istio-ingressgateway -n istio-system 8080:80
-```
-Then access the application at http://localhost:8080
-Metrics are available at http://localhost:8080/metrics
 
 ### Traffic management
 To test the traffic management and primary/canary release routing, you can use curl with Host header:
