@@ -18,8 +18,8 @@ REMLA Group 12
       <a href="#getting-started">Getting Started</a>
       <ul>
         <li><a href="#deployment-with-docker">Deployment with Docker</a></li>
-        <li><a href="#kubernetes-cluster-setup">Kubernetes Cluster setup</a></li>
-        <li><a href="#deployment-on-kubernetes-cluster-helm">Deployment on Kubernetes Cluster (Helm)</a></li>
+        <li><a href="#provisioning-the-kubernetes-cluster">Provisioning the Kubernetes Cluster</a></li>
+        <li><a href="#deployment-on-kubernetes-cluster">Deployment on Kubernetes Cluster</a></li>
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
@@ -39,12 +39,12 @@ REMLA Group 12
   </ol>
 </details>
 
-# 1. About the Project
+# About the Project
 
 This is an adaptation and application of the [Restaurant Sentiment Analysis](https://github.com/proksch/restaurant-sentiment) project.
 This repository serves as the central point of the project, containing the Docker and Kubernetes deployment configurations, installation instructions, and links to other relevant components and repositories.
 
-## 1.1 Relevant Repositories
+## Relevant Repositories
 
 | Repository                                                         | Purpose                                                                                   |
 | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
@@ -68,6 +68,7 @@ This repository serves as the central point of the project, containing the Docke
 ### Install and Run
 
 1. Clone this repository and navigate into the root folder.
+
    ```bash
    git clone https://github.com/remla25-team12/operation.git
    cd operation
@@ -80,7 +81,6 @@ This repository serves as the central point of the project, containing the Docke
    ```
 
 3. Navigate to http://localhost:8080 to access the application homepage.
-   
 4. When you're done, stop the running containers and clean up resources.
    ```bash
    docker compose down
@@ -88,7 +88,7 @@ This repository serves as the central point of the project, containing the Docke
 
 ---
 
-## Kubernetes Cluster setup
+## Provisioning the Kubernetes Cluster
 
 ### Prerequisites
 
@@ -112,45 +112,20 @@ This repository serves as the central point of the project, containing the Docke
     ansible-galaxy collection install -r requirements.yml
    ```
 
-3. Before continuing, it is important to reset the host-only networks in VirtualBox. This prevents conflicts with stale or broken network configurations from previous VirtualBox setups.
+3. Before continuing, you may want to reset the host-only networks in VirtualBox. For some users, this prevents conflicts with stale or broken network configurations from previous VirtualBox setups.
    To do this, **open the VirtualBox GUI**, go to `Tools > Network`, and **remove any existing "Host-only Networks"** listed under that section. The list should now be empty:
    ![Empty host-only adapter list](imgs/vb_empty.png)
 
-4. Register SSH Key
-
-   Follow the below steps to register your SSH key:
-
-   <!-- - Let's say my name is: **abc**.
-   - Add SSH key under the directory **provisioning/keys/abc.pub**. The format of the file should be: **“abc_key: <my_ssh_key>”**.
-   - Run the encryption command, replacing abc with your name:
-     ```bash
-      ansible-vault encrypt provisioning/keys/abc.pub
-     ```
-   - When prompted, the vault password you need to use is: **remla25-team12-vagrant**.
-   - Then save the password file in your home directory with the following commands, as it is accessed by the Vagrantfile:
-     ```bash
-      echo 'remla25-team12-vagrant' > ~/.vault_pass.txt
-      chmod 600 ~/.vault_pass.txt
-     ``` -->
-
-   First generate the key:
+4. For convenient SSH access to the VMs in later steps, add your public SSH key (ends in`.pub`) to the `./provisioning/keys` folder:
 
    ```bash
-    ssh-keygen -t rsa -b 4096 -f ~/.ssh/ansible-provision-key -C "ansible provision key"
+    cp ~/.ssh/<your_key>.pub provisioning/keys/<your_key>.pub
    ```
 
-   Move your public key to provisioning/keys folder with your name:
+5. Start the provisioning process from the repository's root folder:
 
    ```bash
-    mv ~/.ssh/ansible-provision-key.pub provisioning/keys/<name>-key.pub
-   ```
-
-5. Start the virtual environment from the repository's root folder:
-
-   ```bash
-    cd operation
-    vagrant up
-    vagrant provision
+    vagrant up --provision
    ```
 
    This operation may take a while to complete.
@@ -159,12 +134,12 @@ This repository serves as the central point of the project, containing the Docke
 
    ```bash
     ansible-playbook -u vagrant -i 192.168.56.100, provisioning/finalization.yml \
-    --private-key=.vagrant/machines/ctrl/virtualbox/private_key 
+    --private-key=.vagrant/machines/ctrl/virtualbox/private_key
    ```
 
 7. To access the Kubernetes dashboard, do the following **on your host machine**:
 
-   - Add `dashboard.local` to your `/etc/hosts` file. For example, use the following command:
+   - Add `192.168.56.91 dashboard.local` to your `/etc/hosts` file. For example, use the following command:
 
      ```bash
      sudo sh -c 'echo "192.168.56.91 dashboard.local >> /etc/hosts'
@@ -187,7 +162,7 @@ This repository serves as the central point of the project, containing the Docke
 
 ---
 
-## Deployment on Kubernetes Cluster (Helm)
+## Deployment on Kubernetes Cluster
 
 ### Prerequisites
 
@@ -195,7 +170,7 @@ This repository serves as the central point of the project, containing the Docke
 - [Helm 3 CLI](https://helm.sh/docs/intro/install/)
 - [Istioctl](https://istio.io/latest/docs/setup/install/istioctl/) 1.25.2 or higher
 - A functional Kubernetes cluster.
-  - Recommended: VM cluster from the [Kubernetes Cluster setup](#kubernetes-cluster-setup) section. In the instructions below, it is assumed you already have this cluster up and running.
+  - Recommended: VM cluster from the [Provisioning the Kubernetes Cluster](#provisioning-the-kubernetes-cluster) section. In the instructions below, it is assumed you already have this cluster up and running.
   - Alternatively, you can install and use [Minikube](https://minikube.sigs.k8s.io/docs/start/) for a local Kubernetes cluster. 
 
 ### Install and run
@@ -250,7 +225,7 @@ This repository serves as the central point of the project, containing the Docke
 5. Install and deploy our application. One of the flags used in this command will differ depending on your cluster setup.
    i. For the **Kubernetes VM cluster**, simply use:
    ```bash
-   $ helm install myapp-dev ./helm/myapp  # Run this from /mnt/shared
+   $ helm install myapp-dev ./helm/myapp  # Make sure you are inside /mnt/shared
    ```
       
    ii. For **Minikube**, you must disable the VM shared folder:
@@ -268,7 +243,7 @@ This repository serves as the central point of the project, containing the Docke
 
 To access the deployed application, you need to be able to resolve `myapp.local`. Which IP to use depends on your cluster:
 
--  For the **VM Cluster**, first run `kubectl get svc istio-ingressgateway -n istio-system` to find the EXTERNAL-IP. Then run the following **on your host** (not the ctrl node):
+-  For the **VM Cluster**, first run `kubectl get svc istio-ingressgateway -n istio-system` to find the EXTERNAL-IP. Then run the following **on your host machine** (not the ctrl node):
    ```bash
    sudo sh -c 'echo "<EXTERNAL-IP>   myapp.local" >> /etc/hosts'
    ```
@@ -287,6 +262,7 @@ Metrics are available at http://myapp.local/metrics
 
 ### Traffic management
 To test the traffic management and primary/canary release routing, you can use curl with Host header:
+
 ```bash
 # First, port-forward the Istio ingress
 kubectl port-forward svc/istio-ingressgateway -n istio-system 8080:80
@@ -311,8 +287,7 @@ Access Prometeus by [TODO]
 
 ```
 
-
-Access Grafana by running the following **on your host**:
+Access Grafana by running the following **on your host machine**:
 ```bash
 export POD_NAME=$(kubectl --namespace monitoring get pod -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=myprom" -oname)
 kubectl --namespace monitoring port-forward $POD_NAME 3000:3000
@@ -388,4 +363,22 @@ Our project status for Assignment 4 is as follows:
 | Continuous Training          | **Excellent**   | Test adequacy score and test coverage are added and automatically updated in the README. |
 
 ## Assignment 5
-...
+
+For A5, traffic management is implemented. The app defines a Gateway and VirtualServices. Our application is accessible through the IngressGateway. It uses DestinationRules and weights to enable a 90/10 routing of the app service. The versions of model-service and app are consistent. Also, we implemented the Sticky sessions (excellent criteria). These changes are visible on the [operation repository](https://github.com/remla25-team12/operation).
+
+For the purpose of traffic management, new versions for both model-service and app is defined. The new version of model-service uses a logistic classifier model released by model-training repo to make sentiment predictions. Check the [model-training](https://github.com/remla25-team12/model-training) and [model-service](https://github.com/remla25-team12/model-service) repositories for the updates.
+
+On the second version of the app, changes on the Frontend design is introduced. A back button is added on the second page instead of the _analyze another review_ button at the bottom of the page. Also, a placeholder text is added to the review submission box to guide the users in their reviews. Check the [app](https://github.com/remla25-team12/app) repository for the updates.
+
+For documentation, a template documentation file is defined but it only satisfies the sufficient criteria for now.
+
+Our project status for Assignment 5 is as follows:
+
+| Category                   | Expected Rating   | Notes                                                                                                       |
+| -------------------------- | ----------------- | ----------------------------------------------------------------------------------------------------------- |
+| Traffic Management         | **Excellent**     | All criteria for this category are implemented (described in detail in the above paragraphs).               |
+| Additional Use-case        | **Still a To-do** | An additional use-case is not implemented yet.                                                              |
+| Continuous Experimentation | **Still a To-do** |                                                                                                             |
+| Deployment Documentation   | **Sufficient**    | For documentation, a template documentation file is defined. The documentation is still a work-in-progress. |
+| Extension Proposal         | **Still a To-do** |                                                                                                             |
+
