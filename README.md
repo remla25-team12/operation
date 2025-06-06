@@ -197,7 +197,7 @@ This repository serves as the central point of the project, containing the Docke
       minikube delete
       minikube start --memory=4096 --cpus=4 --driver=docker
       minikube addons enable ingress
-      istioctl install --set profile=default -y
+      
       ```
 
       > **Note:** If you are using Fedora, you may need to run the following command first to allow Minikube to use the Docker driver:
@@ -206,10 +206,15 @@ This repository serves as the central point of the project, containing the Docke
       sudo setenforce 0
       ```
 
-3. Enable Istio sidecar injection in the (default) namespace:
+3. Enable Istio and istio sidecar injection in the (default) namespace:
 
-   ```shell
-   $ kubectl label namespace default istio-injection=enabled
+   ```shell 
+   helm repo add istio https://istio-release.storage.googleapis.com/charts
+   helm repo update
+   helm install istio-base istio/base -n istio-system --create-namespace
+   helm install istiod istio/istiod -n istio-system
+   helm install istio-ingress istio/gateway -n istio-system
+   kubectl label namespace default istio-injection=enabled
    ```
 
 4. Install and deploy the Prometheus stack (in a different namespace, without Istio sidecar injection):
@@ -256,10 +261,9 @@ To access the deployed application, you need to be able to resolve `myapp.local`
 
   > The IP is not fixed: if you restart the cluster, it may have changed, so always check that the EXTERNAL-IP and what's in your host file match. Making IP fixed is TODO (excellent requirement)
 
-- On **Minikube**, we use a port-forward, so the IP is `127.0.0.1` (localhost):
+- On **Minikube**, we use a port-forward, so the IP is `127.0.0.1` (localhost): THIS IS NOT USING THE INGRESS GATEWAY
   ```bash
-  sudo sh -c 'echo "127.0.0.1   myapp.local" >> /etc/hosts'
-  kubectl port-forward svc/istio-ingressgateway -n istio-system 8080:80
+  kubectl port-forward svc/myapp-dev-myapp-app 8080:8080
   ```
 
 >Note: Make sure that all the pods are running before accessing the application. You can check the status of the pods with `kubectl get pods` command.
