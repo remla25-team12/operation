@@ -197,7 +197,12 @@ This repository serves as the central point of the project, containing the Docke
       minikube delete
       minikube start --memory=4096 --cpus=4 --driver=docker
       minikube addons enable ingress
-      istioctl install --set profile=default -y
+
+      helm repo add istio https://istio-release.storage.googleapis.com/charts
+      helm repo update
+      helm install istio-base istio/base -n istio-system --create-namespace
+      helm install istiod istio/istiod -n istio-system
+      helm install istio-ingressgateway istio/gateway -n istio-system
       ```
 
       > **Note:** If you are using Fedora, you may need to run the following command first to allow Minikube to use the Docker driver:
@@ -259,37 +264,32 @@ To access the deployed application, you need to be able to resolve `myapp.local`
 - On **Minikube**, we use a port-forward, so the IP is `127.0.0.1` (localhost):
   ```bash
   sudo sh -c 'echo "127.0.0.1   myapp.local" >> /etc/hosts'
-  kubectl port-forward svc/istio-ingressgateway -n istio-system 8080:80
+  minikube tunnel
+  # Keep this terminal tab open for as long as you need access to myapp.local!
   ```
-
->Note: Make sure that all the pods are running before accessing the application. You can check the status of the pods with `kubectl get pods` command.
 
 Then access the application at http://myapp.local
 
 Metrics are available at http://myapp.local/metrics
 
-<!--If you see "no healthy upstream", please wait for the app pods to initialize. Check with `kubectl get pods`.-->
+>Note: If you see "no healthy upstream", the pods may not have finished initializing yet. Check the status with `kubectl get pods`.
 
 ## Traffic management
 
-To test the traffic management and primary/canary release routing, you can use curl with Host header:
+To test the traffic management and primary/canary release routing, you can use curl:
 
 ```bash
-# First, port-forward the Istio ingress
-kubectl port-forward svc/istio-ingressgateway -n istio-system 8080:80
+## For sticky session to v2 (always v2):
+for i in {1..5}; do curl -s -H "x-newvers: true" -H "x-user-id: testuser" myapp.local ; done
 
-# Then in another terminal:
-# For sticky session to v2 (always v2):
-for i in {1..5}; do curl -s -H "Host: myapp.local" -H "x-newvers: true" -H "x-user-id: testuser" http://localhost:8080 ; done
+## For sticky session to v1 (always v1):
+for i in {1..5}; do curl -s -H "x-newvers: false" -H "x-user-id: testuser" myapp.local ; done
 
-# For sticky session to v1 (always v1):
-for i in {1..5}; do curl -s -H "Host: myapp.local" -H "x-newvers: false" -H "x-user-id: testuser" http://localhost:8080 ; done
-
-# For normal split (as defined in values.yaml), just omit x-newvers:
-for i in {1..5}; do curl -s -H "Host: myapp.local" http://localhost:8080 ; done
+## For normal split (as defined in values.yaml), just omit x-newvers:
+for i in {1..5}; do curl -s myapp.local ; done
 ```
+   > Note: If this does not work, verify you are resolving `myapp.local` correctly (see "Webapp" section above)
 
-> Replace https://localhost:8080 with the EXTERNAL-IP of the IngressGateway if you're on VM Cluster instead of Minikube.
 
 ## Prometheus and Grafana
 
