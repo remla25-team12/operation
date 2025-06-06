@@ -58,7 +58,7 @@ This repository serves as the central point of the project, containing the Docke
 
 # Getting Started
 
-## Deployment with Docker 
+## Deployment with Docker
 
 ### Prerequisites
 
@@ -171,7 +171,7 @@ This repository serves as the central point of the project, containing the Docke
 - [Istioctl](https://istio.io/latest/docs/setup/install/istioctl/) 1.25.2 or higher
 - A functional Kubernetes cluster.
   - Recommended: VM cluster from the [Provisioning the Kubernetes Cluster](#provisioning-the-kubernetes-cluster) section. In the instructions below, it is assumed you already have this cluster up and running.
-  - Alternatively, you can install and use [Minikube](https://minikube.sigs.k8s.io/docs/start/) for a local Kubernetes cluster. 
+  - Alternatively, you can install and use [Minikube](https://minikube.sigs.k8s.io/docs/start/) for a local Kubernetes cluster.
 
 ### Install and run
 
@@ -185,6 +185,7 @@ This repository serves as the central point of the project, containing the Docke
 2. Prepare the cluster for app installation.
 
    1. For the **Kubernetes VM cluster**, SSH into the control node and navigate to the shared folder directory.
+
       ```shell
       vagrant ssh ctrl
       $ cd /mnt/shared/
@@ -196,7 +197,7 @@ This repository serves as the central point of the project, containing the Docke
       minikube delete
       minikube start --memory=4096 --cpus=4 --driver=docker
       minikube addons enable ingress
-      istioctl install --set profile=default -y 
+      istioctl install --set profile=default -y
       ```
 
       > **Note:** If you are using Fedora, you may need to run the following command first to allow Minikube to use the Docker driver:
@@ -216,55 +217,65 @@ This repository serves as the central point of the project, containing the Docke
    ```bash
    $ kubectl create namespace monitoring
    $ kubectl label namespace monitoring istio-injection=disabled
-   
+
    $ helm repo add prom-repo https://prometheus-community.github.io/helm-charts
    $ helm repo update
    $ helm install myprom prom-repo/kube-prometheus-stack -n monitoring --set prometheus.prometheusSpec.maximumStartupDurationSeconds=120
    ```
 
 5. Install and deploy our application. One of the flags used in this command will differ depending on your cluster setup.
+
    i. For the **Kubernetes VM cluster**, simply use:
+
    ```bash
    $ helm install myapp-dev ./helm/myapp  # Make sure you are inside /mnt/shared
    ```
-      
+
    ii. For **Minikube**, you must disable the VM shared folder:
+
    ```bash
    helm install myapp-dev ./helm/myapp --set useHostPathSharedFolder=false
    ```
 
-7. If you make changes to the Helm chart or want to update the deployment, use the following command:
+6. If you make changes to the Helm chart or want to update the deployment, use the following command:
    ```bash
    $ helm upgrade --install myapp-dev ./helm/myapp
    ```
 
-# Usage 
+# Usage
+
 ## Webapp access
 
 To access the deployed application, you need to be able to resolve `myapp.local`. Which IP to use depends on your cluster:
 
--  For the **VM Cluster**, first run `kubectl get svc istio-ingressgateway -n istio-system` to find the EXTERNAL-IP. Then run the following **on your host machine** (not the ctrl node):
-   ```bash
-   sudo sh -c 'echo "<EXTERNAL-IP>   myapp.local" >> /etc/hosts'
-   ```
-   > The IP is not fixed: if you restart the cluster, it may have changed, so always check that the EXTERNAL-IP and what's in your host file match. Making IP fixed is TODO (excellent requirement)
+- For the **VM Cluster**, first run `kubectl get svc istio-ingressgateway -n istio-system` to find the EXTERNAL-IP. Then run the following **on your host machine** (not the ctrl node):
+
+  ```bash
+  sudo sh -c 'echo "<EXTERNAL-IP>   myapp.local" >> /etc/hosts'
+  ```
+
+  > The IP is not fixed: if you restart the cluster, it may have changed, so always check that the EXTERNAL-IP and what's in your host file match. Making IP fixed is TODO (excellent requirement)
 
 - On **Minikube**, we use a port-forward, so the IP is `127.0.0.1` (localhost):
-   ```bash
-   sudo sh -c 'echo "127.0.0.1   myapp.local" >> /etc/hosts'
-   kubectl port-forward svc/istio-ingressgateway -n istio-system 8080:80
-   ```
+  ```bash
+  sudo sh -c 'echo "127.0.0.1   myapp.local" >> /etc/hosts'
+  kubectl port-forward svc/istio-ingressgateway -n istio-system 8080:80
+  ```
+
+>Note: Make sure that all the pods are running before accessing the application. You can check the status of the pods with `kubectl get pods` command.
 
 Then access the application at http://myapp.local
+
 Metrics are available at http://myapp.local/metrics
+
 <!--If you see "no healthy upstream", please wait for the app pods to initialize. Check with `kubectl get pods`.-->
 
-
 ## Traffic management
+
 To test the traffic management and primary/canary release routing, you can use curl with Host header:
 
 ```bash
-# First, port-forward the Istio ingress 
+# First, port-forward the Istio ingress
 kubectl port-forward svc/istio-ingressgateway -n istio-system 8080:80
 
 # Then in another terminal:
@@ -277,10 +288,13 @@ for i in {1..5}; do curl -s -H "Host: myapp.local" -H "x-newvers: false" -H "x-u
 # For normal split (as defined in values.yaml), just omit x-newvers:
 for i in {1..5}; do curl -s -H "Host: myapp.local" http://localhost:8080 ; done
 ```
+
 > Replace https://localhost:8080 with the EXTERNAL-IP of the IngressGateway if you're on VM Cluster instead of Minikube.
 
 ## Prometheus and Grafana
+
 Access Prometeus at http://localhost:9090 (or the Minikube URL) on your host machine:
+
 ```bash
 # VM cluster:
 export PROMETHEUS_POD_NAME=$(kubectl -n monitoring get pod -l "app.kubernetes.io/name=prometheus,app.kubernetes.io/instance=myprom-kube-prometheus-sta-prometheus" -oname)
@@ -291,6 +305,7 @@ minikube service myprom-kube-prometheus-sta-prometheus --url
 ```
 
 Access Grafana at http://localhost:3000 (or the Minikube URL) on your host machine:
+
 ```bash
 # VM Cluster:
 export GRAFANA_POD_NAME=$(kubectl -n monitoring get pod -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=myprom" -oname)
@@ -301,9 +316,9 @@ minikube service myprom-grafana --url
 ```
 
 Grafana login credentials:
+
 - Username: `admin`
 - Password: Run `kubectl --namespace monitoring get secrets myprom-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo`
-
 
 The dashboard configuration (`helm/myapp/grafana/dashboard.json`) is automatically imported through a ConfigMap, so no manual installation is required. Simply go to the Dashboards tab in Grafana and load the 'Restaurant sentiment analysis' dashboard:
 
@@ -312,7 +327,6 @@ The dashboard configuration (`helm/myapp/grafana/dashboard.json`) is automatical
 It should look like this:
 
 ![Grafana dashboard](imgs/grafana_dashboard.png)
-
 
 # Continuous Progress Log
 
@@ -374,4 +388,3 @@ Our project status for Assignment 5 is as follows:
 | Continuous Experimentation | **Still a To-do** |                                                                                                             |
 | Deployment Documentation   | **Sufficient**    | For documentation, a template documentation file is defined. The documentation is still a work-in-progress. |
 | Extension Proposal         | **Still a To-do** |                                                                                                             |
-
