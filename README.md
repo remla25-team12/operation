@@ -264,7 +264,7 @@ To access the deployed application, you need to be able to resolve `myapp.local`
 - On **Minikube**, we use a port-forward, so the IP is `127.0.0.1` (localhost):
   ```bash
   sudo sh -c 'echo "127.0.0.1   myapp.local" >> /etc/hosts'
-  kubectl port-forward svc/istio-ingressgateway -n istio-system 8080:80
+  minikube tunnel # Keep this tab open for as long as you need webapp access
   ```
 
 >Note: Make sure that all the pods are running before accessing the application. You can check the status of the pods with `kubectl get pods` command.
