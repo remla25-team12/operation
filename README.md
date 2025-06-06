@@ -197,7 +197,12 @@ This repository serves as the central point of the project, containing the Docke
       minikube delete
       minikube start --memory=4096 --cpus=4 --driver=docker
       minikube addons enable ingress
-      istioctl install --set profile=default -y
+
+      helm repo add istio https://istio-release.storage.googleapis.com/charts
+      helm repo update
+      helm install istio-base istio/base -n istio-system --create-namespace
+      helm install istiod istio/istiod -n istio-system
+      helm install istio-ingressgateway istio/gateway -n istio-system
       ```
 
       > **Note:** If you are using Fedora, you may need to run the following command first to allow Minikube to use the Docker driver:
