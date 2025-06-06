@@ -4,8 +4,8 @@ metadata:
   name: {{ include "myapp.fullname" . }}-gateway
 spec:
   selector:
-    app: istio-ingress
-    istio: ingress
+    app: istio-ingressgateway
+    istio: ingressgateway
   servers:
   - port:
       number: 80

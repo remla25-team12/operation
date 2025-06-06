@@ -51,4 +51,4 @@ istio:
     v1Weight: 50
     v2Weight: 50
 
-useHostPathSharedFolder: false
+useHostPathSharedFolder: true
