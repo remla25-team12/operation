@@ -276,7 +276,7 @@ Metrics are available at http://myapp.local/metrics
 
 ## Traffic management
 
-To test the traffic management and primary/canary release routing, you can use curl with Host header:
+To test the traffic management and primary/canary release routing, you can use curl:
 
 ```bash
 ## For sticky session to v2 (always v2):
