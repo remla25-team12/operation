@@ -116,7 +116,7 @@ Approved PR: https://github.com/remla25-team12/operation/pull/66#pullrequestrevi
 
 **Mees Chammat:**\
 Created PR: https://github.com/remla25-team12/operation/pull/66 (related to A2 & A5) \
-Approved PR: 
+Approved PR: https://github.com/remla25-team12/model-service/pull/14#pullrequestreview-2907416258
 
 **Philippe Henry:**\
 Created PR: (related to A) \
