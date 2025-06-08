@@ -12,7 +12,7 @@ spec:
       name: http
       protocol: HTTP
     hosts:
-    - {{ .Values.ingress.host }}
+    - "*"
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
@@ -20,15 +20,33 @@ metadata:
   name: {{ include "myapp.fullname" . }}-app-vs
 spec:
   hosts:
-  - {{ .Values.ingress.host }}
+  - "*"
   gateways:
   - {{ include "myapp.fullname" . }}-gateway
   http:
   - route:
     - destination:
         host: {{ include "myapp.fullname" . }}-app
-        port:
-          number: {{ .Values.app.port }}
+        subset: v1
+      weight: {{ .Values.istio.appTrafficSplit.v1Weight }}
+    - destination:
+        host: {{ include "myapp.fullname" . }}-app
+        subset: v2
+      weight: {{ .Values.istio.appTrafficSplit.v2Weight }}
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: {{ include "myapp.fullname" . }}-app-dr
+spec:
+  host: {{ include "myapp.fullname" . }}-app
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+  - name: v2
+    labels:
+      version: v2
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
@@ -50,14 +68,30 @@ metadata:
   name: {{ include "myapp.fullname" . }}-model-vs
 spec:
   hosts:
-  - {{ include "myapp.fullname" . }}-model
+    - {{ include "myapp.fullname" . }}-model
   http:
-  - route:
-    - destination:
-        host: {{ include "myapp.fullname" . }}-model
-        subset: v1
-      weight: {{ .Values.istio.modelTrafficSplit.v1Weight }}
-    - destination:
-        host: {{ include "myapp.fullname" . }}-model
-        subset: v2
-      weight: {{ .Values.istio.modelTrafficSplit.v2Weight }}
+    - match:
+        - sourceLabels:
+            version: v2
+      route:
+        - destination:
+            host: {{ include "myapp.fullname" . }}-model
+            subset: v2
+    - route:  # default route (for v1 and others)
+        - destination:
+            host: {{ include "myapp.fullname" . }}-model
+            subset: v1
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  namespace: istio-system
+spec:
+  type: ClusterIP
+  ports:
+  - port: 9090
+    targetPort: 9090
+  selector:
+    app.kubernetes.io/name: prometheus

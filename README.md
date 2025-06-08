@@ -246,11 +246,9 @@ This repository serves as the central point of the project, containing the Docke
 
 
    ```bash
-   kubectl create namespace monitoring
-   kubectl label namespace monitoring istio-injection=disabled
    helm repo add prom-repo https://prometheus-community.github.io/helm-charts
    helm repo update
-   helm install myprom prom-repo/kube-prometheus-stack -n monitoring
+   helm install myprom prom-repo/kube-prometheus-stack -n istio-system 
    ```
 
 4. Install and deploy our application. One of the flags used in this command will differ depending on your cluster setup.

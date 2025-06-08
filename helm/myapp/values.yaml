@@ -42,8 +42,11 @@ service:
 
 istio:
   enabled: true
-  modelTrafficSplit:
+  appTrafficSplit:
     v1Weight: 90
     v2Weight: 10
+  modelTrafficSplit:
+    v1Weight: 50
+    v2Weight: 50
 
 useHostPathSharedFolder: false
