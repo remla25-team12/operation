@@ -1,13 +1,13 @@
 # Continuous Experiment Design
 ## Hypothesis
-Adding example feedbacks as placeholder text inside the review textbox, allows user to understand how to write feedback for restaruant, which will make the reviews more accurately predicted by the model.
+Whether having linkedin icon when hovering over individual cards on the page improves clicks to our team member's individual clicks compared to when not having this linkedin icon
 
 ## Experiment
-The experiment we will do is have two version of our app. One with the placeholder text and one without. We will measure whether the model makes the correct prediction according to the user.
+The experiment we will do is have two version of our app. One is when user hover over each member's card on the people's page, a linkedin incon will show up. THe other does not have such feature
 
 ## What was changed
-The change between the two version is whether there are placeholder text inside the review textbox.
+The change between the two version is whether there is a linkedin icon shown when hovering over.
 
 
 ## Metrics to measure 
-User's feedback on whether the model make the correct prediction.
+Whether clicks to individual linkedin page chagens.
