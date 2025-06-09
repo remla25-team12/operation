@@ -127,8 +127,8 @@ Created PR: (related to A) \
 Approved PR: 
 
 **Ayush Kuruvilla:**\
-Created PR: (related to A) \
-Approved PR:
+Created PR: https://github.com/remla25-team12/model-service/pull/15 (related to A1) \
+Approved PR: https://github.com/remla25-team12/app/pull/18
 
 # Week 8:
 
