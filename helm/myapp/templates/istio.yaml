@@ -4,8 +4,8 @@ metadata:
   name: {{ include "myapp.fullname" . }}-gateway
 spec:
   selector:
-    app: istio-ingress
-    istio: ingress
+    app: istio-ingressgateway
+    istio: ingressgateway
   servers:
   - port:
       number: 80
@@ -24,14 +24,39 @@ spec:
   gateways:
   - {{ include "myapp.fullname" . }}-gateway
   http:
+  - match:
+    - headers:
+        x-newvers:
+          exact: "true"
+    route:
+    - destination:
+        host: {{ include "myapp.fullname" . }}-app
+        subset: v2
+        port:
+          number: {{ .Values.app.port }}
+  - match:
+    - headers:
+        x-newvers:
+          exact: "false"
+    route:
+    - destination:
+        host: {{ include "myapp.fullname" . }}-app
+        subset: v1
+        port:
+          number: {{ .Values.app.port }}
   - route:
     - destination:
         host: {{ include "myapp.fullname" . }}-app
         subset: v1
+        port:
+          number: {{ .Values.app.port }}
       weight: {{ .Values.istio.appTrafficSplit.v1Weight }}
     - destination:
         host: {{ include "myapp.fullname" . }}-app
         subset: v2
+        port:
+          number: {{ .Values.app.port }}
+    weight: {{ .Values.istio.appTrafficSplit.v2Weight }}
       weight: {{ .Values.istio.appTrafficSplit.v2Weight }}
 ---
 apiVersion: networking.istio.io/v1beta1
@@ -61,6 +86,28 @@ spec:
   - name: v2
     labels:
       version: v2
+  trafficPolicy:
+    loadBalancer:
+      consistentHash:
+        httpHeaderName: x-newvers
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: {{ include "myapp.fullname" . }}-app-dr
+spec:
+  host: {{ include "myapp.fullname" . }}-app
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+  - name: v2
+    labels:
+      version: v2
+  trafficPolicy:
+    loadBalancer:
+      consistentHash:
+        httpHeaderName: x-newvers
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
@@ -70,17 +117,34 @@ spec:
   hosts:
     - {{ include "myapp.fullname" . }}-model
   http:
-    - match:
-        - sourceLabels:
-            version: v2
-      route:
-        - destination:
-            host: {{ include "myapp.fullname" . }}-model
-            subset: v2
-    - route:  # default route (for v1 and others)
-        - destination:
-            host: {{ include "myapp.fullname" . }}-model
-            subset: v1
+  - match:
+    - headers:
+        x-newvers:
+          exact: "true"
+    route:
+    - destination:
+        host: {{ include "myapp.fullname" . }}-model
+        subset: v2
+      weight: 100
+  - match:
+    - headers:
+        x-newvers:
+          exact: "false"
+    route:
+    - destination:
+        host: {{ include "myapp.fullname" . }}-model
+        subset: v1
+      weight: 100
+  - route:
+    - destination:
+        host: {{ include "myapp.fullname" . }}-model
+        subset: v1
+      weight: {{ .Values.istio.modelTrafficSplit.v1Weight }}
+    - destination:
+        host: {{ include "myapp.fullname" . }}-model
+        subset: v2
+      weight: {{ .Values.istio.modelTrafficSplit.v2Weight }}
+
 
 ---
 apiVersion: v1

@@ -4,6 +4,7 @@
   become: yes
   become_user: vagrant
   vars:
+    dashboard_ingress_fixed_ip: 192.168.56.91
     venv_path: /opt/ansible-venv
     ansible_python_interpreter: "{{ venv_path }}/bin/python"
     dashboard_admin_yaml: | 
@@ -49,6 +50,7 @@
                       name: kubernetes-dashboard-kong-proxy
                       port:
                         number: 443
+
 
   tasks:
     # Step 20 - Install MetalLB
@@ -124,7 +126,7 @@
         values:
           controller:
             service:
-              loadBalancerIP: 192.168.56.91
+              loadBalancerIP: "{{ dashboard_ingress_fixed_ip }}"
 
     # Step 22: Install Kubernetes Dashboard
     - name: "Add Kubernetes dashboard repository"
@@ -180,13 +182,25 @@
       debug:
         msg: 
           - "Kubernetes dashboard ready. Next steps:"
-          - ">> Add the line '192.168.56.91 dashboard.local' to your host's hostfile"
+          - ">> Add the line '{{ dashboard_ingress_fixed_ip }} dashboard.local' to your host's hostfile"
           - ">> Go to https://dashboard.local and enter the following token: {{ dashboard_token.stdout }}"
 
     # Step 23: Install Istio
-    - name: Download Istio 1.25.2
-      get_url:
-        url: https://github.com/istio/istio/releases/download/1.25.2/istio-1.25.2-linux-amd64.tar.gz
+    - name: Determine cluster architecture (arm64 or amd64)
+      ansible.builtin.set_fact:
+        istio_arch: >-
+          {{ 'arm64' if 'aarch64' in ansible_architecture else
+            'amd64' if 'x86_64' in ansible_architecture else
+            'unsupported' }}
+
+    - name: Fail if architecture is unsupported by Istio
+      ansible.builtin.fail:
+        msg: "Unsupported system architecture: {{ arch_result.stdout }}. Istio only supports arm64 and amd64"
+      when: istio_arch == 'unsupported'
+      
+    - name: Download Istio 1.25.2 for {{istio_arch}}
+      ansible.builtin.get_url:
+        url: "https://github.com/istio/istio/releases/download/1.25.2/istio-1.25.2-linux-{{ istio_arch }}.tar.gz"
         dest: /tmp/istio.tar.gz
         mode: '0644'
       become: true
@@ -207,9 +221,25 @@
         insertafter: EOF
         state: present
 
-    - name: Run istioctl install (demo profile)
+    - name: Install Istio default profile (may take a while)
       shell: |
-        istioctl install --set profile=demo -y
-      args:
-        creates: /home/vagrant/istio-1.25.2/manifests
+        export PATH=$PATH:/home/vagrant/istio-1.25.2/bin
+        istioctl install --set profile=default -y
+      register: istio_result
+
+    - name: Confirm successful Istio installation
+      debug:
+        msg: 
+          - "Result of Istio installation:"
+          - "{{ istio_result.stdout_lines }}, {{ istio_result.stderr_lines }},"
+
+    - name: Deploy Jaegar tracing tool 
+      kubernetes.core.k8s:
+        state: present
+        src: "/home/vagrant/istio-1.25.2/samples/addons/jaeger.yaml"
+
+    - name: Deploy Kiali Dashboard 
+      kubernetes.core.k8s:
+        state: present
+        src: "/home/vagrant/istio-1.25.2/samples/addons/kiali.yaml"
 
