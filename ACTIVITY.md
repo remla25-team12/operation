@@ -116,7 +116,7 @@ Approved PR: https://github.com/remla25-team12/operation/pull/66#pullrequestrevi
 
 **Mees Chammat:**\
 Created PR: https://github.com/remla25-team12/operation/pull/66 (related to A2 & A5) \
-Approved PR: 
+Approved PR: https://github.com/remla25-team12/model-service/pull/14#pullrequestreview-2907416258
 
 **Philippe Henry:**\
 Created PR: (related to A) \
@@ -127,8 +127,8 @@ Created PR: (related to A) \
 Approved PR: 
 
 **Ayush Kuruvilla:**\
-Created PR: (related to A) \
-Approved PR:
+Created PR: https://github.com/remla25-team12/model-service/pull/15 (related to A1) \
+Approved PR: https://github.com/remla25-team12/app/pull/18
 
 # Week 8:
 
