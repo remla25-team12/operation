@@ -111,7 +111,7 @@ Approved PR: https://github.com/remla25-team12/operation/pull/61
 
 # Week 7:
 **Selin Ceydeli:** \
-Created PR: (related to A) \
+Created PR: https://github.com/remla25-team12/model-service/pull/14 (related to A1) \
 Approved PR: https://github.com/remla25-team12/operation/pull/66#pullrequestreview-2898183569 
 
 **Mees Chammat:**\
