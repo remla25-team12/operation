@@ -277,12 +277,12 @@ This repository serves as the central point of the project, containing the Docke
 
 5. If you make changes to the Helm chart or want to update the deployment, use the following command:
    ```bash
-   helm upgrade --install myapp-dev ./helm/myapp \
+   helm upgrade myapp-dev ./helm/myapp \
    --set app.image.tag=latest \
    --set model.image.tag=latest \
    --set model.port=5000 \
    --set app.port=8080 \
-   --set useHostPathSharedFolder=true
+   --set useHostPathSharedFolder=false
    ```
    > Do not forget to set `useHostPathSharedFolder` based on your type of cluster (see previous step)
 
