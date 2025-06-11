@@ -223,20 +223,14 @@
         state: present
 
     - name: Install Istio default profile including fixed IP for IngressGateway
-     shell: |
-       export PATH=$PATH:/home/vagrant/istio-1.25.2/bin
-       istioctl install --set profile=default -y \
-         --set components.ingressGateways[0].name=istio-ingressgateway \
-         --set components.ingressGateways[0].enabled=true \
-         --set components.ingressGateways[0].k8s.service.type=LoadBalancer \
-         --set components.ingressGateways[0].k8s.service.loadBalancerIP={{ istio_gateway_fixed_ip }}
-     register: istio_result
-
-    # - name: Install Istio default profile (may take a while)
-    #   shell: |
-    #     export PATH=$PATH:/home/vagrant/istio-1.25.2/bin
-    #     istioctl install --set profile=default -y
-    #   register: istio_result
+      shell: |
+        export PATH=$PATH:/home/vagrant/istio-1.25.2/bin
+        istioctl install --set profile=default -y \
+          --set components.ingressGateways[0].name=istio-ingressgateway \
+          --set components.ingressGateways[0].enabled=true \
+          --set components.ingressGateways[0].k8s.service.type=LoadBalancer \
+          --set components.ingressGateways[0].k8s.service.loadBalancerIP={{ istio_gateway_fixed_ip }}
+      register: istio_result
 
     - name: Confirm successful Istio installation
       debug:
