@@ -4,6 +4,7 @@
   become: yes
   become_user: vagrant
   vars:
+    istio_gateway_fixed_ip: 192.168.56.99
     dashboard_ingress_fixed_ip: 192.168.56.91
     venv_path: /opt/ansible-venv
     ansible_python_interpreter: "{{ venv_path }}/bin/python"
@@ -221,11 +222,21 @@
         insertafter: EOF
         state: present
 
-    - name: Install Istio default profile (may take a while)
-      shell: |
-        export PATH=$PATH:/home/vagrant/istio-1.25.2/bin
-        istioctl install --set profile=default -y
-      register: istio_result
+    - name: Install Istio default profile including fixed IP for IngressGateway
+     shell: |
+       export PATH=$PATH:/home/vagrant/istio-1.25.2/bin
+       istioctl install --set profile=default -y \
+         --set components.ingressGateways[0].name=istio-ingressgateway \
+         --set components.ingressGateways[0].enabled=true \
+         --set components.ingressGateways[0].k8s.service.type=LoadBalancer \
+         --set components.ingressGateways[0].k8s.service.loadBalancerIP={{ istio_gateway_fixed_ip }}
+     register: istio_result
+
+    # - name: Install Istio default profile (may take a while)
+    #   shell: |
+    #     export PATH=$PATH:/home/vagrant/istio-1.25.2/bin
+    #     istioctl install --set profile=default -y
+    #   register: istio_result
 
     - name: Confirm successful Istio installation
       debug:
