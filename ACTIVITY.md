@@ -136,7 +136,7 @@ Created PR: https://github.com/remla25-team12/lib-ml/pull/10 (related to A1) \
 Approved PR: https://github.com/remla25-team12/lib-version/pull/6
 
 **Mees Chammat:**\
-Created PR: (related to A) \
+Created PR: https://github.com/remla25-team12/operation/pull/74 (related to A2) \
 Approved PR: 
 
 **Philippe Henry:**\
