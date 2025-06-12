@@ -131,5 +131,43 @@ Created PR: https://github.com/remla25-team12/model-service/pull/15 (related to 
 Approved PR: https://github.com/remla25-team12/app/pull/18
 
 # Week 8:
+**Selin Ceydeli:** \
+Created PR: https://github.com/remla25-team12/lib-ml/pull/10 (related to A1) \
+Approved PR: https://github.com/remla25-team12/lib-version/pull/6
+
+**Mees Chammat:**\
+Created PR: (related to A) \
+Approved PR: 
+
+**Philippe Henry:**\
+Created PR: (related to A) \
+Approved PR: 
+
+**Pengxuan (Peter) Huang:**\
+Created PR: (related to A) \
+Approved PR: 
+
+**Ayush Kuruvilla:**\
+Created PR: (related to A) \
+Approved PR: 
 
 # Week 9:
+**Selin Ceydeli:** \
+Created PR: (related to A) \
+Approved PR: 
+
+**Mees Chammat:**\
+Created PR: (related to A) \
+Approved PR: 
+
+**Philippe Henry:**\
+Created PR: (related to A) \
+Approved PR: 
+
+**Pengxuan (Peter) Huang:**\
+Created PR: (related to A) \
+Approved PR: 
+
+**Ayush Kuruvilla:**\
+Created PR: (related to A) \
+Approved PR: 
