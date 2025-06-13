@@ -191,13 +191,18 @@ This repository serves as the central point of the project, containing the Docke
       $ cd /mnt/shared/
       ```
 
-   2. For **Minikube**, it is recommended to first clean up any previous Minikube instance and then launch a new cluster by running the following commands:
+   2. For **Minikube**, it is recommended to first clean up any previous Minikube instance and then launch a new cluster with Istio by running the following commands:
 
       ```shell
       minikube delete
       minikube start --memory=4096 --cpus=4 --driver=docker
       minikube addons enable ingress
       
+      helm repo add istio https://istio-release.storage.googleapis.com/charts
+      helm repo update
+      helm install istio-base istio/base -n istio-system --create-namespace
+      helm install istiod istio/istiod -n istio-system
+      helm install istio-ingressgateway istio/gateway -n istio-system
       ```
 
       > **Note:** If you are using Fedora, you may need to run the following command first to allow Minikube to use the Docker driver:
@@ -209,11 +214,6 @@ This repository serves as the central point of the project, containing the Docke
 3. Enable Istio and istio sidecar injection in the (default) namespace:
 
    ```shell 
-   helm repo add istio https://istio-release.storage.googleapis.com/charts
-   helm repo update
-   helm install istio-base istio/base -n istio-system --create-namespace
-   helm install istiod istio/istiod -n istio-system
-   helm install istio-ingress istio/gateway -n istio-system
    kubectl label namespace default istio-injection=enabled
    ```
 
