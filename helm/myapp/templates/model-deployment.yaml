@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: model
-          image: "{{ .Values.model.image.repository }}:latest"
+          image: "{{ .Values.model.image.repository }}:{{ .Values.model.image.v1Tag }}"
           ports:
             - containerPort: {{ .Values.model.containerPort }}
           env:
@@ -41,9 +41,9 @@ spec:
           {{- end }}
           {{- end }}
             - name: MODEL_URL
-              value: "https://github.com/remla25-team12/model-training/releases/download/{{ .Values.model.image.v1Tag }}/Classifier_Sentiment_Model.joblib"
+              value: "https://github.com/remla25-team12/model-training/releases/download/0.1.0/Classifier_Sentiment_Model.joblib"
             - name: VEC_URL
-              value: "https://github.com/remla25-team12/model-training/releases/download/{{ .Values.model.image.v1Tag }}/c1_BoW_Sentiment_Model.pkl"
+              value: "https://github.com/remla25-team12/model-training/releases/download/0.1.0/c1_BoW_Sentiment_Model.pkl"
             - name: MODEL_CACHE_DIR
               value: {{ .Values.model.cachePath }}
             - name: FEEDBACK_FILE_PATH
@@ -92,7 +92,7 @@ spec:
     spec:
       containers:
         - name: model
-          image: "{{ .Values.model.image.repository }}:latest"
+          image: "{{ .Values.model.image.repository }}:{{ .Values.model.image.v2Tag }}"
           ports:
             - containerPort: {{ .Values.model.containerPort }}
           env:
@@ -120,8 +120,6 @@ spec:
               value: {{ .Values.model.cachePath }}
             - name: FEEDBACK_FILE_PATH
               value: {{ .Values.model.feedbackPath }}/feedback_dump.tsv
-            - name: TRAINED_MODEL_VERSION
-              value: {{ .Values.model.v2.trainedModelVersion | quote }}
           volumeMounts:
             - name: cache
               mountPath: {{ .Values.model.cachePath }}

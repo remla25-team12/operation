@@ -15,7 +15,7 @@ model:
   image:
     repository: ghcr.io/remla25-team12/model-service
     tag: latest
-    v1Tag: 0.1.0
+    v1Tag: 1.1.6
     v2Tag: latest
     pullPolicy: Always
   port: 5000
@@ -43,8 +43,8 @@ service:
 istio:
   enabled: true
   appTrafficSplit:
-    v1Weight: 90
-    v2Weight: 10
+    v1Weight: 50
+    v2Weight: 50
   modelTrafficSplit:
     v1Weight: 50
     v2Weight: 50
