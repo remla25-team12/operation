@@ -119,7 +119,7 @@ Created PR: https://github.com/remla25-team12/operation/pull/66 (related to A2 &
 Approved PR: https://github.com/remla25-team12/model-service/pull/14#pullrequestreview-2907416258
 
 **Philippe Henry:**\
-Created PR: (related to A) \
+Created PR: https://github.com/remla25-team12/operation/commit/e138a52b05c7b08721e1fa8ee5b7c8ceb7086c7d FORGOT TO MAKE A PR (related to A5) \
 Approved PR: 
 
 **Pengxuan (Peter) Huang:**\
