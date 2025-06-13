@@ -50,7 +50,7 @@ Approved PR: https://github.com/remla25-team12/operation/pull/39
 
 **Mees Chammat:**\
 Created PR: https://github.com/remla25-team12/operation/pull/35 (related to A3) \
-Approved PR: https://github.com/remla25-team12/operation/pull/32
+Approved PR: https://github.com/remla25-team12/operation/pull/32#issuecomment-2886754849
 
 **Philippe Henry:**\
 Created PR: https://github.com/remla25-team12/operation/pull/32 (related to A3) \
@@ -94,7 +94,7 @@ Created PR: https://github.com/remla25-team12/model-training/pull/16 (related to
 Approved PR: https://github.com/remla25-team12/operation/pull/58#pullrequestreview-2881946774
 
 **Mees Chammat:**\
-Created PR: (related to A) \
+Created PR: https://github.com/remla25-team12/operation/pull/61 (related to A5) \
 Approved PR: https://github.com/remla25-team12/model-training/pull/16#pullrequestreview-2880636962
 
 **Philippe Henry:**\
@@ -106,10 +106,29 @@ Created PR: (related to A) \
 Approved PR: 
 
 **Ayush Kuruvilla:**\
+Created PR: https://github.com/remla25-team12/operation/pull/63 (related to A5) \
+Approved PR: https://github.com/remla25-team12/operation/pull/61
+
+# Week 7:
+**Selin Ceydeli:** \
+Created PR: https://github.com/remla25-team12/model-service/pull/14 (related to A1) \
+Approved PR: https://github.com/remla25-team12/operation/pull/66#pullrequestreview-2898183569 
+
+**Mees Chammat:**\
+Created PR: https://github.com/remla25-team12/operation/pull/66 (related to A2 & A5) \
+Approved PR: https://github.com/remla25-team12/model-service/pull/14#pullrequestreview-2907416258
+
+**Philippe Henry:**\
 Created PR: (related to A) \
 Approved PR: 
 
-# Week 7:
+**Pengxuan (Peter) Huang:**\
+Created PR: (related to A) \
+Approved PR: 
+
+**Ayush Kuruvilla:**\
+Created PR: https://github.com/remla25-team12/model-service/pull/15 (related to A1) \
+Approved PR: https://github.com/remla25-team12/app/pull/18
 
 # Week 8:
 
