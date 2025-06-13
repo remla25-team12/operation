@@ -35,10 +35,14 @@
         annotations:
           nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
           # nginx.ingress.kubernetes.io/secure-backends: "true"
-          # nginx.ingress.kubernetes.io/ssl-redirect: "true"
+          nginx.ingress.kubernetes.io/ssl-redirect: "true"
           # nginx.ingress.kubernetes.io/ssl-passthrough: "true"
       spec:
         ingressClassName: nginx
+        tls:
+          - hosts:
+              - dashboard.local
+            secretName: "dashboard-tls-secret"
         rules:
           - host: "dashboard.local"
             http:
@@ -152,13 +156,51 @@
       kubernetes.core.k8s:
         state: present
         src: "/tmp/dashboard-admin.yaml"
-      
-    - name: Create dashboard Ingress
+    
+    - name: Create private key for dashboard
+      command: openssl genrsa -out /tmp/dashboard-tls.key 2048
+      args:
+        creates: '/tmp/dashboard-tls.key'
+
+    - name: Create self-signed cert for dashboard
+      command: >
+        openssl req -x509 -nodes -days 365
+        -new -key /tmp/dashboard-tls.key
+        -out /tmp/dashboard-tls.crt
+        -subj "/CN=dashboard.local"
+      args:
+        creates: '/tmp/dashboard-tls.crt'
+
+    - name: Read TLS cert # Generated with ChatGPT
+      slurp:
+        src: /tmp/dashboard-tls.crt
+      register: cert_file
+
+    - name: Read TLS key # Generated with ChatGPT
+      slurp:
+        src: /tmp/dashboard-tls.key
+      register: key_file
+
+    - name: Create TLS secret for dashboard
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: "dashboard-tls-secret"
+            namespace: kubernetes-dashboard
+          type: kubernetes.io/tls
+          data:
+            tls.crt: "{{ cert_file.content }}"
+            tls.key: "{{ key_file.content }}"
+
+    - name: Create dashboard Ingress CRD
       copy:
         dest: /tmp/dashboard-ingress.yaml
         content: "{{ dashboard_ingress_yaml }}"
 
-    - name: Waiting for dashboard ingress to be ready
+    - name: Wait for ingress controller to be ready before applying dashboard CRD
       kubernetes.core.k8s_info:
         kind: Pod
         wait: true
@@ -168,7 +210,7 @@
         wait_sleep: 5
         wait_timeout: 150
       
-    - name: Apply dashboard ingress
+    - name: Apply dashboard ingress CRD
       kubernetes.core.k8s:
         state: present
         src: "/tmp/dashboard-ingress.yaml"
