@@ -253,26 +253,22 @@ This repository serves as the central point of the project, containing the Docke
 
 To access the deployed application, you need to be able to resolve `myapp.local`. Which IP to use depends on your cluster:
 
-- For the **VM Cluster**, first run `kubectl get svc istio-ingressgateway -n istio-system` to find the EXTERNAL-IP. Then run the following **on your host machine** (not the ctrl node):
+- For the **VM Cluster**, Istio has a fixed IP, so you can simply run the following **on your host machine** (not the ctrl node):
 
   ```bash
-  sudo sh -c 'echo "<EXTERNAL-IP>   myapp.local" >> /etc/hosts'
+  sudo sh -c 'echo "192.168.56.99  myapp.local" >> /etc/hosts'
   ```
-
-  > The IP is not fixed: if you restart the cluster, it may have changed, so always check that the EXTERNAL-IP and what's in your host file match. Making IP fixed is TODO (excellent requirement)
 
 - On **Minikube**, we use a port-forward, so the IP is `127.0.0.1` (localhost): THIS IS NOT USING THE INGRESS GATEWAY
   ```bash
   kubectl port-forward svc/myapp-dev-myapp-app 8080:8080
   ```
 
->Note: Make sure that all the pods are running before accessing the application. You can check the status of the pods with `kubectl get pods` command.
-
 Then access the application at http://myapp.local
 
 Metrics are available at http://myapp.local/metrics
 
-<!--If you see "no healthy upstream", please wait for the app pods to initialize. Check with `kubectl get pods`.-->
+> If you see "no healthy upstream", please wait for the app pods to initialize. Check with `kubectl get pods`.
 
 ## Traffic management
 
