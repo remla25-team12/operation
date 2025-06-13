@@ -98,10 +98,10 @@ Created PR: https://github.com/remla25-team12/operation/pull/61 (related to A5) 
 Approved PR: https://github.com/remla25-team12/model-training/pull/16#pullrequestreview-2880636962
 
 **Philippe Henry:**\
-Created PR: (related to A) \
-Approved PR: 
+Created PR: https://github.com/remla25-team12/operation/pull/58 (related to A5) \
+Approved PR: https://github.com/remla25-team12/operation/pull/59
 
-**Pengxuan (Peter) Huang:**\
+**Pengxuan (Peter) Huang:**\    
 Created PR: (related to A) \
 Approved PR: 
 
@@ -140,8 +140,8 @@ Created PR: https://github.com/remla25-team12/operation/pull/74 (related to A2) 
 Approved PR: https://github.com/remla25-team12/lib-ml/pull/10#pullrequestreview-2922662922
 
 **Philippe Henry:**\
-Created PR: (related to A) \
-Approved PR: 
+Created PR: https://github.com/remla25-team12/operation/pull/79 (related to A5) \
+Approved PR: https://github.com/remla25-team12/app/pull/19
 
 **Pengxuan (Peter) Huang:**\
 Created PR: (related to A) \
