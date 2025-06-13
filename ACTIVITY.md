@@ -148,8 +148,9 @@ Created PR: (related to A) \
 Approved PR: 
 
 **Ayush Kuruvilla:**\
-Created PR: (related to A) \
-Approved PR: 
+Created PR: https://github.com/remla25-team12/app/pull/19 (related to A1)
+https://github.com/remla25-team12/lib-version/pull/6 (related to A1)
+Approved PR: https://github.com/remla25-team12/operation/pull/79
 
 # Week 9:
 **Selin Ceydeli:** \
