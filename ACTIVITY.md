@@ -98,10 +98,10 @@ Created PR: https://github.com/remla25-team12/operation/pull/61 (related to A5) 
 Approved PR: https://github.com/remla25-team12/model-training/pull/16#pullrequestreview-2880636962
 
 **Philippe Henry:**\
-Created PR: (related to A) \
-Approved PR: 
+Created PR: https://github.com/remla25-team12/operation/pull/58 (related to A5) \
+Approved PR: https://github.com/remla25-team12/operation/pull/59
 
-**Pengxuan (Peter) Huang:**\
+**Pengxuan (Peter) Huang:**\    
 Created PR: (related to A) \
 Approved PR: 
 
@@ -119,7 +119,7 @@ Created PR: https://github.com/remla25-team12/operation/pull/66 (related to A2 &
 Approved PR: https://github.com/remla25-team12/model-service/pull/14#pullrequestreview-2907416258
 
 **Philippe Henry:**\
-Created PR: (related to A) \
+Created PR: https://github.com/remla25-team12/operation/commit/e138a52b05c7b08721e1fa8ee5b7c8ceb7086c7d FORGOT TO MAKE A PR (related to A5) \
 Approved PR: 
 
 **Pengxuan (Peter) Huang:**\
@@ -131,5 +131,43 @@ Created PR: https://github.com/remla25-team12/model-service/pull/15 (related to 
 Approved PR: https://github.com/remla25-team12/app/pull/18
 
 # Week 8:
+**Selin Ceydeli:** \
+Created PR: https://github.com/remla25-team12/lib-ml/pull/10 (related to A1) \
+Approved PR: https://github.com/remla25-team12/lib-version/pull/6
+
+**Mees Chammat:**\
+Created PR: https://github.com/remla25-team12/operation/pull/74 (related to A2) \
+Approved PR: https://github.com/remla25-team12/lib-ml/pull/10#pullrequestreview-2922662922
+
+**Philippe Henry:**\
+Created PR: https://github.com/remla25-team12/operation/pull/79 (related to A5) \
+Approved PR: https://github.com/remla25-team12/app/pull/19
+
+**Pengxuan (Peter) Huang:**\
+Created PR: (related to A) \
+Approved PR: 
+
+**Ayush Kuruvilla:**\
+Created PR: (related to A) \
+Approved PR: 
 
 # Week 9:
+**Selin Ceydeli:** \
+Created PR: (related to A) \
+Approved PR: 
+
+**Mees Chammat:**\
+Created PR: (related to A) \
+Approved PR: 
+
+**Philippe Henry:**\
+Created PR: (related to A) \
+Approved PR: 
+
+**Pengxuan (Peter) Huang:**\
+Created PR: (related to A) \
+Approved PR: 
+
+**Ayush Kuruvilla:**\
+Created PR: (related to A) \
+Approved PR: 
