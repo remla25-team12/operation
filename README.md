@@ -191,13 +191,18 @@ This repository serves as the central point of the project, containing the Docke
       $ cd /mnt/shared/
       ```
 
-   2. For **Minikube**, it is recommended to first clean up any previous Minikube instance and then launch a new cluster by running the following commands:
+   2. For **Minikube**, it is recommended to first clean up any previous Minikube instance and then launch a new cluster with Istio by running the following commands:
 
       ```shell
       minikube delete
       minikube start --memory=4096 --cpus=4 --driver=docker
       minikube addons enable ingress
       
+      helm repo add istio https://istio-release.storage.googleapis.com/charts
+      helm repo update
+      helm install istio-base istio/base -n istio-system --create-namespace
+      helm install istiod istio/istiod -n istio-system
+      helm install istio-ingressgateway istio/gateway -n istio-system
       ```
 
       > **Note:** If you are using Fedora, you may need to run the following command first to allow Minikube to use the Docker driver:
@@ -209,11 +214,6 @@ This repository serves as the central point of the project, containing the Docke
 3. Enable Istio and istio sidecar injection in the (default) namespace:
 
    ```shell 
-   helm repo add istio https://istio-release.storage.googleapis.com/charts
-   helm repo update
-   helm install istio-base istio/base -n istio-system --create-namespace
-   helm install istiod istio/istiod -n istio-system
-   helm install istio-ingress istio/gateway -n istio-system
    kubectl label namespace default istio-injection=enabled
    ```
 
@@ -253,26 +253,22 @@ This repository serves as the central point of the project, containing the Docke
 
 To access the deployed application, you need to be able to resolve `myapp.local`. Which IP to use depends on your cluster:
 
-- For the **VM Cluster**, first run `kubectl get svc istio-ingressgateway -n istio-system` to find the EXTERNAL-IP. Then run the following **on your host machine** (not the ctrl node):
+- For the **VM Cluster**, Istio has a fixed IP, so you can simply run the following **on your host machine** (not the ctrl node):
 
   ```bash
-  sudo sh -c 'echo "<EXTERNAL-IP>   myapp.local" >> /etc/hosts'
+  sudo sh -c 'echo "192.168.56.99  myapp.local" >> /etc/hosts'
   ```
-
-  > The IP is not fixed: if you restart the cluster, it may have changed, so always check that the EXTERNAL-IP and what's in your host file match. Making IP fixed is TODO (excellent requirement)
 
 - On **Minikube**, we use a port-forward, so the IP is `127.0.0.1` (localhost): THIS IS NOT USING THE INGRESS GATEWAY
   ```bash
   kubectl port-forward svc/myapp-dev-myapp-app 8080:8080
   ```
 
->Note: Make sure that all the pods are running before accessing the application. You can check the status of the pods with `kubectl get pods` command.
-
 Then access the application at http://myapp.local
 
 Metrics are available at http://myapp.local/metrics
 
-<!--If you see "no healthy upstream", please wait for the app pods to initialize. Check with `kubectl get pods`.-->
+> If you see "no healthy upstream", please wait for the app pods to initialize. Check with `kubectl get pods`.
 
 ## Traffic management
 
