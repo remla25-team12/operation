@@ -102,8 +102,8 @@ Created PR: https://github.com/remla25-team12/operation/pull/58 (related to A5) 
 Approved PR: https://github.com/remla25-team12/operation/pull/59
 
 **Pengxuan (Peter) Huang:**\    
-Created PR: (related to A) \
-Approved PR: 
+Created PR: (related to A) https://github.com/remla25-team12/operation/pull/67\
+Approved PR: https://github.com/remla25-team12/operation/pull/63
 
 **Ayush Kuruvilla:**\
 Created PR: https://github.com/remla25-team12/operation/pull/63 (related to A5) \
@@ -123,8 +123,8 @@ Created PR: https://github.com/remla25-team12/operation/commit/e138a52b05c7b0872
 Approved PR: 
 
 **Pengxuan (Peter) Huang:**\
-Created PR: (related to A) \
-Approved PR: 
+Created PR: (related to A5) https://github.com/remla25-team12/app/pull/18\
+Approved PR: https://github.com/remla25-team12/app/pull/17
 
 **Ayush Kuruvilla:**\
 Created PR: https://github.com/remla25-team12/model-service/pull/15 (related to A1) \
@@ -145,7 +145,7 @@ Approved PR: https://github.com/remla25-team12/app/pull/19
 
 **Pengxuan (Peter) Huang:**\
 Created PR: (related to A) \
-Approved PR: 
+Approved PR: https://github.com/remla25-team12/operation/pull/67
 
 **Ayush Kuruvilla:**\
 Created PR: https://github.com/remla25-team12/app/pull/19 (related to A1)
