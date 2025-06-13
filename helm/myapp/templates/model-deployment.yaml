@@ -41,9 +41,9 @@ spec:
           {{- end }}
           {{- end }}
             - name: MODEL_URL
-              value: "https://github.com/remla25-team12/model-training/releases/download/0.1.0/Classifier_Sentiment_Model.joblib"
+              value: "https://github.com/remla25-team12/model-training/releases/download/v0.1.0/Classifier_Sentiment_Model.joblib"
             - name: VEC_URL
-              value: "https://github.com/remla25-team12/model-training/releases/download/0.1.0/c1_BoW_Sentiment_Model.pkl"
+              value: "https://github.com/remla25-team12/model-training/releases/download/v0.1.0/c1_BoW_Sentiment_Model.pkl"
             - name: MODEL_CACHE_DIR
               value: {{ .Values.model.cachePath }}
             - name: FEEDBACK_FILE_PATH
