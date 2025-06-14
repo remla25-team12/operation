@@ -11,7 +11,7 @@ spec:
     - name: http
       port: {{ .Values.model.port }}
       targetPort: {{ .Values.model.containerPort }}
-
+---
 apiVersion: v1
 kind: Service
 metadata:
