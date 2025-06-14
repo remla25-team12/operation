@@ -102,7 +102,7 @@ Created PR: https://github.com/remla25-team12/operation/pull/58 (related to A5) 
 Approved PR: https://github.com/remla25-team12/operation/pull/59
 
 **Pengxuan (Peter) Huang:**\
-Created PR: https://github.com/remla25-team12/operation/pull/67 (related to A) \
+Created PR: https://github.com/remla25-team12/operation/pull/67 (related to A5) \
 Approved PR: https://github.com/remla25-team12/operation/pull/63
 
 **Ayush Kuruvilla:**\
