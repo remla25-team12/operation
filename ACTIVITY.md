@@ -89,7 +89,7 @@ Approved PR: https://github.com/remla25-team12/model-training/pull/11
 
 # Week 6:
 
-**Selin Ceydeli:** \
+**Selin Ceydeli:**\
 Created PR: https://github.com/remla25-team12/model-training/pull/16 & https://github.com/remla25-team12/app/pull/15 (related to A5) \
 Approved PR: https://github.com/remla25-team12/operation/pull/58#pullrequestreview-2881946774
 
@@ -101,7 +101,7 @@ Approved PR: https://github.com/remla25-team12/model-training/pull/16#pullreques
 Created PR: https://github.com/remla25-team12/operation/pull/58 (related to A5) \
 Approved PR: https://github.com/remla25-team12/operation/pull/59
 
-**Pengxuan (Peter) Huang:** \    
+**Pengxuan (Peter) Huang:**\    
 Created PR: (related to A) https://github.com/remla25-team12/operation/pull/67 \
 Approved PR: https://github.com/remla25-team12/operation/pull/63
 
