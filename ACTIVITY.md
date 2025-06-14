@@ -90,7 +90,7 @@ Approved PR: https://github.com/remla25-team12/model-training/pull/11
 # Week 6:
 
 **Selin Ceydeli:** \
-Created PR: https://github.com/remla25-team12/model-training/pull/16 (related to A5) \
+Created PR: https://github.com/remla25-team12/model-training/pull/16 & https://github.com/remla25-team12/app/pull/15 (related to A5) \
 Approved PR: https://github.com/remla25-team12/operation/pull/58#pullrequestreview-2881946774
 
 **Mees Chammat:**\
