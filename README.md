@@ -197,7 +197,6 @@ This repository serves as the central point of the project, containing the Docke
       minikube delete
       minikube start --memory=4096 --cpus=4 --driver=docker
       minikube addons enable ingress
-      
       ```
 
       > **Note:** If you are using Fedora, you may need to run the following command first to allow Minikube to use the Docker driver:
@@ -206,34 +205,27 @@ This repository serves as the central point of the project, containing the Docke
       sudo setenforce 0
       ```
 
-3. Enable Istio and istio sidecar injection in the (default) namespace:
+3. Enable Istio sidecar injection in the default namespace:
 
    ```shell 
    kubectl label namespace default istio-injection=enabled
    ```
 
-4. Install and deploy the Prometheus stack (in a different namespace, without Istio sidecar injection):
+4. Install and deploy the Prometheus stack in the istio-system namespace:
 
-   ```bash
-   $ kubectl create namespace monitoring
-   $ kubectl label namespace monitoring istio-injection=disabled
-
+   ```shell
    $ helm repo add prom-repo https://prometheus-community.github.io/helm-charts
    $ helm repo update
-   $ helm install myprom prom-repo/kube-prometheus-stack -n monitoring --set prometheus.prometheusSpec.maximumStartupDurationSeconds=120
+   $ helm install myprom prom-repo/kube-prometheus-stack -n istio-system --set prometheus.prometheusSpec.maximumStartupDurationSeconds=120
    ```
 
-5. Install and deploy our application. One of the flags used in this command will differ depending on your cluster setup.
+5. Install and deploy our application:
 
-   i. For the **Kubernetes VM cluster**, simply use:
-
-   ```bash
-   $ helm install myapp-dev ./helm/myapp  # Make sure you are inside /mnt/shared
-   ```
-
-   ii. For **Minikube**, you must disable the VM shared folder:
-
-   ```bash
+   ```shell
+   # Kubernetes VMs (make sure you are inside /mnt/shared):
+   $ helm install myapp-dev ./helm/myapp
+  
+   # Minikube (disable VM shared folder):
    helm install myapp-dev ./helm/myapp --set useHostPathSharedFolder=false
    ```
 
@@ -284,7 +276,7 @@ for i in {1..5}; do curl -s -H "Host: myapp.local" -H "x-newvers: false" -H "x-u
 for i in {1..5}; do curl -s -H "Host: myapp.local" http://localhost:8080 ; done
 ```
 
-> Replace https://localhost:8080 with the EXTERNAL-IP of the IngressGateway if you're on VM Cluster instead of Minikube.
+> Replace http://localhost:8080 with `http://192.168.56.99:8080` (the IngressGateway IP) if you're on the VM Cluster instead of Minikube.
 
 ## Prometheus and Grafana
 
@@ -292,8 +284,8 @@ Access Prometeus at http://localhost:9090 (or the Minikube URL) on your host mac
 
 ```bash
 # VM cluster:
-export PROMETHEUS_POD_NAME=$(kubectl -n monitoring get pod -l "app.kubernetes.io/name=prometheus,app.kubernetes.io/instance=myprom-kube-prometheus-sta-prometheus" -oname)
-kubectl -n monitoring port-forward $PROMETHEUS_POD_NAME 9090
+export PROMETHEUS_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/name=prometheus,app.kubernetes.io/instance=myprom-kube-prometheus-sta-prometheus" -oname)
+kubectl -n istio-system port-forward $PROMETHEUS_POD_NAME 9090
 
 # Minikube:
 minikube service myprom-kube-prometheus-sta-prometheus --url
@@ -303,8 +295,8 @@ Access Grafana at http://localhost:3000 (or the Minikube URL) on your host machi
 
 ```bash
 # VM Cluster:
-export GRAFANA_POD_NAME=$(kubectl -n monitoring get pod -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=myprom" -oname)
-kubectl -n monitoring port-forward $GRAFANA_POD_NAME 3000
+export GRAFANA_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=myprom" -oname)
+kubectl -n istio-system port-forward $GRAFANA_POD_NAME 3000
 
 # Minikube:
 minikube service myprom-grafana --url
@@ -313,9 +305,9 @@ minikube service myprom-grafana --url
 Grafana login credentials:
 
 - Username: `admin`
-- Password: Run `kubectl --namespace monitoring get secrets myprom-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo`
+- Password: Run `kubectl --namespace istio-system get secrets myprom-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo`
 
-The dashboard configuration (`helm/myapp/grafana/dashboard.json`) is automatically imported through a ConfigMap, so no manual installation is required. Simply go to the Dashboards tab in Grafana and load the 'Restaurant sentiment analysis' dashboard:
+The dashboard configurations inside the folder `helm/myapp/grafana/` are automatically imported through a ConfigMap, so no manual installation is required. Simply go to the Dashboards tab in Grafana and load the 'Restaurant sentiment analysis' dashboard:
 
 ![Grafana dashboards tab showing our dashboard](imgs/grafana_load_dashboard.png)
 
