@@ -22,8 +22,6 @@ model:
   containerPort: 5000
   cachePath: /app/cache
   feedbackPath: /app/feedback
-  env:
-    MODEL_SERVICE_PORT: "5000"
 
 ingress:
   enabled: false
@@ -45,8 +43,6 @@ istio:
   appTrafficSplit:
     v1Weight: 50
     v2Weight: 50
-  modelTrafficSplit:
-    v1Weight: 50
-    v2Weight: 50
+
 
 useHostPathSharedFolder: true
