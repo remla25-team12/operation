@@ -284,6 +284,7 @@ Access Prometeus at http://localhost:9090 OR (http://192.168.56.100:9090) (or th
 
 ```bash
 # VM cluster:
+vagrant ssh ctrl
 export PROMETHEUS_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/name=prometheus,app.kubernetes.io/instance=myprom-kube-prometheus-sta-prometheus" -oname)
 kubectl -n istio-system port-forward --address=0.0.0.0 $PROMETHEUS_POD_NAME 9090
 
@@ -295,6 +296,7 @@ Access Grafana at http://localhost:3000 OR (http://192.168.56.100:3000) (or the 
 
 ```bash
 # VM Cluster:
+vagrant ssh ctrl
 export GRAFANA_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=myprom" -oname)
 kubectl -n istio-system port-forward --address=0.0.0.0 $GRAFANA_POD_NAME 3000
 
