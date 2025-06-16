@@ -777,7 +777,284 @@
       ],
       "title": "Cluster CPU usage",
       "type": "gauge"
+    },
+    {
+      "type": "table",
+      "title": "Table: Profile Clicks Table by App Version",
+      "id": 92,
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 30
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "sum by (member_name, app_version) (profile_clicks_total{service!=\"myapp-dev-myapp-app\"})",
+
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "groupBy",
+          "options": {
+            "fields": {
+              "member_name": "groupby",
+              "app_version": "groupby",
+              "Value": "sum"
+            }
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "__name__": true,
+              "instance": true,
+              "job": true,
+              "container": true,
+              "endpoint": true,
+              "namespace": true,
+              "Time": true
+            },
+            "renameByName": {
+              "Value": "Clicks"
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "displayName": "member_name",
+            "desc": false
+          }
+        ]
+      }
+    },
+    
+    
+    {
+      "type": "piechart",
+      "title": "Profile Clicks - selin",
+      "id": 201,
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 0,
+        "y": 40
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "sum by (app_version) (profile_clicks_total{member_name=\"selin\", service!=\"myapp-dev-myapp-app\"})",
+          "format": "time_series",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "legend": {
+          "showLegend": true,
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "pieType": "pie",
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+
+    {
+      "type": "piechart",
+      "title": "Profile Clicks - peter",
+      "id": 201,
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 4,
+        "y": 40
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "sum by (app_version) (profile_clicks_total{member_name=\"peter\", service!=\"myapp-dev-myapp-app\"})",
+          "format": "time_series",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "legend": {
+          "showLegend": true,
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "pieType": "pie",
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "piechart",
+      "title": "Profile Clicks - mees",
+      "id": 201,
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 8,
+        "y": 40
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "sum by (app_version) (profile_clicks_total{member_name=\"mees\", service!=\"myapp-dev-myapp-app\"})",
+          "format": "time_series",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "legend": {
+          "showLegend": true,
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "pieType": "pie",
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "piechart",
+      "title": "Profile Clicks - ayush",
+      "id": 201,
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 12,
+        "y": 40
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "sum by (app_version) (profile_clicks_total{member_name=\"ayush\", service!=\"myapp-dev-myapp-app\"})",
+          "format": "time_series",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "legend": {
+          "showLegend": true,
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "pieType": "pie",
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "piechart",
+      "title": "Profile Clicks - philippe",
+      "id": 201,
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 16,
+        "y": 40
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "expr": "sum by (app_version) (profile_clicks_total{member_name=\"philippe\", service!=\"myapp-dev-myapp-app\"})",
+          "format": "time_series",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "legend": {
+          "showLegend": true,
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "pieType": "pie",
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "unit": "short"
+        },
+        "overrides": []
+      }
     }
+
   ],
   "preload": false,
   "schemaVersion": 41,
