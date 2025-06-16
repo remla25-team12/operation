@@ -154,7 +154,7 @@ Approved PR: https://github.com/remla25-team12/operation/pull/79
 # Week 9:
 **Selin Ceydeli:** \
 Created PR: (related to A) \
-Approved PR: 
+Approved PR: https://github.com/remla25-team12/operation/pull/67
 
 **Mees Chammat:**\
 Created PR: (related to A) \
