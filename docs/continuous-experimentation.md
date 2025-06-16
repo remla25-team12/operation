@@ -8,11 +8,11 @@ As part of our continuous experiment, we want to evaluate whether certain UI fea
 
 **Null hypothesis:**
 
-Adding linkedin icon when hovering over user profile does not impact number of user clicks to our member’s profile
+Adding linkedin icon when hovering over user profile **does not** impact number of user clicks to our member’s profile.
 
 **Alternative Hypothesis**
 
-Adding linkedin icon when hovering over user profile will increase number of user clicks to our member’s profile.
+Adding linkedin icon when hovering over user profile **will increas**e** number of user clicks to our member’s profile.
 
 ## Experiment
 The experiment we will do is have two version of our app v1 and v2. 
