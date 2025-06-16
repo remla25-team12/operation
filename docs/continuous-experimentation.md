@@ -23,10 +23,11 @@ For both version, clicking each member's card will direct to each members linked
 
 To measure whether such change lead to difference in user behaviour we will use the **number of total clicks members individual linkedin page** as metrics.
 
-**V1**  \
-![Pie chart screenshot](imgs/Experiment-without-linkedin-example.png "Grouped bar chart" )
-**V2** \
-![Pie chart screenshot](imgs/Experiment-example.png "Grouped bar chart")
+**V1**   \
+<img src="imgs/Experiment-without-linkedin-example.png" alt="Grouped bar chart" title="Grouped bar chart" width="300"/>   \
+
+**V2**   \
+<img src="imgs/Experiment-example.png" alt="Grouped bar chart" title="Grouped bar chart" width="300"/>
 
 ## Instruction to reproduce
 Follow instructions on readme **README** to setup the app and open grafana. Then to mannually create statistics, simply go to the peoples page on our app and refresh while click on each members link. These clicks are reflected in the **Total Click Comparision between Versions** Bar chart.
