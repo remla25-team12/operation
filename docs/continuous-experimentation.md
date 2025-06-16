@@ -19,6 +19,19 @@ The experiment we will do is have two version of our app v1 and v2. Version 1 (v
 
 To measure whether such change lead to difference in user behaviour we will use the **number of clicks to individual linkedin page** as metrics.
 
+An example of the feature we intorduced is shown below in the screenshot.
+![Pie chart screenshot](imgs/Experiment-example.png "Grouped bar chart")
+
 ## Instruction to reproduce
+Follow instructions on readme **README** to setup the app and open grafana. Then to mannually create statistics, simply go to the peoples page on our app and refresh while click on each members link. These clicks are reflected in by piechart at the buttom of the Grafana dashboard.
 
 ## Result
+The following screenshot shows the Grafana dashboard panel specific for this experiment. It presents the comparision of number of clicks between the two version.
+![Pie chart screenshot](imgs/cont-exp-example-plot.png "Grouped bar chart")
+
+
+## Decision Process
+We compare the total clicks and found that the new version with the linkedin icon encourages user to make more clicks to individual profiles.
+
+## Conclusion
+According to our statistics, we can conclude that the feature we introduced, which is having an linkedin icon when user hover over individual card in our people's page, leads to more user clicking to access member's linkedin profile.
