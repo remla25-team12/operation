@@ -2,7 +2,7 @@
 ## Overview
 As part of our continuous experiment, we want to evaluate whether certain UI feature can impact user behaviour with our app. From our current app, we think that it is easy for users to overlook that individual cards are clickable.
 
- Thus, we want to deploy a feature that allows user to realise that these pages are clickable without hurting the aesthetics of the page. We decided to add a feature that have a linkedin icon shown next to each member's name when user hovers over it. To test whether it is effective, we willill deploy 2 apps and use Istio to route traffic towards the 2 version. Prometheus and Grafana will be used to monitor and show the metrics comparision between the metrics betwen the 2 version.
+ Thus, we want to deploy a feature that allows user to realise that these pages are clickable without hurting the aesthetics of the page. We decided to add a feature that have a linkedin icon shown next to each member's name when user hovers over it. To test whether it is effective, we will deploy 2 apps and use Istio to route traffic towards the 2 version. Prometheus and Grafana will be used to monitor and show the metrics comparision between the 2 version.
 
 ## Hypothesis
 
@@ -32,12 +32,12 @@ To measure whether such change lead to difference in user behaviour we will use 
 Follow instructions on readme **README** to setup the app and open grafana. Then to mannually create statistics, simply go to the peoples page on our app and refresh while click on each members link. These clicks are reflected in the **Total Click Comparision between Versions** Bar chart.
 
 ## Result
-The following screenshot shows the Grafana dashboard panel specific for this experiment. It presents the comparision of number of clicks between the two version.
+The following screenshot shows the Grafana dashboard panel specific for this experiment. It presents the comparision of number of clicks between the two version. The x axis is the two versions, where V1 is 0.5.11 and V2 is 0.5.12. The Y axis represents the total number of clicks.
 ![Pie chart screenshot](imgs/cont-exp-example-plot.png "Grouped bar chart")
 
 
 ## Decision Process
-We compare the total clicks and can only conclude if number of total clicks in V1 is 20% higher than V2. However, in our result, although V2, whcih is version 0.5.12 in this case, has a higher total click, it is not statistically significant enough for us to draw the conclusion. Thus, we cannot reject the null hypothesis.
+We compare the total clicks and can only conclude if number of total clicks in V1 is 20% higher than V2. However, in our result as shown in the image above, although V2, whcih is version 0.5.12 in this case, has a higher total click, it is not statistically significant enough for us to draw the conclusion. Thus, we cannot reject the null hypothesis.
 
 ## Conclusion
 According to our statistics, we can conclude that the feature we introduced, which is having an linkedin icon when user hover over individual card in our people's page does not lead to more user clicking to access member's linkedin profile.
