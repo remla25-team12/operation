@@ -61,10 +61,6 @@ metadata:
   name: {{ include "myapp.fullname" . }}-app-dr
 spec:
   host: {{ include "myapp.fullname" . }}-app
-  trafficPolicy:
-    loadBalancer:
-      consistentHash:
-        httpHeaderName: x-user-id
   subsets:
   - name: v1
     labels:
@@ -80,10 +76,6 @@ metadata:
   name: {{ include "myapp.fullname" . }}-model-dr
 spec:
   host: {{ include "myapp.fullname" . }}-model
-  trafficPolicy:
-    loadBalancer:
-      consistentHash:
-        httpHeaderName: x-user-id
   subsets:
   - name: v1
     labels:
@@ -103,7 +95,6 @@ spec:
   http:
     - match:
         - sourceLabels:
-            app: {{ include "myapp.fullname" . }}-app
             version: v2
       route:
         - destination:
