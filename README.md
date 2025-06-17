@@ -257,33 +257,23 @@ Metrics are available at http://myapp.local/metrics
 
 > If you see "no healthy upstream", please wait for the app pods to initialize. Check with `kubectl get pods`.
 
-## Traffic management
+## Sticky sessions
 
-To test the traffic management and primary/canary release routing, you can use curl with Host header:
+To test Sticky sessions and primary/canary release routing, you can use curl with the `x-newvers` header. 
+- If `x-newvers=true`, it will always show v2
+- If `x-newvers=false`, it will always show v1 
+- If `x-newvers` is not specified (i.e. in case of a new user), there is an 80% chance to see v1 and 20% to see v2. 
+
+Example for sticky session to v2:
 
 ```bash
-# ------ VM Cluster ------
-# For sticky session to v2 (always v2):
-for i in {1..5}; do curl -s -H "x-newvers: true" -H "x-user-id: testuser" http://myapp.local ; done
+# VM Cluster
+for i in {1..10}; do curl -s -H "x-newvers: true" -H "x-user-id: testuser" http://myapp.local ; done | grep "App Version"
 
-# For sticky session to v1 (always v1):
-for i in {1..5}; do curl -s -H "x-newvers: false" -H "x-user-id: testuser" http://myapp.local ; done
+# Minikube
+kubectl port-forward svc/istio-ingressgateway -n istio-system 8080:80 # Port-forward and keep this terminal tab open
 
-# For normal split (as defined in values.yaml), omit x-newvers:
-for i in {1..5}; do curl -s http://myapp.local ; done
-
-# ------ Minikube ------
-# First port-forward the Istio ingress and keep this terminal tab open separately
-kubectl port-forward svc/istio-ingressgateway -n istio-system 8080:80
-
-# For sticky session to v2 (always v2):
-for i in {1..5}; do curl -s -H "Host: myapp.local" -H "x-newvers: true" -H "x-user-id: testuser" http://localhost:8080 ; done
-
-# For sticky session to v1 (always v1):
-for i in {1..5}; do curl -s -H "Host: myapp.local" -H "x-newvers: false" -H "x-user-id: testuser" http://localhost:8080 ; done
-
-# For normal split (as defined in values.yaml), omit x-newvers:
-for i in {1..5}; do curl -s -H "Host: myapp.local" http://localhost:8080 ; done
+for i in {1..10}; do curl -s -H "Host: myapp.local" -H "x-newvers: true" -H "x-user-id: testuser" http://localhost:8080 ; done | grep "App Version" # In another terminal tab
 ```
 
 ## Prometheus and Grafana
