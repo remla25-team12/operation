@@ -62,7 +62,7 @@ This section demonstrates how incoming client requests and other data flows thro
 In Figure 2 below, we see the data flow for incoming requests from a client, for example, a user visiting the home page of our application via `myapp.local` and leaving a review. This request does not directly go to the `app` pods. Instead, it is intercepted by Istio and routed through the IngressGateway. Based on the traffic split defined in the VirtualService, the request is then routed to the right pod. 
 
 ![Visualization of the data flow for a client visiting the home page of our application via myapp.local and leaving a review](imgs/data_flow.drawio.png)\
-_**Figure 3**: Data flow for incoming requests _
+_**Figure 3**: Data flow for incoming requests._
 
 
 DestinationRules ensure that `-v1` pods only communicate with other `v1` pods. For example. `app-v1` will only send its queries to `model-service-v1`. The same applies to `v2` pods. 
