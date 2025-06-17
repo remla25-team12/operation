@@ -280,13 +280,13 @@
           - "Result of Istio installation:"
           - "{{ istio_result.stdout_lines }}, {{ istio_result.stderr_lines }},"
 
-    - name: Deploy Jaegar tracing tool 
-      kubernetes.core.k8s:
-        state: present
-        src: "/home/vagrant/istio-1.25.2/samples/addons/jaeger.yaml"
+    # - name: Deploy Jaegar tracing tool 
+    #   kubernetes.core.k8s:
+    #     state: present
+    #     src: "/home/vagrant/istio-1.25.2/samples/addons/jaeger.yaml"
 
-    - name: Deploy Kiali Dashboard 
-      kubernetes.core.k8s:
-        state: present
-        src: "/home/vagrant/istio-1.25.2/samples/addons/kiali.yaml"
+    # - name: Deploy Kiali Dashboard 
+    #   kubernetes.core.k8s:
+    #     state: present
+    #     src: "/home/vagrant/istio-1.25.2/samples/addons/kiali.yaml"
 
