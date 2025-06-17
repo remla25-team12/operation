@@ -262,21 +262,29 @@ Metrics are available at http://myapp.local/metrics
 To test the traffic management and primary/canary release routing, you can use curl with Host header:
 
 ```bash
-# First, port-forward the Istio ingress
+# ------ VM Cluster ------
+# For sticky session to v2 (always v2):
+for i in {1..5}; do curl -s -H "x-newvers: true" -H "x-user-id: testuser" http://myapp.local ; done
+
+# For sticky session to v1 (always v1):
+for i in {1..5}; do curl -s -H "x-newvers: false" -H "x-user-id: testuser" http://myapp.local ; done
+
+# For normal split (as defined in values.yaml), omit x-newvers:
+for i in {1..5}; do curl -s http://myapp.local ; done
+
+# ------ Minikube ------
+# First port-forward the Istio ingress and keep this terminal tab open separately
 kubectl port-forward svc/istio-ingressgateway -n istio-system 8080:80
 
-# Then in another terminal:
 # For sticky session to v2 (always v2):
 for i in {1..5}; do curl -s -H "Host: myapp.local" -H "x-newvers: true" -H "x-user-id: testuser" http://localhost:8080 ; done
 
 # For sticky session to v1 (always v1):
 for i in {1..5}; do curl -s -H "Host: myapp.local" -H "x-newvers: false" -H "x-user-id: testuser" http://localhost:8080 ; done
 
-# For normal split (as defined in values.yaml), just omit x-newvers:
+# For normal split (as defined in values.yaml), omit x-newvers:
 for i in {1..5}; do curl -s -H "Host: myapp.local" http://localhost:8080 ; done
 ```
-
-> Replace http://localhost:8080 with `http://192.168.56.99:8080` (the IngressGateway IP) if you're on the VM Cluster instead of Minikube.
 
 ## Prometheus and Grafana
 
