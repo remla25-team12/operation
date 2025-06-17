@@ -97,68 +97,70 @@ spec:
     app.kubernetes.io/name: prometheus
 
 ---
-
 apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
 metadata:
-  name: filter-local-ratelimit-predict
-  namespace: default
+  name: filter-ratelimit
+  namespace: istio-system
 spec:
   workloadSelector:
+    # select by label in the same namespace
     labels:
-      app: myapp
+      istio: ingressgateway
   configPatches:
+    # The Envoy config you want to modify
     - applyTo: HTTP_FILTER
       match:
-        context: SIDECAR_INBOUND
+        context: GATEWAY
         listener:
           filterChain:
             filter:
               name: "envoy.filters.network.http_connection_manager"
+              subFilter:
+                name: "envoy.filters.http.router"
       patch:
         operation: INSERT_BEFORE
+        # Adds the Envoy Rate Limit Filter in HTTP filter chain.
         value:
-          name: envoy.filters.http.local_ratelimit
+          name: envoy.filters.http.ratelimit
           typed_config:
-            "@type": type.googleapis.com/udpa.type.v1.TypedStruct
-            type_url: type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
-            value:
-              stat_prefix: http_local_rate_limiter
-    - applyTo: HTTP_ROUTE
+            "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimit
+            # domain can be anything! Match it to the ratelimter service config
+            domain: ratelimit
+            failure_mode_deny: true
+            timeout: 10s
+            rate_limit_service:
+              grpc_service:
+                envoy_grpc:
+                  cluster_name: outbound|8081||ratelimit.default.svc.cluster.local
+                  authority: ratelimit.default.svc.cluster.local
+              transport_api_version: V3
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: filter-ratelimit-svc
+  namespace: istio-system
+spec:
+  workloadSelector:
+    labels:
+      istio: ingressgateway
+  configPatches:
+    - applyTo: VIRTUAL_HOST
       match:
-        context: SIDECAR_INBOUND
+        context: GATEWAY
         routeConfiguration:
           vhost:
-            name: "inbound|http|<your-port>"
+            name: ""
             route:
               action: ANY
-              match:
-                prefix: "/predict"
       patch:
         operation: MERGE
+        # Applies the rate limit rules.
         value:
-          typed_per_filter_config:
-            envoy.filters.http.local_ratelimit:
-              "@type": type.googleapis.com/udpa.type.v1.TypedStruct
-              type_url: type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
-              value:
-                stat_prefix: http_local_rate_limiter
-                token_bucket:
-                  max_tokens: 4
-                  tokens_per_fill: 4
-                  fill_interval: 60s
-                filter_enabled:
-                  runtime_key: local_rate_limit_enabled
-                  default_value:
-                    numerator: 100
-                    denominator: HUNDRED
-                filter_enforced:
-                  runtime_key: local_rate_limit_enforced
-                  default_value:
-                    numerator: 100
-                    denominator: HUNDRED
-                response_headers_to_add:
-                  - append: false
-                    header:
-                      key: x-local-rate-limit
-                      value: 'true'
+          rate_limits:
+            - actions: # any actions in here
+              - request_headers:
+                  header_name: ":path"
+                  descriptor_key: "PATH"
