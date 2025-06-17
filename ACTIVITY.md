@@ -157,7 +157,7 @@ Created PR: (related to A) \
 Approved PR: https://github.com/remla25-team12/operation/pull/67
 
 **Mees Chammat:**\
-Created PR: (related to A) \
+Created PR: https://github.com/remla25-team12/operation/pull/81 (related to A5) \
 Approved PR: 
 
 **Philippe Henry:**\
