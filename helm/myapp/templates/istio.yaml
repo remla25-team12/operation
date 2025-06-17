@@ -15,17 +15,35 @@ spec:
     hosts:
     - {{ .Values.ingress.host }}
 ---
-# Traffic split
+# Sticky Sessions + Traffic split
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: {{ include "myapp.fullname" . }}-app-vs
 spec:
   hosts:
-  - "*"
+  - {{ .Values.ingress.host }}
   gateways:
   - {{ include "myapp.fullname" . }}-gateway
   http:
+  # Sticky sessions
+  - match:
+    - headers:
+        x-newvers:
+          exact: "true"
+    route:
+    - destination:
+        host: {{ include "myapp.fullname" . }}-app
+        subset: v2
+  - match:
+    - headers:
+        x-newvers:
+          exact: "false"
+    route:
+    - destination:
+        host: {{ include "myapp.fullname" . }}-app
+        subset: v1
+  # Weighted traffic split
   - route:
     - destination:
         host: {{ include "myapp.fullname" . }}-app
@@ -43,6 +61,10 @@ metadata:
   name: {{ include "myapp.fullname" . }}-app-dr
 spec:
   host: {{ include "myapp.fullname" . }}-app
+  trafficPolicy:
+    loadBalancer:
+      consistentHash:
+        httpHeaderName: x-user-id
   subsets:
   - name: v1
     labels:
@@ -58,6 +80,10 @@ metadata:
   name: {{ include "myapp.fullname" . }}-model-dr
 spec:
   host: {{ include "myapp.fullname" . }}-model
+  trafficPolicy:
+    loadBalancer:
+      consistentHash:
+        httpHeaderName: x-user-id
   subsets:
   - name: v1
     labels:
