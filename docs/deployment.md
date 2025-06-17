@@ -26,7 +26,7 @@ These libraries are also automatically versioned and released through GitHub.
 We use a custom Kubernetes cluster, provisioned through Vagrant and Ansible, on bare-metal VirtualBox VMs. Detailed installation instructions are provided in our README. In this section we discuss the deployment structure, including which resources are deployed and when. A high-level overview of relations between resources in the cluster is shown in Figure 1.
 
 
-![High-level overview of the deployment](imgs/kubernetes_chaos.drawio.png)
+![High-level overview of the deployment](imgs/kubernetes_chaos.drawio.png)\
 _**Figure 1**: High-level overview of the deployed resources. Note that this is a non-exhaustive overview; only the most relevant resources are shown to preserve readability of the figure. For example, all resources from the kube-system namespace, and Kubernetes Dashboard's services/configs are excluded._
 
 ### Manually installed resources
@@ -46,7 +46,7 @@ _**Figure 1**: High-level overview of the deployed resources. Note that this is 
 
 After deploying our app manually, Istio injects a so-called envoy sidecar proxy into all four pods, which intercepts all incoming and outgoing traffic (Figure 2). That traffic is then routed according to the VirtualServices and DestinationRules, which determine the traffic split between the primary and canary releases as well as ensure that `app-v1` communicates with `model-service-v1` (and `app-v2` with `model-service-v2`). We do not use an Egress.
 
-![Istio service mesh](imgs/istio_service_mesh.drawio.png)
+![Istio service mesh](imgs/istio_service_mesh.drawio.png)\
 _**Figure 2:** Istio service mesh, showing the Envoy sidecar proxies in each application pod._
 
 See the next section for a detailed example of how data flows through the network for incoming requests.
@@ -61,7 +61,7 @@ This section demonstrates how incoming client requests and other data flows thro
 
 In Figure 2 below, we see the data flow for incoming requests from a client, for example, a user visiting the home page of our application via `myapp.local` and leaving a review. This request does not directly go to the `app` pods. Instead, it is intercepted by Istio and routed through the IngressGateway. Based on the traffic split defined in the VirtualService, the request is then routed to the right pod. 
 
-![Visualization of the data flow for a client visiting the home page of our application via myapp.local and leaving a review](imgs/data_flow.drawio.png)
+![Visualization of the data flow for a client visiting the home page of our application via myapp.local and leaving a review](imgs/data_flow.drawio.png)\
 _**Figure 3**: Data flow for incoming requests _
 
 
@@ -83,5 +83,5 @@ This section briefly covers the training pipeline of the ML model. For detailed 
 
 Model training is supported by DVC in addition to GitHub, and consists of four stages, shown in Figure 4. The final outputs are the model artefacts (the CountVectorizer, and the model itself in compressed `.joblib` format) and a `.json` file with model performance metrics. 
 ![Visualization of the training pipeline for the restaurant sentiment analysis model.](imgs/ML_pipeline.drawio.png)\
-Figure 4: Visualization of the training pipeline for the restaurant sentiment analysis model.
+_Figure 4: Visualization of the training pipeline for the restaurant sentiment analysis model._
 
