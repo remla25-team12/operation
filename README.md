@@ -207,27 +207,54 @@ This repository serves as the central point of the project, containing the Docke
 
 3. Enable Istio sidecar injection in the default namespace:
 
-   ```shell 
-   kubectl label namespace default istio-injection=enabled
-   ```
+### The following commands are required for **Minikube only**
+```shell
+helm repo add istio https://istio-release.storage.googleapis.com/charts
+helm repo update
+helm install istio-base istio/base -n istio-system --create-namespace
+helm install istiod istio/istiod -n istio-system
+helm install istio-ingress istio/gateway -n istio-system
+```
+### This line is required for **both Minikube and VM**
 
-4. Install and deploy the Prometheus stack in the istio-system namespace:
+```shell
+kubectl label namespace default istio-injection=enabled
+```
 
-   ```shell
-   $ helm repo add prom-repo https://prometheus-community.github.io/helm-charts
-   $ helm repo update
-   $ helm install myprom prom-repo/kube-prometheus-stack -n istio-system --set prometheus.prometheusSpec.maximumStartupDurationSeconds=120
-   ```
+4. Install and deploy our application:
+```shell
+# Kubernetes VMs (make sure you are inside /mnt/shared):
+export ENCRYPTED_SMTP_PASSWORD="c2V3dSB5cGNqIGJscmYgaG9uYg=="
 
-5. Install and deploy our application:
+helm install myapp-dev ./helm/myapp \
+  --set smtp.encodedPassword=$ENCRYPTED_SMTP_PASSWORD
 
-   ```shell
-   # Kubernetes VMs (make sure you are inside /mnt/shared):
-   $ helm install myapp-dev ./helm/myapp
-  
    # Minikube (disable VM shared folder):
-   helm install myapp-dev ./helm/myapp --set useHostPathSharedFolder=false
+   helm install myapp-dev ./helm/myapp --set useHostPathSharedFolder=false --set smtp.encodedPassword=$ENCRYPTED_SMTP_PASSWORD
+
+```
+
+5. Install and deploy the Prometheus stack in the istio-system namespace:
+
+   ```bash
+      # Add the Prometheus Helm chart repository
+      helm repo add prom-repo https://prometheus-community.github.io/helm-charts
+
+      # Update Helm repositories
+      helm repo update
+
+      # Apply the Alertmanager configuration secret
+      kubectl apply -f helm/myapp/templates/alertmanager-secret.yaml -n istio-system
+
+      # Install the Prometheus stack with custom Alertmanager configuration
+      helm install myprom prom-repo/kube-prometheus-stack \
+        -n istio-system \
+        --create-namespace \
+        --set alertmanager.enabled=true \
+        --set alertmanager.alertmanagerSpec.configSecret=myapp-dev-alertmanager-config \
+        --set prometheus.prometheusSpec.maximumStartupDurationSeconds=120
    ```
+
 
 6. If you make changes to the Helm chart or want to update the deployment, use the following command:
    ```bash
@@ -276,7 +303,7 @@ kubectl port-forward svc/istio-ingressgateway -n istio-system 8080:80 # Port-for
 for i in {1..10}; do curl -s -H "Host: myapp.local" -H "x-newvers: true" -H "x-user-id: testuser" http://localhost:8080 ; done | grep "App Version" # In another terminal tab
 ```
 
-## Prometheus and Grafana
+## Prometheus,Grafana and Alert Manager
 
 Access Prometeus at http://localhost:9090 (or the Minikube URL) on your host machine:
 
@@ -312,6 +339,14 @@ The dashboard configurations inside the folder `helm/myapp/grafana/` are automat
 It should look like this:
 
 ![Grafana dashboard](imgs/grafana_dashboard.png)
+
+To view Alert manager on you host machine, make sure kube config is exported then run the below commands and access http://localhost:9093/
+
+```bash
+export ALERTMANAGER_POD=$(kubectl -n istio-system get pod -l app.kubernetes.io/name=alertmanager -o name)
+
+kubectl -n istio-system port-forward "$ALERTMANAGER_POD" 9093:9093
+```
 
 # Continuous Progress Log
 
