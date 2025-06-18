@@ -26,227 +26,6 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
-      "description": "Number of times each team member's profile was clicked within the chosen timeframe (range).",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "continuous-blues"
-          },
-          "decimals": 0,
-          "mappings": [],
-          "thresholds": {
-            "mode": "percentage",
-            "steps": [
-              {
-                "color": "green"
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 9,
-        "x": 15,
-        "y": 0
-      },
-      "id": 6,
-      "options": {
-        "colorMode": "background",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "value_and_name",
-        "wideLayout": true
-      },
-      "pluginVersion": "12.0.1",
-      "targets": [
-        {
-          "disableTextWrap": false,
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "profile_clicks_total{service!=\"myapp-dev-myapp-app\"}",
-          "format": "time_series",
-          "fullMetaSearch": false,
-          "includeNullMetadata": true,
-          "instant": false,
-          "interval": "",
-          "legendFormat": "{{member_name}} - v{{app_version}}",
-          "range": true,
-          "refId": "A",
-          "useBackend": false
-        }
-      ],
-      "title": "Number of profile clicks for each team member",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "decimals": 1,
-          "mappings": [],
-          "max": 100,
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "#EAB839",
-                "value": 60
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "%"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 6,
-        "x": 18,
-        "y": 9
-      },
-      "id": 3,
-      "options": {
-        "minVizHeight": 75,
-        "minVizWidth": 75,
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "/^Memory usage \\(%\\)$/",
-          "values": true
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "sizing": "auto"
-      },
-      "pluginVersion": "12.0.1",
-      "targets": [
-        {
-          "disableTextWrap": false,
-          "editorMode": "builder",
-          "exemplar": false,
-          "expr": "memory_usage_percent_gauge",
-          "format": "time_series",
-          "fullMetaSearch": false,
-          "includeNullMetadata": true,
-          "instant": true,
-          "legendFormat": "Memory usage (%)",
-          "range": false,
-          "refId": "A",
-          "useBackend": false
-        }
-      ],
-      "title": "Cluster memory usage",
-      "type": "gauge"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "decimals": 1,
-          "mappings": [],
-          "max": 100,
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "#EAB839",
-                "value": 60
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "%"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 6,
-        "x": 18,
-        "y": 15
-      },
-      "id": 5,
-      "options": {
-        "minVizHeight": 75,
-        "minVizWidth": 75,
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "/^Memory usage \\(%\\)$/",
-          "values": true
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "sizing": "auto"
-      },
-      "pluginVersion": "12.0.1",
-      "targets": [
-        {
-          "disableTextWrap": false,
-          "editorMode": "builder",
-          "exemplar": false,
-          "expr": "cpu_usage_percent_gauge",
-          "format": "time_series",
-          "fullMetaSearch": false,
-          "includeNullMetadata": true,
-          "instant": true,
-          "legendFormat": "Memory usage (%)",
-          "range": false,
-          "refId": "A",
-          "useBackend": false
-        }
-      ],
-      "title": "Cluster CPU usage",
-      "type": "gauge"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
       "description": "% of correct predictions as reported by users",
       "fieldConfig": {
         "defaults": {
@@ -293,7 +72,7 @@
         "h": 9,
         "w": 7,
         "x": 0,
-        "y": 16
+        "y": 0
       },
       "id": 8,
       "options": {
@@ -311,7 +90,7 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "12.0.1",
+      "pluginVersion": "12.0.1+security-01",
       "targets": [
         {
           "disableTextWrap": false,
@@ -403,7 +182,7 @@
         "h": 9,
         "w": 8,
         "x": 7,
-        "y": 16
+        "y": 0
       },
       "id": 2,
       "options": {
@@ -427,7 +206,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.0.1",
+      "pluginVersion": "12.0.1+security-01",
       "targets": [
         {
           "datasource": {
@@ -564,6 +343,75 @@
         "type": "prometheus",
         "uid": "prometheus"
       },
+      "description": "Number of times each team member's profile was clicked within the chosen timeframe (range).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-blues"
+          },
+          "decimals": 0,
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 9,
+        "x": 15,
+        "y": 0
+      },
+      "id": 6,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value_and_name",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.0.1+security-01",
+      "targets": [
+        {
+          "disableTextWrap": false,
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "profile_clicks_total",
+          "format": "time_series",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "instant": false,
+          "interval": "",
+          "legendFormat": "{{member_name}} - v{{app_version}}",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        }
+      ],
+      "title": "Number of profile clicks for each team member",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "description": "Number of reviews within the chosen timeframe (range))",
       "fieldConfig": {
         "defaults": {
@@ -603,7 +451,7 @@
         "h": 10,
         "w": 9,
         "x": 0,
-        "y": 25
+        "y": 9
       },
       "id": 4,
       "options": {
@@ -630,7 +478,7 @@
         "sizing": "auto",
         "valueMode": "color"
       },
-      "pluginVersion": "12.0.1",
+      "pluginVersion": "12.0.1+security-01",
       "targets": [
         {
           "datasource": {
@@ -737,7 +585,7 @@
         "h": 10,
         "w": 9,
         "x": 9,
-        "y": 25
+        "y": 9
       },
       "id": 1,
       "options": {
@@ -753,7 +601,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.0.1",
+      "pluginVersion": "12.0.1+security-01",
       "targets": [
         {
           "datasource": {
@@ -786,12 +634,166 @@
       "fieldConfig": {
         "defaults": {
           "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 1,
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "#EAB839",
+                "value": 60
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "%"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 18,
+        "y": 9
+      },
+      "id": 3,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^Memory usage \\(%\\)$/",
+          "values": true
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "12.0.1+security-01",
+      "targets": [
+        {
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "exemplar": false,
+          "expr": "memory_usage_percent_gauge",
+          "format": "time_series",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "instant": true,
+          "legendFormat": "Memory usage (%)",
+          "range": false,
+          "refId": "A",
+          "useBackend": false
+        }
+      ],
+      "title": "Cluster memory usage",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 1,
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "#EAB839",
+                "value": 60
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "%"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 18,
+        "y": 15
+      },
+      "id": 5,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^Memory usage \\(%\\)$/",
+          "values": true
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "12.0.1+security-01",
+      "targets": [
+        {
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "exemplar": false,
+          "expr": "cpu_usage_percent_gauge",
+          "format": "time_series",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "instant": true,
+          "legendFormat": "Memory usage (%)",
+          "range": false,
+          "refId": "A",
+          "useBackend": false
+        }
+      ],
+      "title": "Cluster CPU usage",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "decimals": 0,
             "mode": "palette-classic"
           },
           "custom": {
             "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
+            "axisGridShow": false,
             "axisLabel": "",
             "axisPlacement": "auto",
             "fillOpacity": 80,
@@ -809,17 +811,13 @@
               "mode": "off"
             }
           },
-          "decimals": 5,
+          "decimals": 1,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "green"
-              },
-              {
-                "color": "red",
-                "value": 80
               }
             ]
           },
@@ -846,12 +844,12 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 45
+        "y": 21
       },
       "id": 301,
       "options": {
         "barRadius": 0,
-        "barWidth": 0.97,
+        "barWidth": 0.93,
         "fullHighlight": false,
         "groupWidth": 0.7,
         "legend": {
@@ -861,8 +859,11 @@
           "showLegend": true
         },
         "orientation": "auto",
-        "showValue": "never",
-        "stacking": "none",
+        "showValue": "always",
+        "stacking": "normal",
+        "text": {
+          "valueSize": 24
+        },
         "tooltip": {
           "hideZeros": false,
           "mode": "single",
@@ -872,7 +873,7 @@
         "xTickLabelRotation": 0,
         "xTickLabelSpacing": 0
       },
-      "pluginVersion": "12.0.1",
+      "pluginVersion": "12.0.1+security-01",
       "targets": [
         {
           "datasource": {
@@ -881,7 +882,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum by (app_version) (profile_clicks_total{service!=\"myapp-dev-myapp-app\"})",
+          "expr": "sum by (app_version) (profile_clicks_total)",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -890,7 +891,7 @@
           "refId": "C"
         }
       ],
-      "title": "Total Clicks Comparision Between Versions",
+      "title": "Comparison of Total User Clicks to Group Members’ LinkedIN Profiles for Different App Versions",
       "type": "barchart"
     }
   ],
@@ -910,5 +911,5 @@
   "timezone": "browser",
   "title": "Restaurant sentiment analysis",
   "uid": "a808a8a4-ee6b-4689-9d50-adceefe24bfe",
-  "version": 1
+  "version": 10
 }
