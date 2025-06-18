@@ -8,10 +8,12 @@ data:
     descriptors:
       - key: PATH
         value: "/predict"
-        rate_limit:
-          unit: minute
-          requests_per_unit: 2
+        descriptors:
+          - key: IP
+            rate_limit:
+              unit: minute
+              requests_per_unit: 2
       - key: PATH
         rate_limit:
           unit: minute
-          requests_per_unit: 100
+          requests_per_unit: 5

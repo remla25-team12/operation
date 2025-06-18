@@ -44,5 +44,11 @@ istio:
     v1Weight: 50
     v2Weight: 50
 
+gateways:
+  istio-ingressgateway:
+    type: LoadBalancer
+    externalTrafficPolicy: Local
+
+
 
 useHostPathSharedFolder: true
