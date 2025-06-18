@@ -1,3 +1,4 @@
+# Gateway (matches IngressGateway deployed during provisioning)
 apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
@@ -14,16 +15,35 @@ spec:
     hosts:
     - {{ .Values.ingress.host }}
 ---
+# Sticky Sessions + Traffic split
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: {{ include "myapp.fullname" . }}-app-vs
 spec:
   hosts:
-  - "*"
+  - {{ .Values.ingress.host }}
   gateways:
   - {{ include "myapp.fullname" . }}-gateway
   http:
+  # Sticky sessions
+  - match:
+    - headers:
+        x-newvers:
+          exact: "true"
+    route:
+    - destination:
+        host: {{ include "myapp.fullname" . }}-app
+        subset: v2
+  - match:
+    - headers:
+        x-newvers:
+          exact: "false"
+    route:
+    - destination:
+        host: {{ include "myapp.fullname" . }}-app
+        subset: v1
+  # Weighted traffic split
   - route:
     - destination:
         host: {{ include "myapp.fullname" . }}-app
@@ -34,6 +54,7 @@ spec:
         subset: v2
       weight: {{ .Values.istio.appTrafficSplit.v2Weight }}
 ---
+# app subsets
 apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
 metadata:
@@ -48,6 +69,7 @@ spec:
     labels:
       version: v2
 ---
+# model-service subsets
 apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
 metadata:
@@ -62,6 +84,7 @@ spec:
     labels:
       version: v2
 ---
+# Routing app traffic to model-service according to v1/v2 subsets
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
@@ -82,16 +105,16 @@ spec:
             host: {{ include "myapp.fullname" . }}-model
             subset: v1
 
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: prometheus
-  namespace: istio-system
-spec:
-  type: ClusterIP
-  ports:
-  - port: 9090
-    targetPort: 9090
-  selector:
-    app.kubernetes.io/name: prometheus
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: prometheus
+#   namespace: istio-system
+# spec:
+#   type: ClusterIP
+#   ports:
+#   - port: 9090
+#     targetPort: 9090
+#   selector:
+#     app.kubernetes.io/name: prometheus
