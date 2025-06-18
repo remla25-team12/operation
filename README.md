@@ -279,20 +279,33 @@ for i in {1..10}; do curl -s -H "Host: myapp.local" -H "x-newvers: true" -H "x-u
 Access Prometeus at http://localhost:9090 (or the Minikube URL) on your host machine:
 
 ```bash
-# VM cluster:
+# VM cluster (Run below on host):
 export PROMETHEUS_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/name=prometheus,app.kubernetes.io/instance=myprom-kube-prometheus-sta-prometheus" -oname)
 kubectl -n istio-system port-forward $PROMETHEUS_POD_NAME 9090
+
+# VM cluster (Backup option) Access at http://192.168.56.100:9090 in this case
+vagrant ssh ctrl
+cd /mnt/shared
+
+export PROMETHEUS_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/name=prometheus,app.kubernetes.io/instance=myprom-kube-prometheus-sta-prometheus" -oname)
+kubectl -n istio-system port-forward --address=0.0.0.0 $PROMETHEUS_POD_NAME 9090
 
 # Minikube:
 minikube service myprom-kube-prometheus-sta-prometheus --url
 ```
 
-Access Grafana at http://localhost:3000 (or the Minikube URL) on your host machine:
+Access Grafana at http://localhost:3000 OR (or the Minikube URL) on your host machine:
 
 ```bash
-# VM Cluster:
+# VM Cluster (Run below on host):
 export GRAFANA_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=myprom" -oname)
 kubectl -n istio-system port-forward $GRAFANA_POD_NAME 3000
+
+# VM cluster (Backup option) Access at http://192.168.56.100:3000 in this case
+vagrant ssh ctrl
+cd /mnt/shared
+export GRAFANA_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=myprom" -oname)
+kubectl -n istio-system port-forward --address=0.0.0.0 $GRAFANA_POD_NAME 3000
 
 # Minikube:
 minikube service myprom-grafana --url
