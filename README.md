@@ -133,8 +133,7 @@ This repository serves as the central point of the project, containing the Docke
 6. Once the VMs are up and provisioned, run the following Ansible playbook to finalize the Kubernetes setup:
 
    ```bash
-    ansible-playbook -u vagrant -i 192.168.56.100, provisioning/finalization.yml \
-    --private-key=.vagrant/machines/ctrl/virtualbox/private_key
+    ansible-playbook -u vagrant -i 192.168.56.100, provisioning/finalization.yml
    ```
 
 7. To access the Kubernetes dashboard, do the following **on your host machine**:
