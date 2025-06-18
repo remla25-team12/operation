@@ -19,13 +19,13 @@ For the experiment, we will have two version of our app, namely v1 and v2.
 - **Version 1 (v1)** is the base version with no LinkedIn icon.
 - **Version 2 (v2)** introduces a LinkedIn icon that appears when hovering over a member card, suggesting that the card is clickable and links to the member’s LinkedIn profile.
 
-Below you can see the two app versions we will use for the experiment:
+Below you can see the People's page for the two app versions we will use for the experiment. As an example, you can check the bottom-right member card for the addition of LinkedIn icon on v2 of the app. The icon appears upon hovering over the member card of our team member Pengxuan Huang:
 
 **V1** \
-<img src="imgs/Experiment-without-linkedin-example.png" alt="Grouped bar chart" title="Grouped bar chart" width="300"/> \
+<img src="imgs/Experiment-without-linkedin-example.png" alt="Grouped bar chart" title="Grouped bar chart" width="500"/> 
 
 **V2** \
-<img src="imgs/Experiment-example.png" alt="Grouped bar chart" title="Grouped bar chart" width="300"/>
+<img src="imgs/Experiment-example.png" alt="Grouped bar chart" title="Grouped bar chart" width="500"/>
 
 For both versions, clicking each member card will direct to each member's LinkedIn page. However, the key of this experiment is to evaluate whether having such an icon can help users know that it directs to members' LinkedIn pages.
 

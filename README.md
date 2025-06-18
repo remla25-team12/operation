@@ -168,9 +168,9 @@ This repository serves as the central point of the project, containing the Docke
 - [Helm 3 CLI](https://helm.sh/docs/intro/install/)
 - [Istioctl](https://istio.io/latest/docs/setup/install/istioctl/) 1.25.2 or higher
 - A functional Kubernetes cluster.
-   - Recommended: VM cluster from the [Provisioning the Kubernetes Cluster](#provisioning-the-kubernetes-cluster) section. In the instructions below, it is assumed you already have this cluster up and running.
-   - Alternatively, you can install and use [Minikube](https://minikube.sigs.k8s.io/docs/start/) for a local Kubernetes cluster. 
-   > **Note**: Minikube compatibility is not actively being prioritized and maintained by us. If anything does not work as expected, please use the VM cluster.
+  - Recommended: VM cluster from the [Provisioning the Kubernetes Cluster](#provisioning-the-kubernetes-cluster) section. In the instructions below, it is assumed you already have this cluster up and running.
+  - Alternatively, you can install and use [Minikube](https://minikube.sigs.k8s.io/docs/start/) for a local Kubernetes cluster.
+    > **Note**: Minikube compatibility is not actively being prioritized and maintained by us. If anything does not work as expected, please use the VM cluster.
 
 ### Install and run
 
@@ -189,7 +189,7 @@ This repository serves as the central point of the project, containing the Docke
       vagrant ssh ctrl
       $ cd /mnt/shared/
       ```
-      
+
    2. For **Minikube**, additional work is required. Clean up any pevious Minikube instance, launch a new instance, enable ingresses, and install Istio manually with its Helm Charts:
 
       ```shell
@@ -197,19 +197,15 @@ This repository serves as the central point of the project, containing the Docke
       minikube start --memory=4096 --cpus=4 --driver=docker
       minikube addons enable ingress
       helm install istio-base istio/base -n istio-system --create-namespace
-      helm install istiod istio/istiod -n istio-system 
-      helm install istio-ingress istio/gateway -n istio-system 
+      helm install istiod istio/istiod -n istio-system
+      helm install istio-ingress istio/gateway -n istio-system
       ```
 
-      > **Note:** If you are using Fedora, you may need to run `sudo setenforce 0` first to allow Minikube to use the Docker driver:
-
-      ```bash
-      sudo setenforce 0
-      ```
+      > **Note:** If you are using Fedora, you may need to run `sudo setenforce 0` first to allow Minikube to use the Docker driver.
 
 3. Enable Istio sidecar injection in the default namespace:
 
-   ```shell 
+   ```shell
    kubectl label namespace default istio-injection=enabled
    ```
 
@@ -227,7 +223,7 @@ This repository serves as the central point of the project, containing the Docke
    # Kubernetes VMs (make sure you are inside /mnt/shared):
    cd /mnt/shared
    helm install myapp-dev ./helm/myapp
-  
+
    # Minikube (disable VM shared folder):
    helm install myapp-dev ./helm/myapp --set useHostPathSharedFolder=false
    ```
@@ -238,6 +234,7 @@ This repository serves as the central point of the project, containing the Docke
    ```
 
 # Usage
+
 **All commands in this section should be executed on your host machine.** Add kubectl to your PATH if needed, see [Provisioning the Kubernetes Cluster, step 8](#provisioning-the-kubernetes-cluster).
 
 ## Webapp access
@@ -263,10 +260,11 @@ Metrics are available at http://myapp.local/metrics
 
 ## Sticky sessions
 
-To test Sticky sessions and primary/canary release routing, you can use curl with the `x-newvers` header. 
+To test Sticky sessions and primary/canary release routing, you can use curl with the `x-newvers` header.
+
 - If `x-newvers=true`, it will always show v2
-- If `x-newvers=false`, it will always show v1 
-- If `x-newvers` is not specified (i.e. in case of a new user), there is an 80% chance to see v1 and 20% to see v2. 
+- If `x-newvers=false`, it will always show v1
+- If `x-newvers` is not specified (i.e. in case of a new user), there is an 80% chance to see v1 and 20% to see v2.
 
 Example for sticky session to v2:
 
