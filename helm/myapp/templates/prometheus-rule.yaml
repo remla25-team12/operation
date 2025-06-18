@@ -1,0 +1,33 @@
+{{- if .Values.monitoring.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ .Release.Name }}-app-prometheus-rule
+  namespace: istio-system
+  labels:
+    release: myprom
+    prometheus: {{ .Release.Name }}-kube-prometheus-sta-prometheus
+    app.kubernetes.io/managed-by: Helm
+spec:
+  groups:
+    - name: app.rules
+      rules:
+        - alert: LowModelAccuracy
+          expr: current_percentage_of_correct_predictions_gauge < 70
+          for: 1m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Model accuracy is low"
+            description: "The current accuracy reported by users dropped below 70%."
+
+        # ✅ Test Rule for Email Notification
+        - alert: TestEmailAlert
+          expr: vector(1)
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Test Alert Fired"
+            description: "This is a test alert to verify Alertmanager email integration."
+{{- end }}
