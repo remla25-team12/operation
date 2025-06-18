@@ -212,7 +212,25 @@ kubectl label namespace default istio-injection=enabled
 ```
 
 
-4. Install and deploy our application:
+4. Install and deploy the Prometheus stack in the istio-system namespace:
+
+   ```bash
+      # Add the Prometheus Helm chart repository
+      helm repo add prom-repo https://prometheus-community.github.io/helm-charts
+
+      # Update Helm repositories
+      helm repo update
+
+      # Install the Prometheus stack with custom Alertmanager configuration
+      helm install myprom prom-repo/kube-prometheus-stack \
+        -n istio-system \
+        --create-namespace \
+        --set alertmanager.enabled=true \
+        --set alertmanager.alertmanagerSpec.configSecret=myapp-dev-alertmanager-config \
+        --set prometheus.prometheusSpec.maximumStartupDurationSeconds=120
+   ```
+
+5. Install and deploy our application:
 ```shell
 # Kubernetes VMs (make sure you are inside /mnt/shared):
 export ENCRYPTED_SMTP_PASSWORD="c2V3dSB5cGNqIGJscmYgaG9uYg=="
@@ -224,28 +242,6 @@ helm install myapp-dev ./helm/myapp \
    helm install myapp-dev ./helm/myapp --set useHostPathSharedFolder=false --set smtp.encodedPassword=$ENCRYPTED_SMTP_PASSWORD
 
 ```
-
-5. Install and deploy the Prometheus stack in the istio-system namespace:
-
-   ```bash
-      # Add the Prometheus Helm chart repository
-      helm repo add prom-repo https://prometheus-community.github.io/helm-charts
-
-      # Update Helm repositories
-      helm repo update
-
-      # Apply the Alertmanager configuration secret
-      kubectl apply -f helm/myapp/templates/alertmanager-secret.yaml -n istio-system
-
-      # Install the Prometheus stack with custom Alertmanager configuration
-      helm install myprom prom-repo/kube-prometheus-stack \
-        -n istio-system \
-        --create-namespace \
-        --set alertmanager.enabled=true \
-        --set alertmanager.alertmanagerSpec.configSecret=myapp-dev-alertmanager-config \
-        --set prometheus.prometheusSpec.maximumStartupDurationSeconds=120
-   ```
-
 
 6. If you make changes to the Helm chart or want to update the deployment, use the following command:
    ```bash
