@@ -33,7 +33,7 @@ To measure whether such change lead to difference in user behaviour we will use 
 Follow instructions on readme **README** to setup the app and open grafana. Then to mannually create statistics, simply go to the peoples page on our app and refresh while click on each members link. These clicks are reflected in the **Total Click Comparision between Versions** Bar chart.
 
 ## Result
-The following screenshot shows the Grafana dashboard panel specific for this experiment. It presents the comparision of number of clicks between the two version. The x axis is the two versions, where V1 is 0.5.11 and V2 is 0.5.12. The Y axis represents the total number of clicks.
+The following screenshot shows the Grafana dashboard panel specific for this experiment. It presents the comparision of total number of clicks to members' linkedin page between the two versions. The x axis contains the two versions name, where 0.5.11 is V1 and 0.5.12 is V2. The Y axis represents the total number of clicks.
 ![Pie chart screenshot](imgs/cont-exp-example-plot.png "Grouped bar chart")
 
 
