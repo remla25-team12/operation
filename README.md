@@ -131,7 +131,8 @@ This repository serves as the central point of the project, containing the Docke
 6. Once the VMs are up and provisioned, run the following Ansible playbook to finalize the Kubernetes setup:
 
    ```bash
-   ansible-playbook -u vagrant -i 192.168.56.100, provisioning/finalization.yml
+    ansible-playbook -u vagrant -i 192.168.56.100, provisioning/finalization.yml \
+    --private-key=.vagrant/machines/ctrl/virtualbox/private_key
    ```
 
 7. To access the Kubernetes dashboard, do the following **on your host machine**:
@@ -201,6 +202,10 @@ This repository serves as the central point of the project, containing the Docke
       ```
 
       > **Note:** If you are using Fedora, you may need to run `sudo setenforce 0` first to allow Minikube to use the Docker driver:
+
+      ```bash
+      sudo setenforce 0
+      ```
 
 3. Enable Istio sidecar injection in the default namespace:
 
@@ -283,15 +288,19 @@ Access Prometeus at http://localhost:9090 (or the Minikube URL) on your host mac
 export PROMETHEUS_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/name=prometheus,app.kubernetes.io/instance=myprom-kube-prometheus-sta-prometheus" -oname)
 kubectl -n istio-system port-forward $PROMETHEUS_POD_NAME 9090
 
-# VM cluster (Backup option) Access at http://192.168.56.100:9090 in this case
+# Minikube:
+minikube service myprom-kube-prometheus-sta-prometheus --url
+```
+
+Backup Access to Prometheus at http://192.168.56.100:9090:
+
+```bash
+# VM Cluster (Backup option)
 vagrant ssh ctrl
 cd /mnt/shared
 
 export PROMETHEUS_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/name=prometheus,app.kubernetes.io/instance=myprom-kube-prometheus-sta-prometheus" -oname)
 kubectl -n istio-system port-forward --address=0.0.0.0 $PROMETHEUS_POD_NAME 9090
-
-# Minikube:
-minikube service myprom-kube-prometheus-sta-prometheus --url
 ```
 
 Access Grafana at http://localhost:3000 OR (or the Minikube URL) on your host machine:
@@ -301,14 +310,19 @@ Access Grafana at http://localhost:3000 OR (or the Minikube URL) on your host ma
 export GRAFANA_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=myprom" -oname)
 kubectl -n istio-system port-forward $GRAFANA_POD_NAME 3000
 
-# VM cluster (Backup option) Access at http://192.168.56.100:3000 in this case
-vagrant ssh ctrl
-cd /mnt/shared
-export GRAFANA_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=myprom" -oname)
-kubectl -n istio-system port-forward --address=0.0.0.0 $GRAFANA_POD_NAME 3000
-
 # Minikube:
 minikube service myprom-grafana --url
+```
+
+Backup Access to Grafana at http://192.168.56.100:3000:
+
+```bash
+# VM Cluster (Backup option)
+vagrant ssh ctrl
+cd /mnt/shared
+
+export GRAFANA_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=myprom" -oname)
+kubectl -n istio-system port-forward --address=0.0.0.0 $GRAFANA_POD_NAME 3000
 ```
 
 Grafana login credentials:
