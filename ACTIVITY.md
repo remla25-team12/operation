@@ -120,7 +120,7 @@ Approved PR: https://github.com/remla25-team12/model-service/pull/14#pullrequest
 
 **Philippe Henry:**\
 Created PR: https://github.com/remla25-team12/operation/commit/e138a52b05c7b08721e1fa8ee5b7c8ceb7086c7d (related to A5) \
-Approved PR: FORGOT TO MAKE A PR
+Approved PR: FORGOT TO APPROVE A PR
 
 **Pengxuan (Peter) Huang:**\
 Created PR: https://github.com/remla25-team12/app/pull/18 (related to A5) \
@@ -154,10 +154,10 @@ Approved PR: https://github.com/remla25-team12/operation/pull/79
 # Week 9:
 **Selin Ceydeli:** \
 Created PR: (related to A) \
-Approved PR: 
+Approved PR: https://github.com/remla25-team12/operation/pull/67
 
 **Mees Chammat:**\
-Created PR: (related to A) \
+Created PR: https://github.com/remla25-team12/operation/pull/81 (related to A5) \
 Approved PR: 
 
 **Philippe Henry:**\
