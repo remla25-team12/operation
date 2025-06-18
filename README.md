@@ -146,7 +146,7 @@ This repository serves as the central point of the project, containing the Docke
 
      ![Token as shown in the terminal](imgs/terminal_token.png)
 
-     > **Note**: The token was generated during the final provisioning step. If you cannot find the token in the terminal output anymore, run `vagrant ssh ctrl`, followed by `kubectl -n kubernetes-dashboard create token admin-user` to generate a new one.
+     > **Note**: The token was generated during the final provisioning step, just before Istio was installed. If you cannot find the token in the terminal output anymore, run `vagrant ssh ctrl`, followed by `kubectl -n kubernetes-dashboard create token admin-user` to generate a new one.
 
 8. To communicate with the cluster from the host, a kubeconfig file (`admin.conf`) has been exported by Ansible. For example, you can run:
    ```bash
