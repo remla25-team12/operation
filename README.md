@@ -122,18 +122,16 @@ This repository serves as the central point of the project, containing the Docke
     cp ~/.ssh/<your_key>.pub provisioning/keys/<your_key>.pub
    ```
 
-5. Start the provisioning process from the repository's root folder:
+5. Start the provisioning process from the repository's root folder. This operation may take up to 5 minutes to complete.
 
    ```bash
-    vagrant up --provision
+   vagrant up --provision
    ```
-
-   This operation may take a while to complete.
 
 6. Once the VMs are up and provisioned, run the following Ansible playbook to finalize the Kubernetes setup:
 
    ```bash
-    ansible-playbook -u vagrant -i 192.168.56.100, provisioning/finalization.yml
+   ansible-playbook -u vagrant -i 192.168.56.100, provisioning/finalization.yml
    ```
 
 7. To access the Kubernetes dashboard, do the following **on your host machine**:
@@ -152,7 +150,7 @@ This repository serves as the central point of the project, containing the Docke
 
 8. To communicate with the cluster from the host, a kubeconfig file (`admin.conf`) has been exported by Ansible. For example, you can run:
    ```bash
-    kubectl get ns --kubeconfig ./provisioning/admin.conf
+   kubectl get ns --kubeconfig ./provisioning/admin.conf
    ```
    You can also set the filepath as an environment variable or add it to `~/.bashrc`, so that you do not need to use the `--kubeconfig` flag every time:
    ```bash
