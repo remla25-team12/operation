@@ -16,4 +16,4 @@ data:
       - key: PATH
         rate_limit:
           unit: minute
-          requests_per_unit: 5
+          requests_per_unit: 10
