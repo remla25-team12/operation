@@ -122,19 +122,16 @@ This repository serves as the central point of the project, containing the Docke
     cp ~/.ssh/<your_key>.pub provisioning/keys/<your_key>.pub
    ```
 
-5. Start the provisioning process from the repository's root folder:
+5. Start the provisioning process from the repository's root folder. This operation may take up to 5 minutes to complete.
 
    ```bash
-    vagrant up --provision
+   vagrant up --provision
    ```
-
-   This operation may take a while to complete.
 
 6. Once the VMs are up and provisioned, run the following Ansible playbook to finalize the Kubernetes setup:
 
    ```bash
-    ansible-playbook -u vagrant -i 192.168.56.100, provisioning/finalization.yml \
-    --private-key=.vagrant/machines/ctrl/virtualbox/private_key
+   ansible-playbook -u vagrant -i 192.168.56.100, provisioning/finalization.yml
    ```
 
 7. To access the Kubernetes dashboard, do the following **on your host machine**:
@@ -149,11 +146,11 @@ This repository serves as the central point of the project, containing the Docke
 
      ![Token as shown in the terminal](imgs/terminal_token.png)
 
-     > **Note**: The token was generated during the final provisioning step. If you cannot find the token in the terminal output anymore, run `vagrant ssh ctrl`, followed by `kubectl -n kubernetes-dashboard create token admin-user` to generate a new one.
+     > **Note**: The token was generated during the final provisioning step, just before Istio was installed. If you cannot find the token in the terminal output anymore, run `vagrant ssh ctrl`, followed by `kubectl -n kubernetes-dashboard create token admin-user` to generate a new one.
 
 8. To communicate with the cluster from the host, a kubeconfig file (`admin.conf`) has been exported by Ansible. For example, you can run:
    ```bash
-    kubectl get ns --kubeconfig ./provisioning/admin.conf
+   kubectl get ns --kubeconfig ./provisioning/admin.conf
    ```
    You can also set the filepath as an environment variable or add it to `~/.bashrc`, so that you do not need to use the `--kubeconfig` flag every time:
    ```bash
@@ -170,8 +167,9 @@ This repository serves as the central point of the project, containing the Docke
 - [Helm 3 CLI](https://helm.sh/docs/intro/install/)
 - [Istioctl](https://istio.io/latest/docs/setup/install/istioctl/) 1.25.2 or higher
 - A functional Kubernetes cluster.
-  - Recommended: VM cluster from the [Provisioning the Kubernetes Cluster](#provisioning-the-kubernetes-cluster) section. In the instructions below, it is assumed you already have this cluster up and running.
-  - Alternatively, you can install and use [Minikube](https://minikube.sigs.k8s.io/docs/start/) for a local Kubernetes cluster.
+   - Recommended: VM cluster from the [Provisioning the Kubernetes Cluster](#provisioning-the-kubernetes-cluster) section. In the instructions below, it is assumed you already have this cluster up and running.
+   - Alternatively, you can install and use [Minikube](https://minikube.sigs.k8s.io/docs/start/) for a local Kubernetes cluster. 
+   > **Note**: Minikube compatibility is not actively being prioritized and maintained by us. If anything does not work as expected, please use the VM cluster.
 
 ### Install and run
 
@@ -184,26 +182,25 @@ This repository serves as the central point of the project, containing the Docke
 
 2. Prepare the cluster for app installation.
 
-   1. For the **Kubernetes VM cluster**, SSH into the control node and navigate to the shared folder directory.
+   1. For the **Kubernetes VM cluster**, most settings and configurations have already been applied during provisioning. Simply SSH into the control node and navigate to the shared folder directory. **This means that all subsequent commands in this section should be executed on the control node.**
 
       ```shell
       vagrant ssh ctrl
       $ cd /mnt/shared/
       ```
-
-   2. For **Minikube**, it is recommended to first clean up any previous Minikube instance and then launch a new cluster with Istio by running the following commands:
+      
+   2. For **Minikube**, additional work is required. Clean up any pevious Minikube instance, launch a new instance, enable ingresses, and install Istio manually with its Helm Charts:
 
       ```shell
       minikube delete
       minikube start --memory=4096 --cpus=4 --driver=docker
       minikube addons enable ingress
+      helm install istio-base istio/base -n istio-system --create-namespace
+      helm install istiod istio/istiod -n istio-system 
+      helm install istio-ingress istio/gateway -n istio-system 
       ```
 
-      > **Note:** If you are using Fedora, you may need to run the following command first to allow Minikube to use the Docker driver:
-
-      ```shell
-      sudo setenforce 0
-      ```
+      > **Note:** If you are using Fedora, you may need to run `sudo setenforce 0` first to allow Minikube to use the Docker driver:
 
 3. Enable Istio sidecar injection in the default namespace:
 
@@ -220,7 +217,6 @@ helm install istio-ingress istio/gateway -n istio-system
 ```shell
 kubectl label namespace default istio-injection=enabled
 ```
-
 4. Install and deploy our application:
 ```shell
 # Kubernetes VMs (make sure you are inside /mnt/shared):
@@ -258,10 +254,11 @@ helm install myapp-dev ./helm/myapp \
 
 6. If you make changes to the Helm chart or want to update the deployment, use the following command:
    ```bash
-   $ helm upgrade --install myapp-dev ./helm/myapp
+   helm upgrade --install myapp-dev ./helm/myapp
    ```
 
 # Usage
+**All commands in this section should be executed on your host machine.** Add kubectl to your PATH if needed, see [Provisioning the Kubernetes Cluster, step 8](#provisioning-the-kubernetes-cluster).
 
 ## Webapp access
 
@@ -299,7 +296,6 @@ for i in {1..10}; do curl -s -H "x-newvers: true" -H "x-user-id: testuser" http:
 
 # Minikube
 kubectl port-forward svc/istio-ingressgateway -n istio-system 8080:80 # Port-forward and keep this terminal tab open
-
 for i in {1..10}; do curl -s -H "Host: myapp.local" -H "x-newvers: true" -H "x-user-id: testuser" http://localhost:8080 ; done | grep "App Version" # In another terminal tab
 ```
 
