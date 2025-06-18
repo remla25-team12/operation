@@ -195,6 +195,8 @@ This repository serves as the central point of the project, containing the Docke
       minikube delete
       minikube start --memory=4096 --cpus=4 --driver=docker
       minikube addons enable ingress
+      helm repo add istio https://istio-release.storage.googleapis.com/charts
+      helm repo update
       helm install istio-base istio/base -n istio-system --create-namespace
       helm install istiod istio/istiod -n istio-system 
       helm install istio-ingress istio/gateway -n istio-system 
@@ -203,20 +205,13 @@ This repository serves as the central point of the project, containing the Docke
       > **Note:** If you are using Fedora, you may need to run `sudo setenforce 0` first to allow Minikube to use the Docker driver:
 
 3. Enable Istio sidecar injection in the default namespace:
-
-### The following commands are required for **Minikube only**
-```shell
-helm repo add istio https://istio-release.storage.googleapis.com/charts
-helm repo update
-helm install istio-base istio/base -n istio-system --create-namespace
-helm install istiod istio/istiod -n istio-system
-helm install istio-ingress istio/gateway -n istio-system
-```
 ### This line is required for **both Minikube and VM**
 
 ```shell
 kubectl label namespace default istio-injection=enabled
 ```
+
+
 4. Install and deploy our application:
 ```shell
 # Kubernetes VMs (make sure you are inside /mnt/shared):
