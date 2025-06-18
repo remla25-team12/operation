@@ -169,5 +169,5 @@ Created PR: (related to A) \
 Approved PR: 
 
 **Ayush Kuruvilla:**\
-Created PR: (related to A) \
-Approved PR: 
+Created PR: https://github.com/remla25-team12/operation/pull/87 (related to A3) \
+Approved PR: https://github.com/remla25-team12/operation/pull/81
