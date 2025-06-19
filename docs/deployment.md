@@ -5,7 +5,7 @@ This document details the deployment structure and data flow in our application.
 ## Project overview
 Our restaurant sentiment analysis project consists of six repositories, of which two containers, two libraries, one model-traning pipeline, and one central hub. Figure 1 shows the dependencies and relations between the repositories in our project.
 
-![Repository overview](imgs/repo_overview.png)
+![Repository overview](imgs/repo_overview.png)\
 **Figure 1: Repository overview.**
 
 The two container repositories, `app` and `model-service`, form our application:
