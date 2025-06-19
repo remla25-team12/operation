@@ -41,8 +41,8 @@ service:
 istio:
   enabled: true
   appTrafficSplit:
-    v1Weight: 10
-    v2Weight: 90
+    v1Weight: 90
+    v2Weight: 10
 
 gateways:
   istio-ingressgateway:
