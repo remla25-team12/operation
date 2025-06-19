@@ -161,8 +161,8 @@ Created PR: https://github.com/remla25-team12/operation/pull/81 (related to A5) 
 Approved PR: 
 
 **Philippe Henry:**\
-Created PR: (related to A) \
-Approved PR: 
+Created PR: https://github.com/remla25-team12/operation/pull/88 (related to A5) \
+Approved PR: https://github.com/remla25-team12/operation/pull/87
 
 **Pengxuan (Peter) Huang:**\
 Created PR: (related to A) \
