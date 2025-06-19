@@ -291,6 +291,8 @@ for i in {1..10}; do curl -s -H "Host: myapp.local" -H "x-newvers: true" -H "x-u
 
 ## Prometheus, Grafana and Alert Manager
 
+### Prometheus
+
 Access Prometeus at http://localhost:9090 (or the Minikube URL) on your host machine:
 
 ```bash
@@ -312,6 +314,8 @@ cd /mnt/shared
 export PROMETHEUS_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/name=prometheus,app.kubernetes.io/instance=myprom-kube-prometheus-sta-prometheus" -oname)
 kubectl -n istio-system port-forward --address=0.0.0.0 $PROMETHEUS_POD_NAME 9090
 ```
+
+### Grafana
 
 Access Grafana at http://localhost:3000 OR (or the Minikube URL) on your host machine:
 
@@ -347,6 +351,8 @@ The dashboard configurations inside the folder `helm/myapp/grafana/` are automat
 It should look like this:
 
 ![Grafana dashboard](imgs/grafana_dashboard.png)
+
+### Alert Manager
 
 To view Alert Manager on you host machine, make sure kube config is exported (see [Provisioning the Kubernetes Cluster, step 8](#provisioning-the-kubernetes-cluster)), then run the below commands to access Alert Manager at http://localhost:9093/ :
 
