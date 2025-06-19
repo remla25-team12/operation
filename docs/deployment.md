@@ -8,24 +8,26 @@ Our restaurant sentiment analysis project consists of six repositories, of which
 ![Repository overview](imgs/repo_overview.png)\
 **Figure 1: Repository overview.**
 
-The two container repositories, `app` and `model-service`, form our application:
-- `app` handles http requests using the Flask API, and serves the html files. It also collects metrics (see this section).
+The two container repositories, [`app`](https://github.com/remla25-team12/app) and [`model-service`](https://github.com/remla25-team12/model-service), form our application:
+- `app` handles HTTP requests using the Flask API, and serves the html files. It also collects metrics (see this section).
 - `model-service` queries the ML model and returns the predicted sentiment of restaurant reviews submitted by users through `app`'s interface.
 
 Both repositories are capable of automatically releasing new versions of the containers to GitHub, by means of GitHub Actions.
 
-The `model-training` repository is not directly used by any of the containers. It is used to train, evaluate, and release new versions of the ML model.
+The [`model-training`](https://github.com/remla25-team12/model-training) repository is not directly used by any of the containers. It is used to train, evaluate, and release new versions of the ML model.
 
-The two Python libraries, `lib-ml` and `lib-version`, are used by several scripts across our repositories:
+The two Python libraries, [`lib-ml`](https://github.com/remla25-team12/lib-ml) and [`lib-version`](https://github.com/remla25-team12/lib-version), are used by several scripts across our repositories:
 - `lib-ml` contains pre-processing logic for text input. Both `model-training` and `model-service` depend on this library to pre-process raw reviews, whether they're from a dataset or a submitted review.
 - `lib-version` can be queried for the version of a container. `app` depends on this library to display the container versions on the home page of the application.
 
 These libraries are also automatically versioned and released through GitHub.
 
-`operation` is the repository you are currently in. It is the "central hub", the core of the project. It contains mostly documentation and configuration files. 
+[`operation`](https://github.com/remla25-team12/operation) is the repository you are currently in. It is the "central hub", the core of the project. It contains mostly documentation and configuration files for Docker, Kubernetes, Ansible, and several other tools. 
 
 ## Deployment structure
-We use a custom Kubernetes cluster, provisioned through Vagrant and Ansible, on bare-metal VirtualBox VMs. Detailed installation instructions are provided in our README. In this section we discuss the deployment structure, including which resources are deployed and when. A high-level overview of relations between resources in the cluster is shown in Figure 2.
+We use a custom Kubernetes cluster, provisioned through Vagrant and Ansible, on bare-metal VirtualBox VMs. Detailed installation instructions are provided in the [README](https://github.com/remla25-team12/operation/blob/main/README.md). 
+
+In this section, we discuss the deployment structure, including which resources are deployed and when. A high-level overview of relations between resources in the cluster is shown in Figure 2.
 
 
 ![High-level overview of the deployment](imgs/deployment_overview.drawio.png)\
@@ -33,19 +35,19 @@ _**Figure 2**: High-level overview of the deployed resources. Note that only the
 
 ### Manually installed resources
 
-**Prometheus**, **Grafana** and **AlertManager** are added to the cluster for data collection and monitoring purposes (Figure 2). They are manually installed in the same namespace as Istio using the [myprom Helm chart]() and custom configuration values (see [values-myprom.yaml]()).
+**Prometheus**, **Grafana** and **AlertManager** are installed in the cluster for data collection and monitoring purposes (Figure 2). They are manually installed using the [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts) Helm chart and custom configuration values (see [values-myprom.yaml](https://github.com/remla25-team12/operation/blob/main/helm/myapp/values-myprom.yaml)).
 
 **Our application** is deployed into the cluster with Helm, see our [Helm chart](https://github.com/remla25-team12/operation/tree/main/helm/myapp) for configuration details. In short, the chart deploys:
 - Four pods (one for each of the two versions of `app` and `model-service`), which are created with Deployments. 
 - Two services which assign stable DNS names and ClusterIPs to the `app` and `model-service` pods. 
-- A [ConfigMap]() to define the host URL of the ML model.
-- A [Secret]() containing login credentials to the Gmail account used by AlertManager.
-- A [ConfigMap]() for automatically importing Grafana dashboards
-- A [PrometheusRule]() that defines the conditions and thresholds for sending email notifications.
-- A [ServiceMonitor]() that allows Prometheus to find the `/metrics` endpoint of the app to scrape metrics.
+- A [ConfigMap](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/configmap.yaml) to define the host URL of the ML model.
+- A [Secret](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/alertmanager-secret.yaml) containing login credentials to the Gmail account used by AlertManager.
+- A [ConfigMap](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/grafana-dashboard-configmap.yaml) for automatically importing Grafana dashboards
+- A [PrometheusRule](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/prometheus-rule.yaml) that defines the conditions and thresholds for sending email notifications.
+- A [ServiceMonitor](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/service-monitor.yaml) that allows Prometheus to find the `/metrics` endpoint of the app to scrape metrics.
 - Several Istio CRDs: two VirtualServices, two DestinationRules, two EnvoyFilters, and a Gateway. These are all defined together in [istio.yaml](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/istio.yaml).
-- A [ConfigMap]() that defines the specific rate limits (10 requests/minute globally, 2 requests/minute for review submissions.)
-- [Two deployments and two services]() for [RateLimit]() and [Redis](), which are used for global rate limiting purposes. RateLimit listens for rate limit check requests from Istio, while Redis keeps count of the number of requests per user. Our manifest for this deployment was copied from [Istio's repository].
+- A [ConfigMap](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/rate-limit-config.yaml) that defines the specific rate limits (10 requests/minute globally, 2 requests/minute for review submissions.)
+- [Two deployments and two services](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/rate-limit-service.yaml) for RateLimit and Redis, which are used for global rate limiting purposes. RateLimit listens for rate limit check requests from Istio, while Redis keeps count of the number of requests per user. Our manifest for this deployment is a copy of [Istio's sample manifest for rate limiting](https://github.com/istio/istio/blob/master/samples/ratelimit/rate-limit-service.yaml).
 
 These resources and their relations are also all visualized in Figure 2.
 
@@ -82,17 +84,17 @@ _**Figure 4**: Data flow for incoming requests._
 
 We also use the concept of **Sticky Sessions**, which we demonstrate in the README with `curl` requests. A client only gets to see one of two releases, either the primary or canary release. Their K8s resources (pods, deployments, services...) use the `-v1` and `-v2` suffix respectively. Once a (new) visitor is assigned one of the two versions by means of a request header, they will continue to see this version even after a refresh. For example, in Figure 4, the traffic of a client who was assigned v1 will only go to `app-v1` (black arrows), not to `app-v2` (greyed out arrows). 
 
-**Prometheus** collecs metrics from both `app` containers, allowing us to compare user behavior accross versions (Figure 4). As part of our [continuous experimentation]() efforts, we specifically compare the difference in total number of clicks on team member profiles on the [People page](myapp.local/people) of the website. 
+**Prometheus** collecs metrics from both `app` containers, allowing us to compare user behavior accross versions (Figure 4). As part of our [continuous experimentation](https://github.com/remla25-team12/operation/blob/main/docs/continuous-experimentation.md) efforts, we specifically compare the difference in total number of clicks on team member profiles on the [People page](myapp.local/people) of the website. 
 
 Prometheus also pushes alerts to the **AlertManager** pod when certain metrics exceed a set threshold, such as when the model accuracy has become too low (<70%) according to user feedback. We get a notification by email when this is the case.
 
-**Grafana** uses Prometheus as a data source to provide visual monitoring capabilities. It is used in our [continuous experimentation](): the dashboard allows us to easily compare the performance of the primary and canary releases. 
+**Grafana** uses Prometheus as a data source to provide visual monitoring capabilities. It is used in our [continuous experimentation](https://github.com/remla25-team12/operation/blob/main/docs/continuous-experimentation.md): the dashboard allows us to easily compare the performance of the primary and canary releases. 
 
 Not pictured in the diagram are requests to `dashboard.local` (192.168.56.91). These are handled by a "regular" Nginx Ingress (not Istio) and forwarded to the Kubernetes Dashboard pod.
 
 
 ## ML Pipeline
-This section briefly covers the training pipeline of the ML model. For detailed training instructions, we refer you to the [model-training repository]().
+This section briefly covers the training pipeline of the ML model. For detailed training instructions, we refer you to the [model-training repository](https://github.com/remla25-team12/model-training).
 
 Model training is supported by DVC in addition to GitHub, and consists of four stages, shown in Figure 5. The final outputs are the model artefacts (the CountVectorizer, and the model itself in compressed `.joblib` format) and a `.json` file with model performance metrics. 
 ![Visualization of the training pipeline for the restaurant sentiment analysis model.](imgs/ML_pipeline.drawio.png)\
