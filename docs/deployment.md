@@ -68,20 +68,20 @@ In Figure 2 below, we see the data flow for incoming requests from a client, for
 1. The request does not directly go to the `app` pods. Instead, it is intercepted by Istio and routed through the IngressGateway. 
 2. When the IngressGateway receives the request, it calls the RateLimit service, which in turn consults Redis, to decide whether or not to let the request through to the app pod. 
 3. Based on the 90/10 traffic split and/or request headers (as defined in VirtualService), the request is then routed to the right pod version. 
-4. DestinationRules ensure that `-v1` pods only communicate with other `v1` pods. For example. `app-v1` will only send its queries to `model-service-v1`. The same applies to `v2` pods.
+4. DestinationRules ensure that `-v1` pods only communicate with other `v1` pods. For example. `app-v1` will only send its queries to `model-service-v1`. The same logic applies to `-v2` pods.
 5. The `app` container inside the pod processes the requests and returns them to the IngressGateway, so that the client receives the requested content (i.e., the browser renders the website).
 
 
 ![Visualization of the data flow for a client visiting the home page of our application via myapp.local and leaving a review](imgs/data_flow.drawio.png)\
 _**Figure 3**: Data flow for incoming requests._
 
-We also use the concept of **Sticky Sessions**, which we demonstrate in the README with `curl` requests. A client only gets to see one of two releases, either the primary or canary release. Their K8s resources (pods, deployments, services...) use the `-v1` and `-v2` suffix respectively. Once a (new) visitor is assigned one of the two versions by means of a request header, they will continue to see this version even after a refresh. In Figure 3, the traffic of a client who was assigned v1 will only go to `app-v1` (black arrows), not to `app-v2` (greyed out arrows). 
+We also use the concept of **Sticky Sessions**, which we demonstrate in the README with `curl` requests. A client only gets to see one of two releases, either the primary or canary release. Their K8s resources (pods, deployments, services...) use the `-v1` and `-v2` suffix respectively. Once a (new) visitor is assigned one of the two versions by means of a request header, they will continue to see this version even after a refresh. For example, in Figure 3, the traffic of a client who was assigned v1 will only go to `app-v1` (black arrows), not to `app-v2` (greyed out arrows). 
 
-**Prometheus** collecs metrics from both versions, allowing us to compare user behavior in both versions. As part of our [continuous experimentation]() efforts, we specifically compare the difference in total number of clicks on team member profiles on the [People page](myapp.local/people) of the website. Furthermore, Prometheus pushes alerts to the AlertManager pod when certain metrics exceed a set threshold. This pod subsequently sends out notifications to our Gmail account.
+**Prometheus** collecs metrics from both `app` containers, allowing us to compare user behavior accross versions (Figure 3). As part of our [continuous experimentation]() efforts, we specifically compare the difference in total number of clicks on team member profiles on the [People page](myapp.local/people) of the website. 
 
-**Grafana** uses Prometheus as a data source to provide visual monitoring capabilities. It is used in our continuous experimentation: the dashboards allow us to easily compare the performance of the primary and canary releases. 
+Prometheus also pushes alerts to the **AlertManager** pod when certain metrics exceed a set threshold, such as when the model accuracy has become too low (<70%) according to user feedback. We get a notification by email when this is the case.
 
-**AlertManager** notifies us by e-mail when the model accuracy has become too low according to user feedback. We have added a rule that checks if the metric `current_percentage_of_correct_predictions < 70`. 
+**Grafana** uses Prometheus as a data source to provide visual monitoring capabilities. It is used in our [continuous experimentation](): the dashboard allows us to easily compare the performance of the primary and canary releases. 
 
 Not pictured in the diagram are requests to `dashboard.local` (192.168.56.91). These are handled by a "regular" Nginx Ingress (not Istio) and forwarded to the Kubernetes Dashboard pod.
 
