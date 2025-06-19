@@ -167,9 +167,9 @@ This repository serves as the central point of the project, containing the Docke
 - [Helm 3 CLI](https://helm.sh/docs/intro/install/)
 - [Istioctl](https://istio.io/latest/docs/setup/install/istioctl/) 1.25.2 or higher
 - A functional Kubernetes cluster.
-   - Recommended: VM cluster from the [Provisioning the Kubernetes Cluster](#provisioning-the-kubernetes-cluster) section. In the instructions below, it is assumed you already have this cluster up and running.
-   - Alternatively, you can install and use [Minikube](https://minikube.sigs.k8s.io/docs/start/) for a local Kubernetes cluster. 
-   > **Note**: Minikube compatibility is not actively being prioritized and maintained by us. If anything does not work as expected, please use the VM cluster.
+  - Recommended: VM cluster from the [Provisioning the Kubernetes Cluster](#provisioning-the-kubernetes-cluster) section. In the instructions below, it is assumed you already have this cluster up and running.
+  - Alternatively, you can install and use [Minikube](https://minikube.sigs.k8s.io/docs/start/) for a local Kubernetes cluster.
+    > **Note**: Minikube compatibility is not actively being prioritized and maintained by us. If anything does not work as expected, please use the VM cluster.
 
 ### Install and run
 
@@ -188,43 +188,56 @@ This repository serves as the central point of the project, containing the Docke
       vagrant ssh ctrl
       $ cd /mnt/shared/
       ```
-      
+
    2. For **Minikube**, additional work is required. Clean up any pevious Minikube instance, launch a new instance, enable ingresses, and install Istio manually with its Helm Charts:
 
       ```shell
       minikube delete
       minikube start --memory=4096 --cpus=4 --driver=docker
       minikube addons enable ingress
+      helm repo add istio https://istio-release.storage.googleapis.com/charts
+      helm repo update
       helm install istio-base istio/base -n istio-system --create-namespace
-      helm install istiod istio/istiod -n istio-system 
-      helm install istio-ingress istio/gateway -n istio-system 
+      helm install istiod istio/istiod -n istio-system
+      helm install istio-ingress istio/gateway -n istio-system
       ```
 
       > **Note:** If you are using Fedora, you may need to run `sudo setenforce 0` first to allow Minikube to use the Docker driver:
 
-3. Enable Istio sidecar injection in the default namespace:
+3. Enable Istio sidecar injection in the default namespace (required both for VMs and Minikube):
 
-   ```shell 
+   ```shell
    kubectl label namespace default istio-injection=enabled
    ```
 
 4. Install and deploy the Prometheus stack in the istio-system namespace:
 
-   ```shell
+   ```bash
+   # Add the Prometheus Helm chart repository
    helm repo add prom-repo https://prometheus-community.github.io/helm-charts
+
+   # Update Helm repositories
    helm repo update
-   helm install myprom prom-repo/kube-prometheus-stack -n istio-system --set prometheus.prometheusSpec.maximumStartupDurationSeconds=120
+
+   # Install the Prometheus stack with custom Alertmanager configuration
+   helm install myprom prom-repo/kube-prometheus-stack \
+      -n istio-system \
+      --create-namespace \
+      --set alertmanager.enabled=true \
+      --set alertmanager.alertmanagerSpec.configSecret=myapp-dev-alertmanager-config \
+      --set prometheus.prometheusSpec.maximumStartupDurationSeconds=120
    ```
 
 5. Install and deploy our application:
 
    ```shell
    # Kubernetes VMs (make sure you are inside /mnt/shared):
-   cd /mnt/shared
-   helm install myapp-dev ./helm/myapp
-  
+   export ENCRYPTED_SMTP_PASSWORD="c2V3dSB5cGNqIGJscmYgaG9uYg=="
+
+   helm install myapp-dev ./helm/myapp --set smtp.encodedPassword=$ENCRYPTED_SMTP_PASSWORD
+
    # Minikube (disable VM shared folder):
-   helm install myapp-dev ./helm/myapp --set useHostPathSharedFolder=false
+   helm install myapp-dev ./helm/myapp --set useHostPathSharedFolder=false --set smtp.encodedPassword=$ENCRYPTED_SMTP_PASSWORD
    ```
 
 6. If you make changes to the Helm chart or want to update the deployment, use the following command:
@@ -233,6 +246,7 @@ This repository serves as the central point of the project, containing the Docke
    ```
 
 # Usage
+
 **All commands in this section should be executed on your host machine.** Add kubectl to your PATH if needed, see [Provisioning the Kubernetes Cluster, step 8](#provisioning-the-kubernetes-cluster).
 
 ## Webapp access
@@ -258,10 +272,11 @@ Metrics are available at http://myapp.local/metrics
 
 ## Sticky sessions
 
-To test Sticky sessions and primary/canary release routing, you can use curl with the `x-newvers` header. 
+To test Sticky sessions and primary/canary release routing, you can use curl with the `x-newvers` header.
+
 - If `x-newvers=true`, it will always show v2
-- If `x-newvers=false`, it will always show v1 
-- If `x-newvers` is not specified (i.e. in case of a new user), there is an 80% chance to see v1 and 20% to see v2. 
+- If `x-newvers=false`, it will always show v1
+- If `x-newvers` is not specified (i.e. in case of a new user), there is an 80% chance to see v1 and 20% to see v2.
 
 Example for sticky session to v2:
 
@@ -274,25 +289,38 @@ kubectl port-forward svc/istio-ingressgateway -n istio-system 8080:80 # Port-for
 for i in {1..10}; do curl -s -H "Host: myapp.local" -H "x-newvers: true" -H "x-user-id: testuser" http://localhost:8080 ; done | grep "App Version" # In another terminal tab
 ```
 
-## Prometheus and Grafana
+## Prometheus, Grafana and Alert Manager
 
 Access Prometeus at http://localhost:9090 (or the Minikube URL) on your host machine:
 
 ```bash
-# VM cluster:
+# VM cluster (Run below on host):
 export PROMETHEUS_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/name=prometheus,app.kubernetes.io/instance=myprom-kube-prometheus-sta-prometheus" -oname)
 kubectl -n istio-system port-forward $PROMETHEUS_POD_NAME 9090
+
+# VM cluster (Backup option) Access at http://192.168.56.100:9090 in this case
+vagrant ssh ctrl
+cd /mnt/shared
+
+export PROMETHEUS_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/name=prometheus,app.kubernetes.io/instance=myprom-kube-prometheus-sta-prometheus" -oname)
+kubectl -n istio-system port-forward --address=0.0.0.0 $PROMETHEUS_POD_NAME 9090
 
 # Minikube:
 minikube service myprom-kube-prometheus-sta-prometheus --url
 ```
 
-Access Grafana at http://localhost:3000 (or the Minikube URL) on your host machine:
+Access Grafana at http://localhost:3000 OR (or the Minikube URL) on your host machine:
 
 ```bash
-# VM Cluster:
+# VM Cluster (Run below on host):
 export GRAFANA_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=myprom" -oname)
 kubectl -n istio-system port-forward $GRAFANA_POD_NAME 3000
+
+# VM cluster (Backup option) Access at http://192.168.56.100:3000 in this case
+vagrant ssh ctrl
+cd /mnt/shared
+export GRAFANA_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=myprom" -oname)
+kubectl -n istio-system port-forward --address=0.0.0.0 $GRAFANA_POD_NAME 3000
 
 # Minikube:
 minikube service myprom-grafana --url
@@ -310,6 +338,13 @@ The dashboard configurations inside the folder `helm/myapp/grafana/` are automat
 It should look like this:
 
 ![Grafana dashboard](imgs/grafana_dashboard.png)
+
+To view Alert Manager on you host machine, make sure kube config is exported (see [Provisioning the Kubernetes Cluster, step 8](#provisioning-the-kubernetes-cluster)), then run the below commands to access Alert Manager at http://localhost:9093/ :
+
+```bash
+export ALERTMANAGER_POD=$(kubectl -n istio-system get pod -l app.kubernetes.io/name=alertmanager -o name)
+kubectl -n istio-system port-forward "$ALERTMANAGER_POD" 9093:9093
+```
 
 # Continuous Progress Log
 
