@@ -187,7 +187,7 @@ spec:
                   header_name: ":path"
                   descriptor_key: "PATH"
               - remote_address: {}
-                descriptor_key: "IP"
+
             - actions: # GLOBAL
                 - request_headers:
                     header_name: ":path"
