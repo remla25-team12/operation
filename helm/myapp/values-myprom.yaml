@@ -1,0 +1,9 @@
+alertmanager:
+  enabled: true
+  alertmanagerSpec:
+    configSecret: myapp-dev-alertmanager-config
+grafana:
+  enabled: true
+prometheus:
+  prometheusSpec:
+    maximumStartupDurationSeconds: 120

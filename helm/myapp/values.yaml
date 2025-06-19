@@ -49,8 +49,6 @@ gateways:
     type: LoadBalancer
     externalTrafficPolicy: Local
 
-
-
 useHostPathSharedFolder: true
 
 #secrets:

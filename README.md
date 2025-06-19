@@ -25,9 +25,10 @@ REMLA Group 12
     <li><a href="#usage">Usage</a></li>
          <ul>
         <li><a href="#webapp-access">Webapp Access</a></li>
-        <li><a href="#traffic-management">Traffic Management</a></li>
-        <li><a href="#prometheus-and-grafana">Prometheus and Grafana</a></li>
+        <li><a href="#sticky-sessions">Sticky Sessions</a></li>
+        <li><a href="#prometheus-grafana-and-alert-manager">Prometheus, Grafana and Alert Manager</a></li>
       </ul>
+   <li><a href="#troubleshooting">Troubleshooting</a></li>
     <li><a href="#continuous-progress-log">Continuous Progress Log</a></li>
       <ul>
         <li><a href="#assignment-1">Assignment 1</a></li>
@@ -173,6 +174,7 @@ This repository serves as the central point of the project, containing the Docke
     > **Note**: Minikube compatibility is not actively being prioritized and maintained by us. If anything does not work as expected, please use the VM cluster.
 
 ### Install and run
+**Unless specified otherwise, all commands in this "Install and run" section are applicable to both Minikube and VM clusters.**
 
 1. Clone this repository and navigate into the root folder (if you haven't done so already):
 
@@ -205,35 +207,26 @@ This repository serves as the central point of the project, containing the Docke
 
       > **Note:** If you are using Fedora, you may need to run `sudo setenforce 0` first to allow Minikube to use the Docker driver.
 
-3. Enable Istio sidecar injection in the default namespace (required both for VMs and Minikube):
+3. Enable Istio sidecar injection in the default namespace:
 
    ```shell
    kubectl label namespace default istio-injection=enabled
    ```
 
-4. Install and deploy the Prometheus stack in the istio-system namespace:
+4. Install and deploy the Prometheus stack in the istio-system namespace with custom Alertmanager configuration (defined in `helm/myapp/values-myprom.yaml`)
 
    ```bash
-   # Add the Prometheus Helm chart repository
    helm repo add prom-repo https://prometheus-community.github.io/helm-charts
-
-   # Update Helm repositories
    helm repo update
-
-   # Install the Prometheus stack with custom Alertmanager configuration
-   helm install myprom prom-repo/kube-prometheus-stack \
-      -n istio-system \
-      --create-namespace \
-      --set alertmanager.enabled=true \
-      --set alertmanager.alertmanagerSpec.configSecret=myapp-dev-alertmanager-config \
-      --set prometheus.prometheusSpec.maximumStartupDurationSeconds=120
+   helm install myprom prom-repo/kube-prometheus-stack -n istio-system -f ./helm/myapp/values-myprom.yaml
    ```
 
 5. Install and deploy our application:
 
    ```shell
-   # Kubernetes VMs (make sure you are inside /mnt/shared):
    export ENCRYPTED_SMTP_PASSWORD="c2V3dSB5cGNqIGJscmYgaG9uYg=="
+
+   #  VM Cluster (make sure you are inside /mnt/shared): 
    helm install myapp-dev ./helm/myapp --set smtp.encodedPassword=$ENCRYPTED_SMTP_PASSWORD
 
    # Minikube (disable VM shared folder):
@@ -247,7 +240,9 @@ This repository serves as the central point of the project, containing the Docke
 
 # Usage
 
-**All commands in this section should be executed on your host machine.** Add kubectl to your PATH if needed, see [Provisioning the Kubernetes Cluster, step 8](#provisioning-the-kubernetes-cluster).
+**All commands in this "Usage" section should be executed on your host machine.** 
+
+**Add kubectl to your PATH if needed, see [Provisioning the Kubernetes Cluster, step 8](#provisioning-the-kubernetes-cluster).**
 
 ## Webapp access
 
@@ -293,7 +288,7 @@ for i in {1..10}; do curl -s -H "Host: myapp.local" -H "x-newvers: true" -H "x-u
 
 ### Prometheus
 
-Access Prometeus at http://localhost:9090 (or the Minikube URL) on your host machine:
+Access Prometheus at http://localhost:9090 (or the Minikube URL) on your host machine:
 
 ```bash
 # VM cluster (Run below on host):
@@ -304,20 +299,9 @@ kubectl -n istio-system port-forward $PROMETHEUS_POD_NAME 9090
 minikube service myprom-kube-prometheus-sta-prometheus --url
 ```
 
-Backup Access to Prometheus at http://192.168.56.100:9090:
-
-```bash
-# VM Cluster (Backup option)
-vagrant ssh ctrl
-cd /mnt/shared
-
-export PROMETHEUS_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/name=prometheus,app.kubernetes.io/instance=myprom-kube-prometheus-sta-prometheus" -oname)
-kubectl -n istio-system port-forward --address=0.0.0.0 $PROMETHEUS_POD_NAME 9090
-```
-
 ### Grafana
 
-Access Grafana at http://localhost:3000 OR (or the Minikube URL) on your host machine:
+Access Grafana at http://localhost:3000 (or the Minikube URL) on your host machine:
 
 ```bash
 # VM Cluster (Run below on host):
@@ -328,23 +312,12 @@ kubectl -n istio-system port-forward $GRAFANA_POD_NAME 3000
 minikube service myprom-grafana --url
 ```
 
-Backup Access to Grafana at http://192.168.56.100:3000:
-
-```bash
-# VM Cluster (Backup option)
-vagrant ssh ctrl
-cd /mnt/shared
-
-export GRAFANA_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=myprom" -oname)
-kubectl -n istio-system port-forward --address=0.0.0.0 $GRAFANA_POD_NAME 3000
-```
-
 Grafana login credentials:
 
 - Username: `admin`
 - Password: Run `kubectl --namespace istio-system get secrets myprom-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo`
 
-The dashboard configurations inside the folder `helm/myapp/grafana/` are automatically imported through a ConfigMap, so no manual installation is required. Simply go to the Dashboards tab in Grafana and load the 'Restaurant sentiment analysis' dashboard:
+The dashboard configurations inside the folder `helm/myapp/grafana/` are **automatically imported through a ConfigMap**, so no manual installation is required. Simply go to the Dashboards tab in Grafana and load the 'Restaurant sentiment analysis' dashboard:
 
 ![Grafana dashboards tab showing our dashboard](imgs/grafana_load_dashboard.png)
 
@@ -353,13 +326,38 @@ It should look like this:
 ![Grafana dashboard](imgs/grafana_dashboard.png)
 
 ### Alert Manager
-
-To view Alert Manager on you host machine, make sure kube config is exported (see [Provisioning the Kubernetes Cluster, step 8](#provisioning-the-kubernetes-cluster)), then run the below commands to access Alert Manager at http://localhost:9093/ :
+Access Alert Manager at http://localhost:9093/:
 
 ```bash
 export ALERTMANAGER_POD=$(kubectl -n istio-system get pod -l app.kubernetes.io/name=alertmanager -o name)
 kubectl -n istio-system port-forward "$ALERTMANAGER_POD" 9093:9093
 ```
+
+# Troubleshooting
+This section lists some backup methods and workarounds for problems that we have encountered. We list them separately to keep the main installation instructions readable.
+
+**Problem**: kubectl does not work from host, only from the ctrl node. Cannot access Prometheus/Grafana.
+**Solution**: Since kubectl still works on ctrl, just use ctrl's IP address instead of localhost. For example, to access Grafana at http://192.168.56.100:3000:
+
+```bash
+vagrant ssh ctrl
+cd /mnt/shared
+
+export GRAFANA_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=myprom" -oname)
+kubectl -n istio-system port-forward --address=0.0.0.0 $GRAFANA_POD_NAME 3000
+```
+
+And for Prometheus at http://192.168.56.100:9090:
+```bash
+# VM Cluster (Backup option)
+vagrant ssh ctrl
+cd /mnt/shared
+
+export PROMETHEUS_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/name=prometheus,app.kubernetes.io/instance=myprom-kube-prometheus-sta-prometheus" -oname)
+kubectl -n istio-system port-forward --address=0.0.0.0 $PROMETHEUS_POD_NAME 9090
+```
+
+
 
 # Continuous Progress Log
 
