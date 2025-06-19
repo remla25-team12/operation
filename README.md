@@ -131,7 +131,8 @@ This repository serves as the central point of the project, containing the Docke
 6. Once the VMs are up and provisioned, run the following Ansible playbook to finalize the Kubernetes setup:
 
    ```bash
-   ansible-playbook -u vagrant -i 192.168.56.100, provisioning/finalization.yml
+    ansible-playbook -u vagrant -i 192.168.56.100, provisioning/finalization.yml \
+    --private-key=.vagrant/machines/ctrl/virtualbox/private_key
    ```
 
 7. To access the Kubernetes dashboard, do the following **on your host machine**:
@@ -202,7 +203,7 @@ This repository serves as the central point of the project, containing the Docke
       helm install istio-ingress istio/gateway -n istio-system
       ```
 
-      > **Note:** If you are using Fedora, you may need to run `sudo setenforce 0` first to allow Minikube to use the Docker driver:
+      > **Note:** If you are using Fedora, you may need to run `sudo setenforce 0` first to allow Minikube to use the Docker driver.
 
 3. Enable Istio sidecar injection in the default namespace (required both for VMs and Minikube):
 
@@ -233,7 +234,6 @@ This repository serves as the central point of the project, containing the Docke
    ```shell
    # Kubernetes VMs (make sure you are inside /mnt/shared):
    export ENCRYPTED_SMTP_PASSWORD="c2V3dSB5cGNqIGJscmYgaG9uYg=="
-
    helm install myapp-dev ./helm/myapp --set smtp.encodedPassword=$ENCRYPTED_SMTP_PASSWORD
 
    # Minikube (disable VM shared folder):
@@ -291,6 +291,8 @@ for i in {1..10}; do curl -s -H "Host: myapp.local" -H "x-newvers: true" -H "x-u
 
 ## Prometheus, Grafana and Alert Manager
 
+### Prometheus
+
 Access Prometeus at http://localhost:9090 (or the Minikube URL) on your host machine:
 
 ```bash
@@ -298,16 +300,22 @@ Access Prometeus at http://localhost:9090 (or the Minikube URL) on your host mac
 export PROMETHEUS_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/name=prometheus,app.kubernetes.io/instance=myprom-kube-prometheus-sta-prometheus" -oname)
 kubectl -n istio-system port-forward $PROMETHEUS_POD_NAME 9090
 
-# VM cluster (Backup option) Access at http://192.168.56.100:9090 in this case
+# Minikube:
+minikube service myprom-kube-prometheus-sta-prometheus --url
+```
+
+Backup Access to Prometheus at http://192.168.56.100:9090:
+
+```bash
+# VM Cluster (Backup option)
 vagrant ssh ctrl
 cd /mnt/shared
 
 export PROMETHEUS_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/name=prometheus,app.kubernetes.io/instance=myprom-kube-prometheus-sta-prometheus" -oname)
 kubectl -n istio-system port-forward --address=0.0.0.0 $PROMETHEUS_POD_NAME 9090
-
-# Minikube:
-minikube service myprom-kube-prometheus-sta-prometheus --url
 ```
+
+### Grafana
 
 Access Grafana at http://localhost:3000 OR (or the Minikube URL) on your host machine:
 
@@ -316,14 +324,19 @@ Access Grafana at http://localhost:3000 OR (or the Minikube URL) on your host ma
 export GRAFANA_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=myprom" -oname)
 kubectl -n istio-system port-forward $GRAFANA_POD_NAME 3000
 
-# VM cluster (Backup option) Access at http://192.168.56.100:3000 in this case
-vagrant ssh ctrl
-cd /mnt/shared
-export GRAFANA_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=myprom" -oname)
-kubectl -n istio-system port-forward --address=0.0.0.0 $GRAFANA_POD_NAME 3000
-
 # Minikube:
 minikube service myprom-grafana --url
+```
+
+Backup Access to Grafana at http://192.168.56.100:3000:
+
+```bash
+# VM Cluster (Backup option)
+vagrant ssh ctrl
+cd /mnt/shared
+
+export GRAFANA_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=myprom" -oname)
+kubectl -n istio-system port-forward --address=0.0.0.0 $GRAFANA_POD_NAME 3000
 ```
 
 Grafana login credentials:
@@ -338,6 +351,8 @@ The dashboard configurations inside the folder `helm/myapp/grafana/` are automat
 It should look like this:
 
 ![Grafana dashboard](imgs/grafana_dashboard.png)
+
+### Alert Manager
 
 To view Alert Manager on you host machine, make sure kube config is exported (see [Provisioning the Kubernetes Cluster, step 8](#provisioning-the-kubernetes-cluster)), then run the below commands to access Alert Manager at http://localhost:9093/ :
 
