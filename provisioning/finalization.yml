@@ -79,7 +79,17 @@
           - component=controller
         wait_sleep: 5
         wait_timeout: 150
-      
+        
+    - name: Waiting for MetalLB webhook pod to be ready
+      kubernetes.core.k8s_info:
+        kind: Pod
+        wait: true
+        namespace: metallb-system
+        label_selectors:
+          - app=metallb
+          - component=webhook
+        wait_sleep: 5
+        wait_timeout: 150
     - name: Configure IPAddressPool
       copy:
         dest: /tmp/metallb-pool.yaml
