@@ -45,3 +45,10 @@ istio:
     v2Weight: 10
 
 useHostPathSharedFolder: true
+
+#secrets:
+#  smtpPassword: "eait fmtz sspl cnkn"
+
+smtp:
+  # This will be passed at install time from an env var
+  encodedPassword: ""

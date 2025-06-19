@@ -29,11 +29,6 @@ spec:
                 configMapKeyRef:
                   name: {{ include "myapp.fullname" . }}-config
                   key: MODEL_HOST
-            - name: SMTP_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "myapp.fullname" . }}-secret
-                  key: SMTP_PASSWORD
           {{- with .Values.model.env }}
           {{- range $key, $value := . }}
             - name: {{ $key }}
@@ -101,11 +96,6 @@ spec:
                 configMapKeyRef:
                   name: {{ include "myapp.fullname" . }}-config
                   key: MODEL_HOST
-            - name: SMTP_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "myapp.fullname" . }}-secret
-                  key: SMTP_PASSWORD
           {{- with .Values.model.env }}
           {{- range $key, $value := . }}
             - name: {{ $key }}
