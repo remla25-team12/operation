@@ -5,7 +5,7 @@ Created PR: https://github.com/remla25-team12/lib-ml/pull/3 (related to A1) \
 Approved PR: https://github.com/remla25-team12/app/pull/1
 
 **Mees Chammat:**\
-Created PR: https://github.com/remla25-team12/app/pull/5 (related to A1) \
+Created PR: https://github.com/remla25-team12/app/pull/5 & https://github.com/remla25-team12/operation/pull/3 (related to A1) \
 Approved PR: https://github.com/remla25-team12/lib-version/pull/1
 
 **Philippe Henry:**\
@@ -136,7 +136,7 @@ Created PR: https://github.com/remla25-team12/lib-ml/pull/10 (related to A1) \
 Approved PR: https://github.com/remla25-team12/lib-version/pull/6
 
 **Mees Chammat:**\
-Created PR: https://github.com/remla25-team12/operation/pull/74 (related to A2) \
+Created PR: https://github.com/remla25-team12/operation/pull/74 & https://github.com/remla25-team12/operation/pull/78 (related to A2) \
 Approved PR: https://github.com/remla25-team12/lib-ml/pull/10#pullrequestreview-2922662922
 
 **Philippe Henry:**\
