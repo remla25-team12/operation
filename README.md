@@ -367,9 +367,14 @@ Rate Limiting is setups to 2 requests/min maximum per user (IP) on the `/predict
 Additionally, there is a global rate limit of 10 requests/minute. This can be tested by refreshing the landing page at least 11 times in quick succession (ctrl+R in the browser). The 11th request will be rejected with a `429 status code (Too Many Requests)`.
 
 We understand that these rates are low and unrealistic for a production application, but they are convenient for testing purposes. 
-The rate limits can be adjusted in the `helm/myapp/rate-limit-config.yaml` file by changing both the request_per_unit limits.
-For example, to increase the global limit to 100 requests/minute, change the `requests_per_unit: 10` to `requests_per_unit: 100 `.
 
+The rate limits can be adjusted by upgrading the current app deployment with the following command:
+
+```bash
+    helm upgrade --install myapp-dev ./helm/myapp \
+    --set ratelimit.predictLimit=10 --set ratelimit.globalLimit=100
+```
+This would set the `/predict` endpoint to 10 requests/minute per user and the global limit to 100 requests/minute.
 
 # Continuous Progress Log
 
