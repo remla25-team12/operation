@@ -259,9 +259,9 @@ To access the deployed application, you need to be able to resolve `myapp.local`
   sudo sh -c 'echo "192.168.56.99  myapp.local" >> /etc/hosts'
   ```
 
-- On **Minikube**, we use a port-forward, so the IP is `127.0.0.1` (localhost): THIS IS NOT USING THE INGRESS GATEWAY
+- On **Minikube**, just use Minikube tunnel:
   ```bash
-  kubectl port-forward svc/myapp-dev-myapp-app 8080:8080
+  minikube tunnel  # keep this terminal tab open for as long as you need to access myapp.local
   ```
 
 Then access the application at http://myapp.local
