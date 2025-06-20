@@ -12,8 +12,8 @@ data:
           - key: remote_address
             rate_limit:
               unit: minute
-              requests_per_unit: 2
+              requests_per_unit: {{ .Values.ratelimit.predictLimit }}
       - key: PATH
         rate_limit:
           unit: minute
-          requests_per_unit: 10
+          requests_per_unit: {{ .Values.ratelimit.globalLimit }}
