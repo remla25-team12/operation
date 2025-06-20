@@ -251,9 +251,9 @@ This repository serves as the central point of the project, containing the Docke
 
 ## Webapp access
 
-To access the deployed application, you need to be able to resolve `myapp.local`. Which IP to use depends on your cluster:
+To access the deployed application, you need to be able to resolve `myapp.local`. The exact access methods depends on your cluster:
 
-- For the **VM Cluster**, Istio has a fixed IP, so you can simply run the following **on your host machine** (not the ctrl node):
+- On the **VM Cluster**, Istio has a fixed IP, so you can simply run the following **on your host machine** (not the ctrl node):
 
   ```bash
   sudo sh -c 'echo "192.168.56.99  myapp.local" >> /etc/hosts'
@@ -284,8 +284,7 @@ Example for sticky session to v2:
 # VM Cluster
 for i in {1..10}; do curl -s -H "x-newvers: true" -H "x-user-id: testuser" http://myapp.local ; done | grep "App Version"
 
-# Minikube
-kubectl port-forward svc/istio-ingressgateway -n istio-system 8080:80 # Port-forward and keep this terminal tab open
+# Minikube (make sure you have a second terminal tab open with minikube tunnel)
 for i in {1..10}; do curl -s -H "Host: myapp.local" -H "x-newvers: true" -H "x-user-id: testuser" http://localhost:8080 ; done | grep "App Version" # In another terminal tab
 ```
 
