@@ -218,8 +218,7 @@ This repository serves as the central point of the project, containing the Docke
    ```bash
    helm repo add prom-repo https://prometheus-community.github.io/helm-charts
    helm repo update
-   helm install myprom prom-repo/kube-prometheus-stack \
-      -n istio-system \
+   helm install myprom prom-repo/kube-prometheus-stack -n istio-system -f ./helm/myapp/values-myprom.yaml \
       --set alertmanager.enabled=true \
       --set alertmanager.alertmanagerSpec.configSecret=myapp-dev-alertmanager-config \
       --set prometheus.prometheusSpec.maximumStartupDurationSeconds=120
@@ -337,6 +336,21 @@ export ALERTMANAGER_POD=$(kubectl -n istio-system get pod -l app.kubernetes.io/n
 kubectl -n istio-system port-forward "$ALERTMANAGER_POD" 9093:9093
 ```
 
+### Rate Limiting
+
+Rate Limiting is setups to 2 requests/min maximum per user (IP) on the `/predict` endpoint. This can be tested by trying to predict 3 different reviews in quick succession. The third request will be rejected with a `429 status code  (Too Many Requests)`.
+Additionally, there is a global rate limit of 10 requests/minute. This can be tested by refreshing the landing page at least 11 times in quick succession (ctrl+R in the browser). The 11th request will be rejected with a `429 status code (Too Many Requests)`.
+
+We understand that these rates are low and unrealistic for a production application, but they are convenient for testing purposes. 
+
+The rate limits can be adjusted by upgrading the current app deployment with the following command:
+
+```bash
+    helm upgrade --install myapp-dev ./helm/myapp \
+    --set ratelimit.predictLimit=10 --set ratelimit.globalLimit=100
+```
+This would set the `/predict` endpoint to 10 requests/minute per user and the global limit to 100 requests/minute.
+
 # Troubleshooting
 This section lists some backup methods and workarounds for problems that we have encountered. We list them separately to keep the main installation instructions readable.
 
@@ -360,21 +374,6 @@ cd /mnt/shared
 export PROMETHEUS_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/name=prometheus,app.kubernetes.io/instance=myprom-kube-prometheus-sta-prometheus" -oname)
 kubectl -n istio-system port-forward --address=0.0.0.0 $PROMETHEUS_POD_NAME 9090
 ```
-
-### Rate Limiting
-
-Rate Limiting is setups to 2 requests/min maximum per user (IP) on the `/predict` endpoint. This can be tested by trying to predict 3 different reviews in quick succession. The third request will be rejected with a `429 status code  (Too Many Requests)`.
-Additionally, there is a global rate limit of 10 requests/minute. This can be tested by refreshing the landing page at least 11 times in quick succession (ctrl+R in the browser). The 11th request will be rejected with a `429 status code (Too Many Requests)`.
-
-We understand that these rates are low and unrealistic for a production application, but they are convenient for testing purposes. 
-
-The rate limits can be adjusted by upgrading the current app deployment with the following command:
-
-```bash
-    helm upgrade --install myapp-dev ./helm/myapp \
-    --set ratelimit.predictLimit=10 --set ratelimit.globalLimit=100
-```
-This would set the `/predict` endpoint to 10 requests/minute per user and the global limit to 100 requests/minute.
 
 # Continuous Progress Log
 
