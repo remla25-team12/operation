@@ -218,10 +218,7 @@ This repository serves as the central point of the project, containing the Docke
    ```bash
    helm repo add prom-repo https://prometheus-community.github.io/helm-charts
    helm repo update
-   helm install myprom prom-repo/kube-prometheus-stack -n istio-system -f ./helm/myapp/values-myprom.yaml \
-      --set alertmanager.enabled=true \
-      --set alertmanager.alertmanagerSpec.configSecret=myapp-dev-alertmanager-config \
-      --set prometheus.prometheusSpec.maximumStartupDurationSeconds=120
+   helm install myprom prom-repo/kube-prometheus-stack -n istio-system -f ./helm/myapp/values-myprom.yaml
    ```
 
 5. Install and deploy our application:
