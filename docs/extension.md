@@ -10,7 +10,7 @@ We identified two main shortcomings in our project: manual Kubernetes provisioni
 
 Related repository: [Operation](https://github.com/remla25-team12/operation)
 
-Provisioning and deploying the application on a Kubernetes cluster is currently done manually by following the steps outlined in the repository's README. This includes setting up the cluster, configuring namespaces, applying manifests, and potentially exposing services.
+Provisioning and deploying the application on a Kubernetes cluster is currently done manually by following the steps outlined in the repository's README. The manual work consists of manually executing each step in the Kubernetes provisioning and deployment process—ranging from VM setup with Vagrant, SSH access, Ansible playbook execution, and Istio configuration to Helm-based application deployment—by following a long sequence of commands described in the README.
 
 ### B. Critical Reflection
 
@@ -30,7 +30,7 @@ This automated Kubernetes provisioning and deployment approach will make the pro
 
 To measure the impact of our introduced improvement on automating the Kubernetes provisioning and deployment, we can measure the following:
 
-1. Comparing the average onboarding time for new developers to deploy our application for the first time. Measuring the onboarding time of these new developers is crucial because it might take them a lot more time to understand what is going on when our README is crowded with manual setup steps. This could be measured in minutes, in hours, or even in days.
+1. Comparing the average onboarding time for new developers to deploy our application for the first time. Measuring the onboarding time of these new developers is crucial because it might take them a lot more time to understand what is going on with our system when our README is crowded with manual setup steps. This onboarding time could be measured in minutes, in hours, or even in days.
 
 2. Logging the frequency of deployment errors or missing steps in manual and automated runs. It is expected that the frequency of deployment errors will be significantly higher for the manual setup runs.
 
@@ -38,13 +38,13 @@ To measure the impact of our introduced improvement on automating the Kubernetes
 
 **Objective:** To empirically evaluate whether scripting the provisioning and deployment of Kubernetes resources leads to faster onboarding and fewer errors compared to the current manual approach.
 
-**Experiment Setup:** Divide the participants into two groups, where one group will follow the manual steps and the other will follow the automated steps. Ask both groups to:
+**Experiment Setup:** Collect 10 developers, who are new to our system. Divide them into two groups, where one group will follow the manual steps and the other will follow the automated steps. Ask both groups to:
 
 1. Set up a Kubernetes cluster
 2. Deploy the application using the specified method
 3. Validate that the deployed app is running
 
-**Measurement:** While conducting these steps, measure the onboarding time of the participants in minutes, hours, or days. Also, measure the number of failed attempts, misconfigurations, or missing steps during Kubernetes setup and provisioning.
+**Measurement:** While conducting these steps, measure the onboarding time of the developers in minutes, hours, or days. Also, measure the number of failed attempts, misconfigurations, or missing steps during Kubernetes setup and provisioning.
 
 ## Shortcoming #2. DVC on Google Drive Blocked: Local Storage Fall-back
 
@@ -70,7 +70,7 @@ For the purpose of this extension proposal, we choose to use Amazon S3 as our DV
 
 To measure the impact of our introduced improvement on migrating to a shared storage from a local storage, we can measure the following:
 
-1. Recording the latency until a new developer accesses the latest trained model with the current vs. proposed method, because with local storage, it is expected that every time a new user joins, they have to run the entire pipeline via `dvc repro` and push it to the storage, whereas with the proposed method, it is expected that they only need to run `dvc pull` to access the model.
+1. Recording the latency until a new developer accesses the latest trained model with the current vs. proposed method. With local storage, it is expected that every time a new user joins, they have to run the entire pipeline via `dvc repro` and push it to the storage, whereas with the proposed method, it is expected that they only need to run `dvc pull` to access the model.
 
 2. Counting the steps or errors encountered by a new developer while setting up the repository with the current vs. proposed method and while accessing the latest trained model from the storage.
 
@@ -84,7 +84,7 @@ To measure the impact of our introduced improvement on migrating to a shared sto
   - Current method: Local storage (dvc repro, then dvc push)
   - Proposed method: dvc pull from Amazon S3
 
-**Measurement:** While conducting these steps, measure the time until the trained model is available locally (setup time) and measure the error frequency relating to authentication, missing data, or permission issues.
+**Measurement:** While conducting these steps, measure the time until the trained model is available locally (setup time), measure the number of steps that needs to be followed and the error frequency relating to authentication, missing data, or permission issues.
 
 ## References
 
