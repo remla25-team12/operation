@@ -91,11 +91,17 @@ Excellent:
 
 ### Kubernetes Usage - Excellent
 
+- Model service location defined as [environment variable]() with variable names, so can be relocated just by changing Kubernetes config.
+- ConfigMap and Secret
+
 Excellent:
 
 - /mnt/shared is mounted in [Vagrantfile](https://github.com/remla25-team12/operation/blob/cfdc4b9c7ed25955658588abf1637150ee66ebc4/Vagrantfile#L140)
 
 ### Helm - Excellent
+- Helm chart: `./helm/myapp`, contains the complete except Prometheus/Grafana/AlertManager stack (these are deployed separately as `myprom`)
+- [values.yaml]() (not .xml though)
+- Can be installed more than once through the use of the "myapp.fullName" variable in all templates.
 
 ### App Monitoring - Excellent
 
@@ -116,8 +122,7 @@ Sufficient/Good:
 
 Excellent:
 
-- We use AlertManager and notifications successfully reach our GMail inbox:
-  ![Gmail inbox]()
+- We use AlertManager and notifications successfully reach our GMail inbox:\ ![GMail inbox AlertManager](imgs/rubric_gmail_alertmanager.png)
 - There is no password in the [AlertManager Secret](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/alertmanager-secret.yaml). The password must be passed as an environment variable. For the sake of being able to test our codebase, we have included the password to our Google account in base64.
 
 ### Grafana - Excellent
