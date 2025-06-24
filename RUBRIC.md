@@ -24,7 +24,7 @@
 
 ### Software Reuse in Libraries - Excellent
 
-- The version string in lib-version is updated with an [auto-generated .txt]() file in the repository.
+- [lib-version]() has a VersionUtil class that retrieves the package version using PEP 621-compliant metadata or falls back to a "dev" string if not installed as a package.
 
 ## A1.3 Containers & Orchestration
 
