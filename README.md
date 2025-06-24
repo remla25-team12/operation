@@ -362,7 +362,7 @@ kubectl -n istio-system port-forward --address=0.0.0.0 $PROMETHEUS_POD_NAME 9090
 
 # Final State of our Assignment
 
-We aimed to meet the excellent criteria for all rubric points. We prepared a detailed rubric document called _RUBRIC.md_ to describe the status of our project for each rubric criterion and to add additional comments that might need consideration during grading.
+We aimed to meet the excellent criteria for all rubric points. We prepared a detailed rubric document called [RUBRIC.md](https://github.com/remla25-team12/operation/blob/main/RUBRIC.md) to describe the status of our project for each rubric criterion and to add additional comments that might need consideration during grading.
 
 # Continuous Progress Log
 
