@@ -93,7 +93,7 @@ Excellent:
 
 Excellent:
 
-- /mnt/shared is mounted in [Vagrantfile](link to mount line in file)
+- /mnt/shared is mounted in [Vagrantfile](https://github.com/remla25-team12/operation/blob/cfdc4b9c7ed25955658588abf1637150ee66ebc4/Vagrantfile#L140)
 
 ### Helm - Excellent
 
