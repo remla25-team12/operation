@@ -174,6 +174,7 @@ This repository serves as the central point of the project, containing the Docke
     > **Note**: Minikube compatibility is not actively being prioritized and maintained by us. If anything does not work as expected, please use the VM cluster.
 
 ### Install and run
+
 **Unless specified otherwise, all commands in this "Install and run" section are applicable to both Minikube and VM clusters.**
 
 1. Clone this repository and navigate into the root folder (if you haven't done so already):
@@ -226,7 +227,7 @@ This repository serves as the central point of the project, containing the Docke
    ```shell
    export ENCRYPTED_SMTP_PASSWORD="c2V3dSB5cGNqIGJscmYgaG9uYg=="
 
-   #  VM Cluster (make sure you are inside /mnt/shared): 
+   #  VM Cluster (make sure you are inside /mnt/shared):
    helm install myapp-dev ./helm/myapp --set smtp.encodedPassword=$ENCRYPTED_SMTP_PASSWORD
 
    # Minikube (disable VM shared folder):
@@ -240,7 +241,7 @@ This repository serves as the central point of the project, containing the Docke
 
 # Usage
 
-**All commands in this "Usage" section should be executed on your host machine.** 
+**All commands in this "Usage" section should be executed on your host machine.**
 
 **Add kubectl to your PATH if needed, see [Provisioning the Kubernetes Cluster, step 8](#provisioning-the-kubernetes-cluster).**
 
@@ -371,6 +372,10 @@ cd /mnt/shared
 export PROMETHEUS_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/name=prometheus,app.kubernetes.io/instance=myprom-kube-prometheus-sta-prometheus" -oname)
 kubectl -n istio-system port-forward --address=0.0.0.0 $PROMETHEUS_POD_NAME 9090
 ```
+
+# Final State of our Assignment
+
+We aimed to meet the excellent criteria for all rubric points. We prepared a detailed rubric document called [RUBRIC.md](https://github.com/remla25-team12/operation/blob/main/RUBRIC.md) to describe the status of our project for each rubric criterion and to add additional comments that might need consideration during grading.
 
 # Continuous Progress Log
 
