@@ -91,7 +91,7 @@ Excellent:
 
 ### Kubernetes Usage - Excellent
 
-- Model service location defined as [environment variable]() with variable names, so can be relocated just by changing Kubernetes config.
+- Model service location defined as [environment variable](https://github.com/remla25-team12/operation/blob/c432605a8a93291e5b3acb41a59e6bbb9b3ff0b4/helm/myapp/templates/app-deployment.yaml#L27) with variable names, so can be relocated just by changing Kubernetes config.
 - ConfigMap and Secret
 
 Excellent:
@@ -99,8 +99,9 @@ Excellent:
 - /mnt/shared is mounted in [Vagrantfile](https://github.com/remla25-team12/operation/blob/cfdc4b9c7ed25955658588abf1637150ee66ebc4/Vagrantfile#L140)
 
 ### Helm - Excellent
+
 - Helm chart: `./helm/myapp`, contains the complete except Prometheus/Grafana/AlertManager stack (these are deployed separately as `myprom`)
-- [values.yaml]() (not .xml though)
+- [values.yaml](https://github.com/remla25-team12/operation/blob/main/helm/myapp/values.yaml) (not .xml though)
 - Can be installed more than once through the use of the "myapp.fullName" variable in all templates.
 
 ### App Monitoring - Excellent
@@ -127,7 +128,7 @@ Excellent:
 
 ### Grafana - Excellent
 
-- No manual installation instructions, because we use a [Configmap](https://github.com/remla25-team12/operation/blob/e0ee9fec4e10556e4de1efaae205570eb067ed61/helm/myapp/templates/grafana-dashboard-configmap.yaml) to install the [dashboard.json](https://github.com/remla25-team12/operation/blob/e0ee9fec4e10556e4de1efaae205570eb067ed61/helm/myapp/grafana/dashboard.json) automatically.
+- No manual installation instructions, because we use a [Configmap](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/grafana-dashboard-configmap.yaml) to install the [dashboard.json](https://github.com/remla25-team12/operation/blob/main/helm/myapp/grafana/dashboard.json) automatically.
 - Gauges, Counters, variable timeframes for parameterizable queries, and rate/avg functions are all used.
 
 # A4
