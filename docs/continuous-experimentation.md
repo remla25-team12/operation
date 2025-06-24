@@ -21,11 +21,13 @@ For the experiment, we will have two version of our app, namely v1 and v2.
 
 Below you can see the People's page for the two app versions we will use for the experiment. As an example, you can check the bottom-right member card for the addition of LinkedIn icon on v2 of the app. The icon appears upon hovering over the member card of our team member Pengxuan Huang:
 
-**V1** \
-<img src="imgs/Experiment-without-linkedin-example.png" alt="Grouped bar chart" title="Grouped bar chart" width="500"/> 
+<img src="imgs/Experiment-without-linkedin-example.png" alt="Grouped bar chart" title="Grouped bar chart" width="500"/>
 
-**V2** \
+_**Figure 1:** Version 1 of our application where the member cards do not have LinkedIn icons._
+
 <img src="imgs/Experiment-example.png" alt="Grouped bar chart" title="Grouped bar chart" width="500"/>
+
+_**Figure 2:** Version 2 of our application where a LinkedIn icon appears when hovering over a member card._
 
 For both versions, clicking each member card will direct to each member's LinkedIn page. However, the key of this experiment is to evaluate whether having such an icon can help users know that it directs to members' LinkedIn pages.
 
@@ -33,18 +35,22 @@ To measure whether such a change leads to a difference in user behavior, we will
 
 ## Instruction to Reproduce the Experiment
 
-Follow instructions on readme **README** to setup the app and open grafana. Then to mannually create statistics, simply go to the peoples page on our app and refresh while click on each members link. These clicks are reflected in the **Total Click Comparision between Versions** Bar chart.
+Follow the instructions on the [README](https://github.com/remla25-team12/operation/blob/main/README.md) for setting up the clusters, deploying the application, and opening the Grafana dashboard. Then, manually create statistics. To create these statistics, simply go to the People page on our app and click on the member cards to visit the members' LinkedIn pages. These clicks are reflected in the **Total Click Comparison between Versions** bar chart on our Grafana dashboard.
 
-## Result
+## Interpreting the Experimental Results
 
-The following screenshot shows the Grafana dashboard panel specific to this experiment. It presents the comparison of the total number of clicks to members' LinkedIn pages between the two app versions. The x-axis contains the names of the two versions, where 0.5.11 is V1 and 0.5.12 is V2. The y-axis represents the total number of clicks.
+We conducted a test experiment to visualize one possible experimental result. **Figure 3** shows an exemplary Grafana dashboard panel specific to this experiment. It presents the comparison of the total number of clicks to members' LinkedIn pages between the two app versions. The x-axis contains the names of the two versions, where 0.5.11 is version-1 and 0.5.12 is version-2 of our application. The y-axis represents the total number of clicks.
 
 ![Pie chart screenshot](imgs/cont-exp-example-plot.png "Grouped bar chart")
 
+_**Figure 3:** The bar chart displayed on our Grafana dashboard to visualize the experimental results._
+
 ## Decision Process
 
-We compare the total clicks and can only conclude if the number of total clicks in V1 is 20% higher than in V2. However, in our result, as shown in the image above, although V2, which is version 0.5.12 in this case, has a higher total click count, it is not statistically significant enough for us to draw a conclusion. Thus, we cannot reject the null hypothesis.
+To determine whether the new UI feature (the LinkedIn icon on hover) has a statistically significant impact on user behavior, we will perform a hypothesis test based on the number of clicks recorded in our Grafana dashboard. We selected a 95% confidence level for our hypothesis test. Hence, the decision criteria for this hypothesis test will be as follows:
 
-## Conclusion
+- We will **reject the null hypothesis** if the p-value of the statistical test is below the α = 0.05 threshold (selected due to the 95% confidence level), indicating a statistically significant difference in user behavior.
 
-According to our statistics, we can conclude that the feature we introduced, which is having a LinkedIn icon when a user hovers over an individual card on our People page, does not lead to more users clicking to access a member's LinkedIn profile.
+- Otherwise, we will **fail to reject the null hypothesis** if the p-value is above the α = 0.05 threshold, indicating that there is insufficient evidence to conclude a difference in user behavior.
+
+The p-value will be computed using the recorded values on the **Total Click Comparison between Versions** bar chart on our Grafana dashboard in an experiment setting.
