@@ -42,10 +42,10 @@
 
 ### Setting up (Virtual) Infrastructure - Excellent
 
-- Loops and template arithmetic are used to define node IPs
-- CPU/memory/num workers are variables in Vagrantfile
-- Number of workers passed from Vagrant to Ansible
-- [inventory.cfg]()
+- Loops and template arithmetic are used to define node IPs.
+- CPU/memory/num workers are variables in Vagrantfile.
+- Number of workers passed from Vagrant to Ansible.
+- `./provisioning/inventory.cfg` is generated after provisioning.
 
 ### Setting up Software Environment
 
@@ -91,9 +91,30 @@ Excellent:
 
 ### Kubernetes Usage - Excellent
 
+Excellent:
+- /mnt/shared is mounted in [Vagrantfile](link to mount line in file)
+
 ### Helm - Excellent
 
 ### App Monitoring - Excellent
+Sufficient/Good:
+- Our app-specific metrics are defined in [remla25-team12/app, app.py]():
+    - Counters:
+        - total_reviews_submitted ('app-version' label)
+        - total_correct_predictions
+        - total_incorrect_predictions
+        - profile_clicks ('member_name' and 'app_version' labels)
+    - Histogram: 
+        - all_review_length_histogram ('app_version' label)
+        - review_length_per_feedback_histogram ('prediction_outcome' label)
+    - Gauge
+        - current_percentage_of_correct_predictions_gauge ('model_version' label)
+- Automatically discovered through a [ServiceMonitor] ()
+
+Excellent: 
+- We use AlertManager and notifications successfully reach our GMail inbox:
+![Gmail inbox]()
+- There is no password in the [AlertManager Secret](). The password must be passed as an environment variable. For the sake of being able to test our codebase, we have included the password to our Google account in base64.
 
 ### Grafana - Excellent
 
