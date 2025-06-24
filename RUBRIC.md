@@ -141,7 +141,7 @@ Excellent:
 ## A4.2 
 ### Project Organization
 ### Pipeline Management with DVC - Excellent
-- Cloud remote storage (Google Drive) instructions provided in [README](model-training readme, not operation) and works on our side with our Google Account. However, due to authentication problems with Google and the fact that you do not have our password/2FA keys, it might not work for you.
+- Cloud remote storage (Google Drive) instructions provided in [README](https://github.com/remla25-team12/model-training/blob/main/README.md) and works on our side with our Google Account. However, due to authentication problems with Google and the fact that you do not have our password/2FA keys, it might not work for you.
 - [metrics.json]() for accuracy-related metrics, registered in [eval_model stage](link to line in dvc.yaml)
 - 
 
