@@ -131,6 +131,24 @@ Excellent:
 - No manual installation instructions, because we use a [Configmap](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/grafana-dashboard-configmap.yaml) to install the [dashboard.json](https://github.com/remla25-team12/operation/blob/main/helm/myapp/grafana/dashboard.json) automatically.
 - Gauges, Counters, variable timeframes for parameterizable queries, and rate/avg functions are all used.
 
-# A4
+# A4 ML Configuration Management
+## A4.1 ML Testing
+### Automated Tests
+
+### Continuous Training
+
+
+## A4.2 
+### Project Organization
+### Pipeline Management with DVC - Excellent
+- Cloud remote storage (Google Drive) instructions provided in [README](model-training readme, not operation) and works on our side with our Google Account. However, due to authentication problems with Google and the fact that you do not have our password/2FA keys, it might not work for you.
+- [metrics.json]() for accuracy-related metrics, registered in [eval_model stage](link to line in dvc.yaml)
+- 
+
+### Code Quality - Excellent
+- Non-standard [.pylintrc]()
+- No warnings (else our GitHub action for linting would fail)
+- Multiple linters: black and flake8 defined in [setup.cfg]()
+- Custom pylint rule for ML-Specific code smells: ??????
 
 # A5
