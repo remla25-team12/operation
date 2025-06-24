@@ -85,9 +85,6 @@ Excellent:
 - HTTPS Nginx Ingress Controller with self-signed certs for Kubernetes Dashboard (https://dashboard.local)
   - Your browser may still throw a security warning because the TLS certs are not signed by LetsEncrypt or another reputable Certificate Authority.
 
-<<<<<<< Updated upstream
-# A3
-=======
 # A3 Operate and Monitor Kubernetes
 ## A3.1 Kubernetes & Monitoring
 ### Kubernetes Usage - Excellent
@@ -100,7 +97,6 @@ Excellent:
 - No manual installation instructions, because we use a [Configmap]() to install the dashboard.json automatically.
 - Gauges, Counters, variable timeframes for parameterizable queries, and rate/avg functions are all used.
 
->>>>>>> Stashed changes
 
 # A4
 
