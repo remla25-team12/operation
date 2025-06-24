@@ -24,13 +24,13 @@
 
 ### Software Reuse in Libraries - Excellent
 
-- [lib-version]() has a VersionUtil class that retrieves the package version using PEP 621-compliant metadata or falls back to a "dev" string if not installed as a package.
+- [lib-version](https://github.com/remla25-team12/lib-version) has a VersionUtil class that retrieves the package version using PEP 621-compliant metadata or falls back to a "dev" string if not installed as a package.
 
 ## A1.3 Containers & Orchestration
 
 ### Containers & Orchestration - Excellent
 
-- See [.env]() file.
+- See [.env](https://github.com/remla25-team12/operation/blob/main/.env) file.
 
 ### Docker Compose Operation - Excellent
 
@@ -54,15 +54,15 @@ Good:
 - Both built-in modules (community.general) and Kubernetes.core modules are used for idempotency
 - Several variables are registered, e.g. "register: dashboard_token"
 - Loop used for SSH keys
-- Cluster does not get re-inizialied upon reprovisioning:
-  - general.yaml, ctrl.yaml and node.yaml are fully idempotent (no [changed] tasks after re- provisioning).
+- Cluster does not get re-initialized upon reprovisioning:
+  - general.yaml, ctrl.yaml and node.yaml are fully idempotent (no [changed] tasks after re-provisioning).
   - finalization.yaml is as idempotent as possible. Only the installation of Istio will always show [changed] (despite nothing actually changing).
 
 Excellent:
 
-- [Jinja2 template]() is used to dynamically generate a `/etc/hosts` file.
+- [Jinja2 template](https://github.com/remla25-team12/operation/blob/main/provisioning/generate_hosts.j2) is used to dynamically generate a `/etc/hosts` file.
 - Waiting step: "Waiting for MetalLB webhook pod to be ready" in finalization.yaml
-- Idempotent [regex-based replacement]()
+- Idempotent [regex-based replacement](https://github.com/remla25-team12/operation/blob/e0ee9fec4e10556e4de1efaae205570eb067ed61/provisioning/ctrl.yaml#L91)
 
 ### Setting up Kubernetes - Excellent
 
@@ -86,7 +86,9 @@ Excellent:
   - Your browser may still throw a security warning because the TLS certs are not signed by LetsEncrypt or another reputable Certificate Authority.
 
 # A3 Operate and Monitor Kubernetes
+
 ## A3.1 Kubernetes & Monitoring
+
 ### Kubernetes Usage - Excellent
 
 ### Helm - Excellent
@@ -94,9 +96,9 @@ Excellent:
 ### App Monitoring - Excellent
 
 ### Grafana - Excellent
+
 - No manual installation instructions, because we use a [Configmap]() to install the dashboard.json automatically.
 - Gauges, Counters, variable timeframes for parameterizable queries, and rate/avg functions are all used.
-
 
 # A4
 
