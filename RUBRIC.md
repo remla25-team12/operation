@@ -92,33 +92,37 @@ Excellent:
 ### Kubernetes Usage - Excellent
 
 Excellent:
+
 - /mnt/shared is mounted in [Vagrantfile](link to mount line in file)
 
 ### Helm - Excellent
 
 ### App Monitoring - Excellent
-Sufficient/Good:
-- Our app-specific metrics are defined in [remla25-team12/app, app.py]():
-    - Counters:
-        - total_reviews_submitted ('app-version' label)
-        - total_correct_predictions
-        - total_incorrect_predictions
-        - profile_clicks ('member_name' and 'app_version' labels)
-    - Histogram: 
-        - all_review_length_histogram ('app_version' label)
-        - review_length_per_feedback_histogram ('prediction_outcome' label)
-    - Gauge
-        - current_percentage_of_correct_predictions_gauge ('model_version' label)
-- Automatically discovered through a [ServiceMonitor] ()
 
-Excellent: 
+Sufficient/Good:
+
+- Our app-specific metrics are defined in [remla25-team12/app, app.py](https://github.com/remla25-team12/app/blob/main/app.py):
+  - Counters:
+    - total_reviews_submitted ('app-version' label)
+    - total_correct_predictions
+    - total_incorrect_predictions
+    - profile_clicks ('member_name' and 'app_version' labels)
+  - Histogram:
+    - all_review_length_histogram ('app_version' label)
+    - review_length_per_feedback_histogram ('prediction_outcome' label)
+  - Gauge
+    - current_percentage_of_correct_predictions_gauge ('model_version' label)
+- Automatically discovered through a [ServiceMonitor](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/service-monitor.yaml)
+
+Excellent:
+
 - We use AlertManager and notifications successfully reach our GMail inbox:
-![Gmail inbox]()
-- There is no password in the [AlertManager Secret](). The password must be passed as an environment variable. For the sake of being able to test our codebase, we have included the password to our Google account in base64.
+  ![Gmail inbox]()
+- There is no password in the [AlertManager Secret](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/alertmanager-secret.yaml). The password must be passed as an environment variable. For the sake of being able to test our codebase, we have included the password to our Google account in base64.
 
 ### Grafana - Excellent
 
-- No manual installation instructions, because we use a [Configmap]() to install the dashboard.json automatically.
+- No manual installation instructions, because we use a [Configmap](https://github.com/remla25-team12/operation/blob/e0ee9fec4e10556e4de1efaae205570eb067ed61/helm/myapp/templates/grafana-dashboard-configmap.yaml) to install the [dashboard.json](https://github.com/remla25-team12/operation/blob/e0ee9fec4e10556e4de1efaae205570eb067ed61/helm/myapp/grafana/dashboard.json) automatically.
 - Gauges, Counters, variable timeframes for parameterizable queries, and rate/avg functions are all used.
 
 # A4
