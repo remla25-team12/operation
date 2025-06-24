@@ -38,6 +38,7 @@
 - [inventory.cfg]()
 
 ### Setting up Software Environment
+Good:
 - Both built-in modules (community.general) and Kubernetes.core modules are used for idempotency
 - Several variables are registered, e.g. "register: dashboard_token"
 - Loop used for SSH keys
@@ -45,18 +46,30 @@
     - general.yaml, ctrl.yaml and node.yaml are fully idempotent (no [changed] tasks after re- provisioning). 
     - finalization.yaml is as idempotent as possible. Only the installation of Istio will always show [changed] (despite nothing actually changing).
 
-- [Jinja2 template]() is used to dynamically generate a `/etc/hosts` file depending on the number of workers
+Excellent:
+- [Jinja2 template]() is used to dynamically generate a `/etc/hosts` file.
 - Waiting step: "Waiting for MetalLB webhook pod to be ready" in finalization.yaml
 - Idempotent [regex-based replacement]()
 
 ### Setting up Kubernetes - Excellent
+Sufficient:
 - kubectl config: `./provisioning/admin.conf`
 - Host-based kubectl can communicate with control plane after exporting `admin.conf` as environment variable.
 
+Good:
 - MetalLB installed
-- Istio Gateway for for myapp.local
+- HTTP Ingress Controller for Kubernetes Dashboard
+- Istio Gateway for our app
 
+Excellent:
 - Kubernetes Dashboard directly reachable at dashboard.local (or 192.168.56.91)
-- Ingress Controller fixed IP: 192.168.56.91
+- Nginx Ingress Controller fixed IP: 192.168.56.91
 - Istio IngressGateway fixed IP: 192.168.56.99
-- HTTPS Ingress Controller for Kubernetes Dashboard (https://dashboard.local)
+- HTTPS Nginx Ingress Controller with self-signed certs for Kubernetes Dashboard (https://dashboard.local)
+    - Your browser may still throw a security warning because the TLS certs are not signed by LetsEncrypt or another reputable Certificate Authority.
+
+# A3 
+
+# A4
+
+# A5 
