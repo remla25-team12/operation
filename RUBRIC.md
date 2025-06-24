@@ -134,16 +134,43 @@ Excellent:
 # A4 ML Configuration Management
 ## A4.1 ML Testing
 ### Automated Tests
+Sufficient/Good:
+- All 4 ML Test Score categories are applied and clearly labelled with comments in [run_tests.py]()
+- Non-determinism robustness test: [test_robustness.py]()
+- Performance tests: [test_performance.py]()
+- Feature cost test: [??????]()
 
-### Continuous Training
+Excellent:
+- Coverage measured in [run_tests.py]()
+- Mutamorphic testing in [???????]()
 
+### Continuous Training - Excellent
+- pytest and pylint in [GitHub workflow]()
+- pylint score, test adequacy and test coverage all calculated and reported automatically in [README](link to model-training readme) with a badge.
 
 ## A4.2 
-### Project Organization
+### Project Organization - Excellent
+Sufficient:
+- Python project with pipeline scripts in [./src](link to this folder)
+- [requirements.txt]()
+- Loosely follows Cookiecutter template
+
+Good:
+- Dataset not stored on our GitHub repository ([./data](link to this folder) folder is empty)
+- There is no exploratory code in our repository
+- Only code required for training & evaluation is included in ./src
+- Versioned [release](link to Releases page of model-training) of the model
+
+Excellent:
+- [Automated](link to workflow/github actions) versioned [release](link to releases page) of the model.
+
 ### Pipeline Management with DVC - Excellent
-- Cloud remote storage (Google Drive) instructions provided in [README](https://github.com/remla25-team12/model-training/blob/main/README.md) and works on our side with our Google Account. However, due to authentication problems with Google and the fact that you do not have our password/2FA keys, it might not work for you.
-- [metrics.json]() for accuracy-related metrics, registered in [eval_model stage](link to line in dvc.yaml)
-- 
+- Cloud remote storage (Google Drive) instructions provided in [README](https://github.com/remla25-team12/model-training/blob/main/README.md) and works on our side with our Google Account. 
+    - Due to authentication problems with Google and the fact that you do not have our password/2FA keys, it might not work for you.
+    - We also included local remote storage instructions.
+- `metrics.json` for accuracy metrics generated in [./src/evaluate.py]().
+    - Registered in [eval_model stage](link to line in dvc.yaml).
+    - Also reports non-accuracy metrics such as precision, recall, F1-score and support.
 
 ### Code Quality - Excellent
 - Non-standard [.pylintrc]()
@@ -151,4 +178,4 @@ Excellent:
 - Multiple linters: black and flake8 defined in [setup.cfg]()
 - Custom pylint rule for ML-Specific code smells: ??????
 
-# A5
+# A5 Istio Service Mesh
