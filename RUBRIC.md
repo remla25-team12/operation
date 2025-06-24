@@ -132,76 +132,99 @@ Excellent:
 - Gauges, Counters, variable timeframes for parameterizable queries, and rate/avg functions are all used.
 
 # A4 ML Configuration Management
+
 ## A4.1 ML Testing
+
 ### Automated Tests - Good
+
 Sufficient/Good:
-- All 4 ML Test Score categories are applied and clearly labelled with comments in [run_tests.py]()
-- Non-determinism robustness test: [test_robustness.py]()
-- Performance tests: [test_performance.py]()
+
+- All 4 ML Test Score categories are applied and clearly labelled with comments in [run_tests.py](https://github.com/remla25-team12/model-training/blob/main/tests/run_tests.py)
+- Non-determinism robustness test: [test_robustness.py](https://github.com/remla25-team12/model-training/blob/main/tests/test_robustness.py)
+- Performance tests: [test_performance.py](https://github.com/remla25-team12/model-training/blob/main/tests/test_performance.py)
 - **NOT IMPLEMENTED:** Feature cost test
 
 Excellent:
-- Coverage measured in [run_tests.py]()
+
+- Coverage measured in [run_tests.py](https://github.com/remla25-team12/model-training/blob/main/tests/run_tests.py)
 - **NOT IMPLEMENTED:** Mutamorphic testing
 
 ### Continuous Training - Excellent
-- pytest and pylint in [GitHub workflow]()
-- pylint score, test adequacy and test coverage all calculated and reported automatically in [README](link to model-training readme) with a badge.
 
-## A4.2 
+- pytest and pylint in a [GitHub workflow called quality.yaml](https://github.com/remla25-team12/model-training/blob/main/.github/workflows/quality.yml)
+- pylint score, test adequacy and test coverage all calculated and reported automatically in [README](https://github.com/remla25-team12/model-training/blob/main/README.md) with a badge.
+
+## A4.2
+
 ### Project Organization - Excellent
+
 Sufficient:
-- Python project with pipeline scripts in [./src](link to this folder)
-- [requirements.txt]()
+
+- Python project with pipeline scripts in [./src](https://github.com/remla25-team12/model-training/tree/main/src)
+- [requirements.txt](https://github.com/remla25-team12/model-training/blob/main/requirements.txt)
 - Loosely follows Cookiecutter template
 
 Good:
-- Dataset not stored on our GitHub repository ([./data](link to this folder) folder is empty)
+
+- Dataset not stored on our GitHub repository ([./data](https://github.com/remla25-team12/model-training/tree/main/data) folder is empty)
 - There is no exploratory code in our repository
 - Only code required for training & evaluation is included in ./src
-- Versioned [release](link to Releases page of model-training) of the model
+- Versioned [release](https://github.com/remla25-team12/model-training/releases) of the model
 
 Excellent:
-- [Automated](link to workflow/github actions) versioned [release](link to releases page) of the model.
+
+- [Automated](https://github.com/remla25-team12/model-training/blob/main/.github/workflows/release.yaml) versioned [release](https://github.com/remla25-team12/model-training/releases) of the model.
 
 ### Pipeline Management with DVC - Excellent
-- Cloud remote storage (Google Drive) instructions provided in [README](https://github.com/remla25-team12/model-training/blob/main/README.md) and works on our side with our Google Account. 
-    - Due to authentication problems with Google and the fact that you do not have our password/2FA keys, it might not work for you.
-    - We also included local remote storage instructions.
-- `metrics.json` for accuracy metrics generated in [./src/evaluate.py]().
-    - Registered in [eval_model stage](link to line in dvc.yaml).
-    - Also reports non-accuracy metrics such as precision, recall, F1-score and support.
+
+- Cloud remote storage (Google Drive) instructions provided in [README](https://github.com/remla25-team12/model-training/blob/main/README.md) and works on our side with our Google Account.
+  - Due to authentication problems with Google and the fact that you do not have our password/2FA keys, it might not work for you.
+  - We also included local remote storage instructions.
+- `metrics.json` for accuracy metrics generated in [./src/evaluate.py](https://github.com/remla25-team12/model-training/blob/main/src/evaluate.py).
+  - Registered in [eval_model stage](link to line in dvc.yaml).
+  - Also reports non-accuracy metrics such as precision, recall, F1-score and support.
 
 ### Code Quality - Excellent
+
 - Non-standard [.pylintrc]()
 - No warnings (else our GitHub action for linting would fail)
 - Multiple linters: black and flake8 defined in [setup.cfg]()
-- Custom pylint rule for ML-Specific code smells: ??????
+- Custom pylint rule for ML-Specific code smells: We relaxed the naming convention rules to accommodate commonly used variable names in ML pipelines, such as X, X_train, X_test, y, and y_pred.
 
 # A5 Istio Service Mesh
+
 ## A5.1 Implementation
+
 ### Traffic Management - Excellent
-- Accessibler through IngressGateway after adding "myapp.local 192.168.56.99" to hostsfile. 
+
+- Accessibler through IngressGateway after adding "myapp.local 192.168.56.99" to hostsfile.
 - Gateway, VirtualServices, DestinationRules and weights for 90/10 split are defined in [istio.yaml]()
 - `app` and `model-service` versions are consistent.
 - We implemented Sticky Sessions using illustrative curl requests with the header variable `x-newvers`, see [README](link to section Sticky Sessions in our README)
 
 ### Additional Use Case - Excellent
+
 - We fully realized rate limiting with Istio: maximum 10 requests globally and maximum 2 model queries (/predict endpoint) per minute.
 
 ### Continuous Experimentation - Excellent
+
 Sufficient/good:
+
 - Experiment is described clearly: LinkedIn icon vs no LinkedIn icon, which generated more clicks?
 - Both versions of `app` (with and without LinkedIn icon) are deployed with Istio and reachable through the traffic split.
 - Prometheus picks up the metric `profile_clicks` automatically and it is visualized in Grafana in the automatically-imported dashboard.
 
-Excellent: 
+Excellent:
+
 - We explain the decision process in detail.
 
 ## A5.2 Documentation
+
 ### Deployment Documentation - Excellent
+
 - In [deployment.md](), we discuss both the deployment structure and the data flow on several levels (Kubernetes, Istio service mesh, HTTP requests).
-- In our opinion the documentation is indeed visually appearing and clear, with useful visualizations connected to the text. 
+- In our opinion the documentation is indeed visually appearing and clear, with useful visualizations connected to the text.
 
 ### Extension Proposal - Excellent
+
 - [TODO] Selin could you write here why our Extension proposal could be considered excellent?
