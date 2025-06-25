@@ -61,7 +61,7 @@ Good:
 Excellent:
 
 - [Jinja2 template](https://github.com/remla25-team12/operation/blob/main/provisioning/generate_hosts.j2) is used to dynamically generate a `/etc/hosts` file.
-- Waiting step: "Waiting for MetalLB webhook pod to be ready" in finalization.yaml
+- Waiting step: "Waiting for MetalLB webhook pod to be ready" in [finalization.yaml](https://github.com/remla25-team12/operation/blob/main/provisioning/finalization.yml)
 - Idempotent [regex-based replacement](https://github.com/remla25-team12/operation/blob/e0ee9fec4e10556e4de1efaae205570eb067ed61/provisioning/ctrl.yaml#L91)
 
 ### Setting up Kubernetes - Excellent
@@ -73,16 +73,14 @@ Sufficient:
 
 Good:
 
-- MetalLB installed
-- HTTP Ingress Controller for Kubernetes Dashboard
-- Istio Gateway for our app
+- MetalLB, HTTP Ingress Controller for Kubernetes Dashboard, and Istio all installed in [finalization.yaml](https://github.com/remla25-team12/operation/blob/main/provisioning/finalization.yml)
 
 Excellent:
 
 - Kubernetes Dashboard directly reachable at dashboard.local (or 192.168.56.91)
 - Nginx Ingress Controller fixed IP: 192.168.56.91
 - Istio IngressGateway fixed IP: 192.168.56.99
-- HTTPS Nginx Ingress Controller with self-signed certs for Kubernetes Dashboard (https://dashboard.local)
+- HTTPS Nginx Ingress Controller with self-signed certs for Kubernetes Dashboard (https://dashboard.local) in [finalization.yaml](https://github.com/remla25-team12/operation/blob/main/provisioning/finalization.yml#L176)
   - Your browser may still throw a security warning because the TLS certs are not signed by LetsEncrypt or another reputable Certificate Authority.
 
 # A3 Operate and Monitor Kubernetes
@@ -92,7 +90,7 @@ Excellent:
 ### Kubernetes Usage - Excellent
 
 - Model service location defined as [environment variable](https://github.com/remla25-team12/operation/blob/c432605a8a93291e5b3acb41a59e6bbb9b3ff0b4/helm/myapp/templates/app-deployment.yaml#L27) with variable names, so can be relocated just by changing Kubernetes config.
-- ConfigMap and Secret
+- [ConfigMap](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/grafana-dashboard-configmap.yaml) and [Secret](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/alertmanager-secret.yaml)
 
 Excellent:
 
