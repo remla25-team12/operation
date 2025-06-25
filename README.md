@@ -297,7 +297,7 @@ export PROMETHEUS_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.
 kubectl -n istio-system port-forward $PROMETHEUS_POD_NAME 9090
 
 # Minikube:
-minikube service myprom-kube-prometheus-sta-prometheus --url
+minikube service myprom-kube-prometheus-sta-prometheus -n istio-system --url
 ```
 
 ### Grafana
@@ -310,7 +310,7 @@ export GRAFANA_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/
 kubectl -n istio-system port-forward $GRAFANA_POD_NAME 3000
 
 # Minikube:
-minikube service myprom-grafana --url
+minikube service myprom-grafana -n istio-system --url
 ```
 
 Grafana login credentials:
