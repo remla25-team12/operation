@@ -317,7 +317,7 @@ minikube service myprom-grafana --url
 Grafana login credentials:
 
 - Username: `admin`
-- Password: Run `kubectl --namespace istio-system get secrets myprom-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo`
+- Password: On a new terminal, SSH into the control node and run `kubectl --namespace istio-system get secrets myprom-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo`
 
 The dashboard configurations inside the folder `helm/myapp/grafana/` are **automatically imported through a ConfigMap**, so no manual installation is required. Simply go to the Dashboards tab in Grafana and load the 'Restaurant sentiment analysis' dashboard:
 
