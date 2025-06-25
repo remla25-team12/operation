@@ -124,7 +124,7 @@ Sufficient/Good:
 Excellent:
 
 - We use AlertManager and notifications successfully reach our GMail inbox: ![GMail inbox AlertManager](imgs/rubric_gmail_alertmanager.png)
-- There is no password in the [AlertManager Secret](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/alertmanager-secret.yaml). The password must be passed as an environment variable. For the sake of being able to test our codebase, we have included the password to our Google account in base64.
+- There is no password in the [AlertManager Secret](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/alertmanager-secret.yaml). The password must be passed as an environment variable. For the sake of being able to test our codebase, we have included the password to our Google account in base64 in the README.
 
 ### Grafana - Excellent
 
