@@ -123,12 +123,12 @@ Sufficient/Good:
 
 Excellent:
 
-- We use AlertManager and notifications successfully reach our GMail inbox:\ ![GMail inbox AlertManager](imgs/rubric_gmail_alertmanager.png)
+- We use AlertManager and notifications successfully reach our GMail inbox: ![GMail inbox AlertManager](imgs/rubric_gmail_alertmanager.png)
 - There is no password in the [AlertManager Secret](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/alertmanager-secret.yaml). The password must be passed as an environment variable. For the sake of being able to test our codebase, we have included the password to our Google account in base64.
 
 ### Grafana - Excellent
 
-- No manual installation instructions, because we use a [Configmap](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/grafana-dashboard-configmap.yaml) to install the [dashboard.json](https://github.com/remla25-team12/operation/blob/main/helm/myapp/grafana/dashboard.json) automatically.
+- No manual installation instructions, because we use a [Configmap](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/grafana-dashboard-configmap.yaml) for Grafana to install the [dashboard.json](https://github.com/remla25-team12/operation/blob/main/helm/myapp/grafana/dashboard.json) automatically.
 - Gauges, Counters, variable timeframes for parameterizable queries, and rate/avg functions are all used.
 
 # A4 ML Configuration Management
@@ -188,7 +188,7 @@ Excellent:
 
 - Non-standard [.pylintrc]()
 - No warnings (else our GitHub action for linting would fail)
-- Multiple linters: black and flake8 defined in [setup.cfg]()
+- Multiple linters: black and flake8 defined in [setup.cfg](https://github.com/remla25-team12/model-training/blob/main/setup.cfg)
 - Custom pylint rule for ML-Specific code smells: We relaxed the naming convention rules to accommodate commonly used variable names in ML pipelines, such as X, X_train, X_test, y, and y_pred.
 
 # A5 Istio Service Mesh
@@ -197,10 +197,10 @@ Excellent:
 
 ### Traffic Management - Excellent
 
-- Accessibler through IngressGateway after adding "myapp.local 192.168.56.99" to hostsfile.
-- Gateway, VirtualServices, DestinationRules and weights for 90/10 split are defined in [istio.yaml]()
+- Accessible through IngressGateway after adding "myapp.local 192.168.56.99" to hostsfile.
+- Gateway, VirtualServices, DestinationRules and weights for 90/10 split are defined in [istio.yaml](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/istio.yaml)
 - `app` and `model-service` versions are consistent.
-- We implemented Sticky Sessions using illustrative curl requests with the header variable `x-newvers`, see [README](link to section Sticky Sessions in our README)
+- We implemented Sticky Sessions using illustrative curl requests with the header variable `x-newvers`, see [README](https://github.com/remla25-team12/operation/blob/main/README.md#sticky-sessions)
 
 ### Additional Use Case - Excellent
 
@@ -222,9 +222,10 @@ Excellent:
 
 ### Deployment Documentation - Excellent
 
-- In [deployment.md](), we discuss both the deployment structure and the data flow on several levels (Kubernetes, Istio service mesh, HTTP requests).
-- In our opinion the documentation is indeed visually appearing and clear, with useful visualizations connected to the text.
+- In [deployment.md](https://github.com/remla25-team12/operation/blob/main/docs/deployment.md), we discuss both the deployment structure and the data flow on several levels (Kubernetes, Istio service mesh, HTTP requests).
+- In our opinion, the documentation is indeed visually appearing and clear, with useful visualizations connected to the text.
 
 ### Extension Proposal - Excellent
 
-- [TODO] Selin could you write here why our Extension proposal could be considered excellent?
+- In [extension.md](https://github.com/remla25-team12/operation/blob/main/docs/extension.md), we analyze 2 shortcomings, critically reflect, present extensions to improve these shortcomings, and describe how an improvement can be measured in an experiment.
+- In our opinion, the documentation is general and applicable beyond the current status of our project.

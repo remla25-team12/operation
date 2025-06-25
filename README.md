@@ -2,42 +2,44 @@
 
 REMLA Group 12
 
-<!-- TABLE OF CONTENTS -->
 <details>
   <summary><b>Table of Contents</b></summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">About the Project</a>
-      <ul>
-        <li>
-          <a href="#relevant-repositories">Relevant Repositories</a>
-        </li>
-      </ul>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#deployment-with-docker">Deployment with Docker</a></li>
-        <li><a href="#provisioning-the-kubernetes-cluster">Provisioning the Kubernetes Cluster</a></li>
-        <li><a href="#deployment-on-kubernetes-cluster">Deployment on Kubernetes Cluster</a></li>
-      </ul>
-    </li>
-    <li><a href="#usage">Usage</a></li>
-         <ul>
-        <li><a href="#webapp-access">Webapp Access</a></li>
-        <li><a href="#sticky-sessions">Sticky Sessions</a></li>
-        <li><a href="#prometheus-grafana-and-alert-manager">Prometheus, Grafana and Alert Manager</a></li>
-      </ul>
-   <li><a href="#troubleshooting">Troubleshooting</a></li>
-    <li><a href="#continuous-progress-log">Continuous Progress Log</a></li>
-      <ul>
-        <li><a href="#assignment-1">Assignment 1</a></li>
-        <li><a href="#assignment-2">Assignment 2</a></li>
-        <li><a href="#assignment-3">Assignment 3</a></li>
-        <li><a href="#assignment-4">Assignment 4</a></li>
-        <li><a href="#assignment-5">Assignment 5</a></li>
-      </ul>
-  </ol>
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+**Table of Contents** _generated with [DocToc](https://github.com/thlorenz/doctoc)_
+
+- [Operation](#operation)
+- [About the Project](#about-the-project)
+  - [Relevant Repositories](#relevant-repositories)
+- [Getting Started](#getting-started)
+  - [Deployment with Docker](#deployment-with-docker)
+    - [Prerequisites](#prerequisites)
+    - [Install and Run](#install-and-run)
+  - [Provisioning the Kubernetes Cluster](#provisioning-the-kubernetes-cluster)
+    - [Prerequisites](#prerequisites-1)
+    - [Install and Run](#install-and-run-1)
+  - [Deployment on Kubernetes Cluster](#deployment-on-kubernetes-cluster)
+    - [Prerequisites](#prerequisites-2)
+    - [Install and run](#install-and-run-2)
+- [Usage](#usage)
+  - [Webapp access](#webapp-access)
+  - [Sticky sessions](#sticky-sessions)
+  - [Prometheus, Grafana and Alert Manager](#prometheus-grafana-and-alert-manager)
+    - [Prometheus](#prometheus)
+    - [Grafana](#grafana)
+    - [Alert Manager](#alert-manager)
+- [Troubleshooting](#troubleshooting)
+- [Final State of our Assignment](#final-state-of-our-assignment)
+- [Continuous Progress Log](#continuous-progress-log)
+  - [Assignment 1](#assignment-1)
+  - [Assignment 2](#assignment-2)
+  - [Assignment 3](#assignment-3)
+  - [Assignment 4](#assignment-4)
+  - [Assignment 5](#assignment-5)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 </details>
 
 # About the Project
