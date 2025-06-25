@@ -100,7 +100,7 @@ Excellent:
 
 ### Helm - Excellent
 
-- Helm chart: `./helm/myapp`, contains the complete except Prometheus/Grafana/AlertManager stack (these are deployed separately as `myprom`)
+- Helm chart: `./helm/myapp`, contains the complete deployment except Prometheus/Grafana/AlertManager stack (these are deployed separately as `myprom`)
 - [values.yaml](https://github.com/remla25-team12/operation/blob/main/helm/myapp/values.yaml) (not .xml though)
 - Can be installed more than once through the use of the "myapp.fullName" variable in all templates.
 
