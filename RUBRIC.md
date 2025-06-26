@@ -62,7 +62,7 @@ Excellent:
 
 - [Jinja2 template](https://github.com/remla25-team12/operation/blob/main/provisioning/generate_hosts.j2) is used to dynamically generate a `/etc/hosts` file.
 - Waiting step: "Waiting for MetalLB webhook pod to be ready" in [finalization.yaml](https://github.com/remla25-team12/operation/blob/main/provisioning/finalization.yml)
-- Idempotent [regex-based replacement](https://github.com/remla25-team12/operation/blob/e0ee9fec4e10556e4de1efaae205570eb067ed61/provisioning/ctrl.yaml#L91)
+- Idempotent [regex-based replacement](https://github.com/remla25-team12/operation/blob/main/provisioning/ctrl.yaml#L91)
 
 ### Setting up Kubernetes - Excellent
 
@@ -89,12 +89,12 @@ Excellent:
 
 ### Kubernetes Usage - Excellent
 
-- Model service location defined as [environment variable](https://github.com/remla25-team12/operation/blob/c432605a8a93291e5b3acb41a59e6bbb9b3ff0b4/helm/myapp/templates/app-deployment.yaml#L27) with variable names, so can be relocated just by changing Kubernetes config.
+- Model service location defined as [environment variable](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/app-deployment.yaml#L27) with variable names, so can be relocated just by changing Kubernetes config.
 - [ConfigMap](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/grafana-dashboard-configmap.yaml) and [Secret](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/alertmanager-secret.yaml)
 
 Excellent:
 
-- /mnt/shared is mounted in [Vagrantfile](https://github.com/remla25-team12/operation/blob/cfdc4b9c7ed25955658588abf1637150ee66ebc4/Vagrantfile#L140)
+- /mnt/shared is mounted in [Vagrantfile](https://github.com/remla25-team12/operation/blob/main/Vagrantfile#L140)
 
 ### Helm - Excellent
 
