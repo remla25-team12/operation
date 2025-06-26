@@ -47,7 +47,7 @@
 - Number of workers passed from Vagrant to Ansible.
 - `./provisioning/inventory.cfg` is generated after provisioning.
 
-### Setting up Software Environment
+### Setting up Software Environment - Excellent
 
 Good:
 
