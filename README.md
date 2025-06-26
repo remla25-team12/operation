@@ -25,10 +25,11 @@ REMLA Group 12
 - [Usage](#usage)
   - [Webapp access](#webapp-access)
   - [Sticky sessions](#sticky-sessions)
-  - [Prometheus, Grafana and Alert Manager](#prometheus-grafana-and-alert-manager)
+  - [Prometheus, Grafana, Alert Manager, and Rate Limiting](#prometheus-grafana-alert-manager-and-rate-limiting)
     - [Prometheus](#prometheus)
     - [Grafana](#grafana)
     - [Alert Manager](#alert-manager)
+    - [Rate Limiting](#rate-limiting)
 - [Troubleshooting](#troubleshooting)
 - [Final State of our Assignment](#final-state-of-our-assignment)
 - [Continuous Progress Log](#continuous-progress-log)
@@ -256,17 +257,29 @@ To access the deployed application, you need to be able to resolve `myapp.local`
   sudo sh -c 'echo "192.168.56.99  myapp.local" >> /etc/hosts'
   ```
 
-- On **Minikube**, just use Minikube tunnel:
-  ```bash
-  minikube tunnel  # keep this terminal tab open for as long as you need to access myapp.local
-  ```
- >**Note**: You may have to wait a few seconds for the pods to be initialized and the Ingress to be set up. If you see "no healthy upstream" in the browser, wait a bit longer and refresh the page.
+- On **Minikube**:
+
+  1. Resolve `myapp.local`:
+
+     ```shell
+     sudo sh -c 'echo "127.0.0.1  myapp.local" >> /etc/hosts'
+     ```
+
+  2. Then, Minikube tunnel:
+
+     ```shell
+     minikube tunnel  # keep this terminal tab open for as long as you need to access myapp.local
+     ```
+
+  > **Note:** If you receive `Bad gateway` error when accessing the application at `myapp.local` using Minikube, please go to the `Troubleshooting` section to resolve this error.
+
+> **Note:** Make sure that you have only one instance of `myapp.local` on your `/etc/hosts` file (either for VM Cluster or Minikube).
 
 Then access the application at http://myapp.local
 
 Metrics are available at http://myapp.local/metrics
 
-> If you see "no healthy upstream", please wait for the app pods to initialize. Check with `kubectl get pods`.
+> **Note**: You may have to wait a few seconds for the pods to be initialized and the Ingress to be set up. If you see "no healthy upstream" in the browser, please wait for the app pods to initialize and refresh the page. You can check the status of your pods with `kubectl get pods`.
 
 ## Sticky sessions
 
@@ -286,7 +299,9 @@ for i in {1..10}; do curl -s -H "x-newvers: true" -H "x-user-id: testuser" http:
 for i in {1..10}; do curl -s -H "Host: myapp.local" -H "x-newvers: true" -H "x-user-id: testuser" http://localhost:8080 ; done | grep "App Version" # In another terminal tab
 ```
 
-## Prometheus, Grafana and Alert Manager
+## Prometheus, Grafana, Alert Manager, and Rate Limiting
+
+> **Note:** If you face any issues in this section, please check the `Troubleshooting` section.
 
 ### Prometheus
 
@@ -328,6 +343,7 @@ It should look like this:
 ![Grafana dashboard](imgs/grafana_dashboard.png)
 
 ### Alert Manager
+
 Access Alert Manager at http://localhost:9093/:
 
 ```bash
@@ -337,24 +353,44 @@ kubectl -n istio-system port-forward "$ALERTMANAGER_POD" 9093:9093
 
 ### Rate Limiting
 
-Rate Limiting is setups to 2 requests/min maximum per user (IP) on the `/predict` endpoint. This can be tested by trying to predict 3 different reviews in quick succession. The third request will be rejected with a `429 status code  (Too Many Requests)`.
-Additionally, there is a global rate limit of 10 requests/minute. This can be tested by refreshing the landing page at least 11 times in quick succession (ctrl+R in the browser). The 11th request will be rejected with a `429 status code (Too Many Requests)`.
+Rate Limiting is setup to a maximum of 2 requests/min per user (IP) on the `/predict` endpoint. This can be tested by trying to predict 3 different reviews in quick succession. The third request will be rejected with a `429 status code (Too Many Requests)`.
 
-We understand that these rates are low and unrealistic for a production application, but they are convenient for testing purposes. 
+Additionally, there is a global rate limit of 10 requests/min. This can be tested by refreshing the landing page at least 11 times in quick succession (ctrl+R in the browser). The 11th request will be rejected with a `429 status code (Too Many Requests)`.
+
+We understand that these rates are low and unrealistic for a production application, but they are convenient for testing purposes.
 
 The rate limits can be adjusted by upgrading the current app deployment with the following command:
 
 ```bash
-    helm upgrade --install myapp-dev ./helm/myapp \
-    --set ratelimit.predictLimit=10 --set ratelimit.globalLimit=100
+helm upgrade --install myapp-dev ./helm/myapp \
+--set ratelimit.predictLimit=10 --set ratelimit.globalLimit=100
 ```
-This would set the `/predict` endpoint to 10 requests/minute per user and the global limit to 100 requests/minute.
+
+This would set the `/predict` endpoint to 10 requests/min per user and the global limit to 100 requests/min.
 
 # Troubleshooting
+
 This section lists some backup methods and workarounds for problems that we have encountered. We list them separately to keep the main installation instructions readable.
 
-**Problem**: kubectl does not work from host, only from the ctrl node. Cannot access Prometheus/Grafana.
-**Solution**: Since kubectl still works on ctrl, just use ctrl's IP address instead of localhost. For example, to access Grafana at http://192.168.56.100:3000:
+**Problem 1**: Receiving `Bad gateway` error when accessing the application at `myapp.local` using Minikube.
+
+**Solution 1**: Make sure that requests to myapp.local are not intercepted by nginx before tunneling. To ensure nginx is not listening on port 80, you can stop local nginx temporarily:
+
+```bash
+sudo nginx -s stop
+```
+
+After stopping local nginx, re-run Minikube tunnel:
+
+```bash
+minikube tunnel  # keep this terminal tab open for as long as you need to access myapp.local
+```
+
+---
+
+**Problem 2**: kubectl does not work from host, only from the ctrl node. Cannot access Prometheus/Grafana.
+
+**Solution 2**: Since kubectl still works on ctrl, just use ctrl's IP address instead of localhost. For example, to access Grafana at http://192.168.56.100:3000:
 
 ```bash
 vagrant ssh ctrl
@@ -365,6 +401,7 @@ kubectl -n istio-system port-forward --address=0.0.0.0 $GRAFANA_POD_NAME 3000
 ```
 
 And for Prometheus at http://192.168.56.100:9090:
+
 ```bash
 # VM Cluster (Backup option)
 vagrant ssh ctrl
