@@ -259,19 +259,19 @@ To access the deployed application, you need to be able to resolve `myapp.local`
 
 - On **Minikube**:
 
-  - Resolve `myapp.local`:
+  1. Resolve `myapp.local`:
 
   ```bash
   sudo sh -c 'echo "127.0.0.1  myapp.local" >> /etc/hosts'
   ```
 
-  - Make sure that requests to `myapp.local` are not intercepted by nginx before tunneling. To ensure nginx is not listening on port 80, you can stop local nginx temporarily:
+  2. Make sure that requests to `myapp.local` are not intercepted by nginx before tunneling. To ensure nginx is not listening on port 80, you can stop local nginx temporarily:
 
   ```bash
   sudo nginx -s stop
   ```
 
-  - Finally, Minikube tunnel:
+  3. Finally, Minikube tunnel:
 
   ```bash
   minikube tunnel  # keep this terminal tab open for as long as you need to access myapp.local
