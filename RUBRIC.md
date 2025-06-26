@@ -19,8 +19,8 @@
 
 ### Automated Release Process - Excellent
 
-- [app](https://github.com/remla25-team12/app) and [model-service](https://github.com/remla25-team12/model-service) have auto-patch bumps and multiple pre-release automation.
-- [lib-ml](https://github.com/remla25-team12/lib-ml) and [lib-version](https://github.com/remla25-team12/lib-version) are tagged and released manually.
+- [app](https://github.com/remla25-team12/app), [model-service](https://github.com/remla25-team12/model-service), [lib-ml](https://github.com/remla25-team12/lib-ml), and [lib-version](https://github.com/remla25-team12/lib-version) have auto-patch bumps and multiple pre-release automation,
+- [model-training](https://github.com/remla25-team12/model-training) is tagged manually and then the release workflow is triggered automatically. Tagging is kept manual intentionally so that the trained models are released only after they are fully prepared.
 
 ### Software Reuse in Libraries - Excellent
 
