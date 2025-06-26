@@ -419,7 +419,10 @@ We aimed to meet the excellent criteria for all rubric points. We prepared a det
 
 ## Assignment 1
 
-The docker-compose.yaml successfully launches both containers (`app` and `model-service`). They communicate with each other over a shared Docker network, and only `app`'s port is exposed to the host. The app frontend can be used to query the model for predictions. All libraries and containers are released using automatic versioning via a GitHub workflow. We do not yet have additional interaction options (e.g. flagging incorrect predictions).
+The docker-compose.yaml successfully launches both containers (`app` and `model-service`). They communicate with each other over a shared Docker network, and only `app`'s port is exposed to the host. The app frontend can be used to query the model for predictions. All libraries and containers are released using automatic versioning via a GitHub workflow. We implemented additional interaction options:
+
+- Users are shown the predicted sentiment of the review and can indicate if the prediction is correct or not.
+- Our frontend has a "People" page with our pictures that redirect to LinkedIn pages when clicked by the users (used in continuous experimentation).
 
 ## Assignment 2
 
@@ -435,12 +438,12 @@ All issues and pending solutions described in Assignment 2 have been resolved.
 
 Our project status for Assignment 3 is as follows:
 
-| Category          | Expected Rating | Notes                                                                                                              |
-| ----------------- | --------------- | ------------------------------------------------------------------------------------------------------------------ |
-| Kubernetes Usage  | **Excellent**   | All criteria described in the Assignment 3 rubric is implemented.                                                  |
-| Helm Installation | **Excellent**   | All criteria described in the Assignment 3 rubric is implemented.                                                  |
-| App Monitoring    | **Good**        | Our AlertManager implementation is not yet fully functional. We are currently having troubles with sending emails. |
-| Grafana           | **Excellent**   | All criteria described in the Assignment 3 rubric is implemented.                                                  |
+| Category          | Expected Rating | Notes                                                                                                  |
+| ----------------- | --------------- | ------------------------------------------------------------------------------------------------------ |
+| Kubernetes Usage  | **Excellent**   | All criteria described in the Assignment 3 rubric is implemented.                                      |
+| Helm Installation | **Excellent**   | All criteria described in the Assignment 3 rubric is implemented.                                      |
+| App Monitoring    | **Excellent**   | Our AlertManager implementation is fully functional. Notifications successfully reach our GMail inbox. |
+| Grafana           | **Excellent**   | All criteria described in the Assignment 3 rubric is implemented.                                      |
 
 ## Assignment 4
 
@@ -473,7 +476,7 @@ On the second version of the app, changes on the Frontend design is introduced. 
 Our project status for Assignment 5 is as follows:
 
 | Category                   | Expected Rating | Notes                                                                                         |
-| -------------------------- |-----------------|-----------------------------------------------------------------------------------------------|
+| -------------------------- | --------------- | --------------------------------------------------------------------------------------------- |
 | Traffic Management         | **Excellent**   | All criteria for this category are implemented (described in detail in the above paragraphs). |
 | Additional Use-case        | **Excellent**   | User specific and global rate limiting is implemented fully.                                  |
 | Continuous Experimentation | **Excellent**   | All criteria for this category are implemented and presented.                                 |
