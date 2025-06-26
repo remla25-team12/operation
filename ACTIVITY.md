@@ -171,3 +171,10 @@ Approved PR: https://github.com/remla25-team12/operation/pull/89
 **Ayush Kuruvilla:**\
 Created PR: https://github.com/remla25-team12/operation/pull/87 (related to A3) \
 Approved PR: https://github.com/remla25-team12/operation/pull/81
+
+
+# Week 10: (Extra PRs Compensation)
+
+**Philippe Henry:**
+
+Approved PR: https://github.com/remla25-team12/model-training/pull/23

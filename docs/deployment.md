@@ -46,7 +46,7 @@ _**Figure 2**: High-level overview of the deployed resources. Note that only the
 - Two services which assign stable DNS names and ClusterIPs to the `app` and `model-service` pods.
 - A [ConfigMap](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/configmap.yaml) to define the host URL of the ML model.
 - A [Secret](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/alertmanager-secret.yaml) containing login credentials to the Gmail account used by AlertManager.
-- A [ConfigMap](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/grafana-dashboard-configmap.yaml) for automatically importing Grafana dashboards
+- A [ConfigMap](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/grafana-dashboard-configmap.yaml) for automatically importing Grafana dashboards.
 - A [PrometheusRule](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/prometheus-rule.yaml) that defines the conditions and thresholds for sending email notifications.
 - A [ServiceMonitor](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/service-monitor.yaml) that allows Prometheus to find the `/metrics` endpoint of the app to scrape metrics.
 - Several Istio CRDs: two VirtualServices, two DestinationRules, two EnvoyFilters, and a Gateway. These are all defined together in [istio.yaml](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/istio.yaml).
@@ -99,6 +99,6 @@ Not pictured in the diagram are requests to `dashboard.local` (192.168.56.91). T
 
 This section briefly covers the training pipeline of the ML model. For detailed training instructions, we refer you to the [model-training repository](https://github.com/remla25-team12/model-training).
 
-Model training is supported by DVC in addition to GitHub, and consists of four stages, shown in Figure 5. The final outputs are the model artefacts (the CountVectorizer, and the model itself in compressed `.joblib` format) and a `.json` file with model performance metrics.
+Model training is supported by DVC in addition to GitHub, and consists of four stages, shown in Figure 5. The final outputs are the model artifacts (the CountVectorizer, and the model itself in compressed `.joblib` format) and a `.json` file with model performance metrics.
 ![Visualization of the training pipeline for the restaurant sentiment analysis model.](imgs/ML_pipeline.drawio.png)\
 _**Figure 5**: Visualization of the training pipeline for the restaurant sentiment analysis model._

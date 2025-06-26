@@ -12,15 +12,15 @@
 
 - Our frontend can query the model.
 - Users are shown the predicted sentiment of the review and can indicate if the prediction is correct or not.
-- User feedback on predictions is collected and stored in a new dataset.
+- User feedback on predictions is collected and stored in a new dataset. When you boot up the app, a new folder is created under the operation directory (since the mount point is the operation folder). The feedback data is stored inside this folder in a file called feedback_dump.tsv (see [model_service.py](https://github.com/remla25-team12/model-service/blob/57cb9e5f75de0d96ce88060f9d5df817ee7079e4/model_service.py#L186) for this logic).
 - Our frontend has a "People" page with our pictures that redirect to LinkedIn pages when clicked (used in continuous experimentation).
 
 ## A1.2 Versioning & Releases
 
 ### Automated Release Process - Excellent
 
-- [app](https://github.com/remla25-team12/app) and [model-service](https://github.com/remla25-team12/model-service) have auto-patch bumps and multiple pre-release automation.
-- [lib-ml](https://github.com/remla25-team12/lib-ml) and [lib-version](https://github.com/remla25-team12/lib-version) are tagged and released manually.
+- [app](https://github.com/remla25-team12/app), [model-service](https://github.com/remla25-team12/model-service), [lib-ml](https://github.com/remla25-team12/lib-ml), and [lib-version](https://github.com/remla25-team12/lib-version) have auto-patch bumps and multiple pre-release automation,
+- [model-training](https://github.com/remla25-team12/model-training) is tagged manually and then the release workflow is triggered automatically. Tagging is kept manual intentionally so that the trained models are released only after they are fully prepared.
 
 ### Software Reuse in Libraries - Excellent
 
@@ -47,7 +47,7 @@
 - Number of workers passed from Vagrant to Ansible.
 - `./provisioning/inventory.cfg` is generated after provisioning.
 
-### Setting up Software Environment
+### Setting up Software Environment - Excellent
 
 Good:
 
@@ -62,7 +62,7 @@ Excellent:
 
 - [Jinja2 template](https://github.com/remla25-team12/operation/blob/main/provisioning/generate_hosts.j2) is used to dynamically generate a `/etc/hosts` file.
 - Waiting step: "Waiting for MetalLB webhook pod to be ready" in [finalization.yaml](https://github.com/remla25-team12/operation/blob/main/provisioning/finalization.yml)
-- Idempotent [regex-based replacement](https://github.com/remla25-team12/operation/blob/e0ee9fec4e10556e4de1efaae205570eb067ed61/provisioning/ctrl.yaml#L91)
+- Idempotent [regex-based replacement](https://github.com/remla25-team12/operation/blob/main/provisioning/ctrl.yaml#L91)
 
 ### Setting up Kubernetes - Excellent
 
@@ -89,12 +89,12 @@ Excellent:
 
 ### Kubernetes Usage - Excellent
 
-- Model service location defined as [environment variable](https://github.com/remla25-team12/operation/blob/c432605a8a93291e5b3acb41a59e6bbb9b3ff0b4/helm/myapp/templates/app-deployment.yaml#L27) with variable names, so can be relocated just by changing Kubernetes config.
+- Model service location defined as [environment variable](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/app-deployment.yaml#L27) with variable names, so can be relocated just by changing Kubernetes config.
 - [ConfigMap](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/grafana-dashboard-configmap.yaml) and [Secret](https://github.com/remla25-team12/operation/blob/main/helm/myapp/templates/alertmanager-secret.yaml)
 
 Excellent:
 
-- /mnt/shared is mounted in [Vagrantfile](https://github.com/remla25-team12/operation/blob/cfdc4b9c7ed25955658588abf1637150ee66ebc4/Vagrantfile#L140)
+- /mnt/shared is mounted in [Vagrantfile](https://github.com/remla25-team12/operation/blob/main/Vagrantfile#L140)
 
 ### Helm - Excellent
 
@@ -184,10 +184,10 @@ Excellent:
 
 ### Code Quality - Excellent
 
-- Non-standard [.pylintrc]()
+- Non-standard [.pylintrc](https://github.com/remla25-team12/model-training/blob/b73e69e97cd00173d992496e1df75cc0a8de5d3a/.pylintrc#L85)
 - No warnings (else our GitHub action for linting would fail)
 - Multiple linters: black and flake8 defined in [setup.cfg](https://github.com/remla25-team12/model-training/blob/main/setup.cfg)
-- Custom pylint rule for ML-Specific code smells: We relaxed the naming convention rules to accommodate commonly used variable names in ML pipelines, such as X, X_train, X_test, y, and y_pred.
+- [Custom pylint rule](https://github.com/remla25-team12/model-training/blob/b73e69e97cd00173d992496e1df75cc0a8de5d3a/.pylintrc#L236) for ML-Specific code smells: We relaxed the naming convention rules to accommodate commonly used variable names in ML pipelines, such as X, X_train, X_test, y, and y_pred.
 
 # A5 Istio Service Mesh
 
@@ -202,7 +202,7 @@ Excellent:
 
 ### Additional Use Case - Excellent
 
-- We fully realized rate limiting with Istio: maximum 10 requests globally and maximum 2 model queries (/predict endpoint) per minute.
+- We fully realized rate limiting with Istio: maximum 10 requests globally and maximum 2 model queries (/predict endpoint) per minute. Check our [README](https://github.com/remla25-team12/operation/blob/main/README.md#rate-limiting) for rate limiting details.
 
 ### Continuous Experimentation - Excellent
 

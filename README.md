@@ -25,10 +25,11 @@ REMLA Group 12
 - [Usage](#usage)
   - [Webapp access](#webapp-access)
   - [Sticky sessions](#sticky-sessions)
-  - [Prometheus, Grafana and Alert Manager](#prometheus-grafana-and-alert-manager)
+  - [Prometheus, Grafana, Alert Manager, and Rate Limiting](#prometheus-grafana-alert-manager-and-rate-limiting)
     - [Prometheus](#prometheus)
     - [Grafana](#grafana)
     - [Alert Manager](#alert-manager)
+    - [Rate Limiting](#rate-limiting)
 - [Troubleshooting](#troubleshooting)
 - [Final State of our Assignment](#final-state-of-our-assignment)
 - [Continuous Progress Log](#continuous-progress-log)
@@ -84,6 +85,9 @@ This repository serves as the central point of the project, containing the Docke
    ```
 
 3. Navigate to http://localhost:8080 to access the application homepage.
+
+   > **Note:** If you see the model version as `Unavailable` on the application homepage, please refresh the page.
+
 4. When you're done, stop the running containers and clean up resources.
    ```bash
    docker compose down
@@ -195,17 +199,16 @@ This repository serves as the central point of the project, containing the Docke
       $ cd /mnt/shared/
       ```
 
-   2. For **Minikube**, additional work is required. Clean up any pevious Minikube instance, launch a new instance, enable ingresses, and install Istio manually with its Helm Charts:
+   2. For **Minikube**, a different installation process is required. Clean up any pevious Minikube instance, launch a new instance, enable ingresses, and install Istio manually with its Helm Charts:
 
       ```shell
       minikube delete
       minikube start --memory=4096 --cpus=4 --driver=docker
-      minikube addons enable ingress
       helm repo add istio https://istio-release.storage.googleapis.com/charts
       helm repo update
       helm install istio-base istio/base -n istio-system --create-namespace
       helm install istiod istio/istiod -n istio-system
-      helm install istio-ingress istio/gateway -n istio-system
+      helm install istio-ingressgateway istio/gateway -n istio-system
       ```
 
       > **Note:** If you are using Fedora, you may need to run `sudo setenforce 0` first to allow Minikube to use the Docker driver.
@@ -257,16 +260,29 @@ To access the deployed application, you need to be able to resolve `myapp.local`
   sudo sh -c 'echo "192.168.56.99  myapp.local" >> /etc/hosts'
   ```
 
-- On **Minikube**, just use Minikube tunnel:
-  ```bash
-  minikube tunnel  # keep this terminal tab open for as long as you need to access myapp.local
-  ```
+- On **Minikube**:
+
+  1. Resolve `myapp.local`:
+
+     ```shell
+     sudo sh -c 'echo "127.0.0.1  myapp.local" >> /etc/hosts'
+     ```
+
+  2. Then, Minikube tunnel:
+
+     ```shell
+     minikube tunnel  # keep this terminal tab open for as long as you need to access myapp.local
+     ```
+
+  > **Note:** If you receive `Bad gateway` error when accessing the application at `myapp.local` using Minikube, please go to the `Troubleshooting` section to resolve this error.
+
+> **Note:** Make sure that you have only one instance of `myapp.local` on your `/etc/hosts` file (either for VM Cluster or Minikube).
 
 Then access the application at http://myapp.local
 
 Metrics are available at http://myapp.local/metrics
 
-> If you see "no healthy upstream", please wait for the app pods to initialize. Check with `kubectl get pods`.
+> **Note**: You may have to wait a few seconds for the pods to be initialized and the Ingress to be set up. If you see "no healthy upstream" in the browser, please wait for the app pods to initialize and refresh the page. You can check the status of your pods with `kubectl get pods`.
 
 ## Sticky sessions
 
@@ -274,7 +290,7 @@ To test Sticky sessions and primary/canary release routing, you can use curl wit
 
 - If `x-newvers=true`, it will always show v2
 - If `x-newvers=false`, it will always show v1
-- If `x-newvers` is not specified (i.e. in case of a new user), there is an 80% chance to see v1 and 20% to see v2.
+- If `x-newvers` is not specified (i.e. in case of a new user), there is an 90% chance to see v1 and 10% to see v2.
 
 Example for sticky session to v2:
 
@@ -286,7 +302,9 @@ for i in {1..10}; do curl -s -H "x-newvers: true" -H "x-user-id: testuser" http:
 for i in {1..10}; do curl -s -H "Host: myapp.local" -H "x-newvers: true" -H "x-user-id: testuser" http://localhost:8080 ; done | grep "App Version" # In another terminal tab
 ```
 
-## Prometheus, Grafana and Alert Manager
+## Prometheus, Grafana, Alert Manager, and Rate Limiting
+
+> **Note:** If you face any issues in this section, please check the `Troubleshooting` section.
 
 ### Prometheus
 
@@ -298,7 +316,7 @@ export PROMETHEUS_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.
 kubectl -n istio-system port-forward $PROMETHEUS_POD_NAME 9090
 
 # Minikube:
-minikube service myprom-kube-prometheus-sta-prometheus --url
+minikube service myprom-kube-prometheus-sta-prometheus -n istio-system --url
 ```
 
 ### Grafana
@@ -311,7 +329,7 @@ export GRAFANA_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/
 kubectl -n istio-system port-forward $GRAFANA_POD_NAME 3000
 
 # Minikube:
-minikube service myprom-grafana --url
+minikube service myprom-grafana -n istio-system --url
 ```
 
 Grafana login credentials:
@@ -324,8 +342,8 @@ The dashboard configurations inside the folder `helm/myapp/grafana/` are **autom
 ![Grafana dashboards tab showing our dashboard](imgs/grafana_load_dashboard.png)
 
 It should look like this:
-
-![Grafana dashboard](imgs/grafana_dashboard.png)
+![Grafana dashboard](imgs/grafana_dashboard_new.png)
+![Grafana dashboard](imgs/grafana_dashboard_remaining.png)
 
 ### Alert Manager
 
@@ -336,12 +354,46 @@ export ALERTMANAGER_POD=$(kubectl -n istio-system get pod -l app.kubernetes.io/n
 kubectl -n istio-system port-forward "$ALERTMANAGER_POD" 9093:9093
 ```
 
+### Rate Limiting
+
+Rate Limiting is setup to a maximum of 2 requests/min per user (IP) on the `/predict` endpoint. This can be tested by trying to predict 3 different reviews in quick succession. The third request will be rejected with a `429 status code (Too Many Requests)`.
+
+Additionally, there is a global rate limit of 10 requests/min. This can be tested by refreshing the landing page at least 11 times in quick succession (ctrl+R in the browser). The 11th request will be rejected with a `429 status code (Too Many Requests)`.
+
+We understand that these rates are low and unrealistic for a production application, but they are convenient for testing purposes.
+
+The rate limits can be adjusted by upgrading the current app deployment with the following command:
+
+```bash
+helm upgrade --install myapp-dev ./helm/myapp \
+--set ratelimit.predictLimit=10 --set ratelimit.globalLimit=100
+```
+
+This would set the `/predict` endpoint to 10 requests/min per user and the global limit to 100 requests/min.
+
 # Troubleshooting
 
 This section lists some backup methods and workarounds for problems that we have encountered. We list them separately to keep the main installation instructions readable.
 
-**Problem**: kubectl does not work from host, only from the ctrl node. Cannot access Prometheus/Grafana.
-**Solution**: Since kubectl still works on ctrl, just use ctrl's IP address instead of localhost. For example, to access Grafana at http://192.168.56.100:3000:
+**Problem 1**: Receiving `Bad gateway` error when accessing the application at `myapp.local` using Minikube.
+
+**Solution 1**: Make sure that requests to myapp.local are not intercepted by nginx before tunneling. To ensure nginx is not listening on port 80, you can stop local nginx temporarily:
+
+```bash
+sudo nginx -s stop
+```
+
+After stopping local nginx, re-run Minikube tunnel:
+
+```bash
+minikube tunnel  # keep this terminal tab open for as long as you need to access myapp.local
+```
+
+---
+
+**Problem 2**: kubectl does not work from host, only from the ctrl node. Cannot access Prometheus/Grafana.
+
+**Solution 2**: Since kubectl still works on ctrl, just use ctrl's IP address instead of localhost. For example, to access Grafana at http://192.168.56.100:3000:
 
 ```bash
 vagrant ssh ctrl
@@ -370,7 +422,10 @@ We aimed to meet the excellent criteria for all rubric points. We prepared a det
 
 ## Assignment 1
 
-The docker-compose.yaml successfully launches both containers (`app` and `model-service`). They communicate with each other over a shared Docker network, and only `app`'s port is exposed to the host. The app frontend can be used to query the model for predictions. All libraries and containers are released using automatic versioning via a GitHub workflow. We do not yet have additional interaction options (e.g. flagging incorrect predictions).
+The docker-compose.yaml successfully launches both containers (`app` and `model-service`). They communicate with each other over a shared Docker network, and only `app`'s port is exposed to the host. The app frontend can be used to query the model for predictions. All libraries and containers are released using automatic versioning via a GitHub workflow. We implemented additional interaction options:
+
+- Users are shown the predicted sentiment of the review and can indicate if the prediction is correct or not.
+- Our frontend has a "People" page with our pictures that redirect to LinkedIn pages when clicked by the users (used in continuous experimentation).
 
 ## Assignment 2
 
@@ -386,12 +441,12 @@ All issues and pending solutions described in Assignment 2 have been resolved.
 
 Our project status for Assignment 3 is as follows:
 
-| Category          | Expected Rating | Notes                                                                                                              |
-| ----------------- | --------------- | ------------------------------------------------------------------------------------------------------------------ |
-| Kubernetes Usage  | **Excellent**   | All criteria described in the Assignment 3 rubric is implemented.                                                  |
-| Helm Installation | **Excellent**   | All criteria described in the Assignment 3 rubric is implemented.                                                  |
-| App Monitoring    | **Good**        | Our AlertManager implementation is not yet fully functional. We are currently having troubles with sending emails. |
-| Grafana           | **Excellent**   | All criteria described in the Assignment 3 rubric is implemented.                                                  |
+| Category          | Expected Rating | Notes                                                                                                  |
+| ----------------- | --------------- | ------------------------------------------------------------------------------------------------------ |
+| Kubernetes Usage  | **Excellent**   | All criteria described in the Assignment 3 rubric is implemented.                                      |
+| Helm Installation | **Excellent**   | All criteria described in the Assignment 3 rubric is implemented.                                      |
+| App Monitoring    | **Excellent**   | Our AlertManager implementation is fully functional. Notifications successfully reach our GMail inbox. |
+| Grafana           | **Excellent**   | All criteria described in the Assignment 3 rubric is implemented.                                      |
 
 ## Assignment 4
 
@@ -415,14 +470,18 @@ For the purpose of traffic management, new versions for both model-service and a
 
 On the second version of the app, changes on the Frontend design is introduced. A back button is added on the second page instead of the _analyze another review_ button at the bottom of the page. Also, a placeholder text is added to the review submission box to guide the users in their reviews. Check the [app](https://github.com/remla25-team12/app) repository for the updates.
 
-For documentation, a template documentation file is defined but it only satisfies the sufficient criteria for now.
+**Continuous experimentation** documentation can be found in [docs/continuous-experimentation.md](https://github.com/remla25-team12/operation/blob/bb8750552db2838f0d975ae08ceb9cd3c189859a/docs/continuous-experimentation.md)
+
+**Deployment documentation** can be found in the [docs/deployment.md](https://github.com/remla25-team12/operation/blob/bb8750552db2838f0d975ae08ceb9cd3c189859a/docs/deployment.md)
+
+**The extension proposal** can be found in the [docs/extension.md](https://github.com/remla25-team12/operation/blob/bb8750552db2838f0d975ae08ceb9cd3c189859a/docs/extension.md)
 
 Our project status for Assignment 5 is as follows:
 
-| Category                   | Expected Rating   | Notes                                                                                                       |
-| -------------------------- | ----------------- | ----------------------------------------------------------------------------------------------------------- |
-| Traffic Management         | **Excellent**     | All criteria for this category are implemented (described in detail in the above paragraphs).               |
-| Additional Use-case        | **Still a To-do** | An additional use-case is not implemented yet.                                                              |
-| Continuous Experimentation | **Still a To-do** |                                                                                                             |
-| Deployment Documentation   | **Sufficient**    | For documentation, a template documentation file is defined. The documentation is still a work-in-progress. |
-| Extension Proposal         | **Still a To-do** |                                                                                                             |
+| Category                   | Expected Rating | Notes                                                                                         |
+| -------------------------- | --------------- | --------------------------------------------------------------------------------------------- |
+| Traffic Management         | **Excellent**   | All criteria for this category are implemented (described in detail in the above paragraphs). |
+| Additional Use-case        | **Excellent**   | User specific and global rate limiting is implemented fully.                                  |
+| Continuous Experimentation | **Excellent**   | All criteria for this category are implemented and presented.                                 |
+| Deployment Documentation   | **Excellent**   | All criteria for this category are implemented and presented.                                 |
+| Extension Proposal         | **Excellent**   | All criteria for this category are implemented and presented.                                 |

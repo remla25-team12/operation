@@ -47,10 +47,9 @@ _**Figure 3:** The bar chart displayed on our Grafana dashboard to visualize the
 
 ## Decision Process
 
-To determine whether the new UI feature (the LinkedIn icon on hover) has a statistically significant impact on user behavior, we will perform a hypothesis test based on the number of clicks recorded in our Grafana dashboard. We selected a 95% confidence level for our hypothesis test. Hence, the decision criteria for this hypothesis test will be as follows:
+To evaluate whether the new UI feature (the LinkedIn icon on hover) improves user interaction, we define a threshold-based decision criterion. Specifically, we consider the new feature effective if it increases the total number of clicks on member cards by **at least 10%** compared to the baseline version. As described in the previous sections of this documentation, we are using the *total number of clicks* as our metric to capture the impact of this new UI feature on user interaction.
 
-- We will **reject the null hypothesis** if the p-value of the statistical test is below the α = 0.05 threshold (selected due to the 95% confidence level), indicating a statistically significant difference in user behavior.
+We adopt the following decision rule:
 
-- Otherwise, we will **fail to reject the null hypothesis** if the p-value is above the α = 0.05 threshold, indicating that there is insufficient evidence to conclude a difference in user behavior.
-
-The p-value will be computed using the recorded values on the **Total Click Comparison between Versions** bar chart on our Grafana dashboard in an experiment setting.
+- If version 2 (with the LinkedIn icon) results in 10% or more clicks than version 1, we will **reject the null hypothesis**, concluding that the feature significantly improves user interaction.
+- Otherwise, we will **fail to reject the null hypothesis**, indicating that there is insufficient evidence to conclude a difference in user behavior.
