@@ -12,7 +12,7 @@
 
 - Our frontend can query the model.
 - Users are shown the predicted sentiment of the review and can indicate if the prediction is correct or not.
-- User feedback on predictions is collected and stored in a new dataset.
+- User feedback on predictions is collected and stored in a new dataset. When you boot up the app, a new folder is created under the operation directory (since the mount point is the operation folder). The feedback data is stored inside this folder in a file called feedback_dump.tsv (see [model_service.py](https://github.com/remla25-team12/model-service/blob/57cb9e5f75de0d96ce88060f9d5df817ee7079e4/model_service.py#L186) for this logic).
 - Our frontend has a "People" page with our pictures that redirect to LinkedIn pages when clicked (used in continuous experimentation).
 
 ## A1.2 Versioning & Releases
