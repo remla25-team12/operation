@@ -287,7 +287,7 @@ To test Sticky sessions and primary/canary release routing, you can use curl wit
 
 - If `x-newvers=true`, it will always show v2
 - If `x-newvers=false`, it will always show v1
-- If `x-newvers` is not specified (i.e. in case of a new user), there is an 80% chance to see v1 and 20% to see v2.
+- If `x-newvers` is not specified (i.e. in case of a new user), there is an 90% chance to see v1 and 10% to see v2.
 
 Example for sticky session to v2:
 
@@ -464,14 +464,18 @@ For the purpose of traffic management, new versions for both model-service and a
 
 On the second version of the app, changes on the Frontend design is introduced. A back button is added on the second page instead of the _analyze another review_ button at the bottom of the page. Also, a placeholder text is added to the review submission box to guide the users in their reviews. Check the [app](https://github.com/remla25-team12/app) repository for the updates.
 
-For documentation, a template documentation file is defined but it only satisfies the sufficient criteria for now.
+**Continuous experimentation** documentation can be found in [docs/continuous-experimentation.md](https://github.com/remla25-team12/operation/blob/bb8750552db2838f0d975ae08ceb9cd3c189859a/docs/continuous-experimentation.md)
+
+**Deployment documentation** can be found in the [docs/deployment.md](https://github.com/remla25-team12/operation/blob/bb8750552db2838f0d975ae08ceb9cd3c189859a/docs/deployment.md)
+
+**The extension proposal** can be found in the [docs/extension.md](https://github.com/remla25-team12/operation/blob/bb8750552db2838f0d975ae08ceb9cd3c189859a/docs/extension.md)
 
 Our project status for Assignment 5 is as follows:
 
-| Category                   | Expected Rating   | Notes                                                                                                       |
-| -------------------------- | ----------------- | ----------------------------------------------------------------------------------------------------------- |
-| Traffic Management         | **Excellent**     | All criteria for this category are implemented (described in detail in the above paragraphs).               |
-| Additional Use-case        | **Still a To-do** | An additional use-case is not implemented yet.                                                              |
-| Continuous Experimentation | **Still a To-do** |                                                                                                             |
-| Deployment Documentation   | **Sufficient**    | For documentation, a template documentation file is defined. The documentation is still a work-in-progress. |
-| Extension Proposal         | **Still a To-do** |                                                                                                             |
+| Category                   | Expected Rating | Notes                                                                                         |
+| -------------------------- |-----------------|-----------------------------------------------------------------------------------------------|
+| Traffic Management         | **Excellent**   | All criteria for this category are implemented (described in detail in the above paragraphs). |
+| Additional Use-case        | **Excellent**   | User specific and global rate limiting is implemented fully.                                  |
+| Continuous Experimentation | **Excellent**   | All criteria for this category are implemented and presented.                                 |
+| Deployment Documentation   | **Excellent**   | All criteria for this category are implemented and presented.                                 |
+| Extension Proposal         | **Excellent**   | All criteria for this category are implemented and presented.                                 |

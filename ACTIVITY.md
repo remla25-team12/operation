@@ -175,6 +175,6 @@ Approved PR: https://github.com/remla25-team12/operation/pull/81
 
 # Week 10: (Extra PRs Compensation)
 
-**Philippe Henry:**\
+**Philippe Henry:**
 
 Approved PR: https://github.com/remla25-team12/model-training/pull/23
