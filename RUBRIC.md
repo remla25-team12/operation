@@ -133,7 +133,7 @@ Excellent:
 
 ## A4.1 ML Testing
 
-### Automated Tests - Good
+### Automated Tests - Excellent
 
 Sufficient/Good:
 
