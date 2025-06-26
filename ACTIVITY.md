@@ -177,4 +177,4 @@ Approved PR: https://github.com/remla25-team12/operation/pull/81
 
 **Philippe Henry:**
 
-Approved PR: https://github.com/remla25-team12/model-training/pull/23
+Approved PR: https://github.com/remla25-team12/model-training/pull/24
