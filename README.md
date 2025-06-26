@@ -261,23 +261,19 @@ To access the deployed application, you need to be able to resolve `myapp.local`
 
   1. Resolve `myapp.local`:
 
-      ```shell
-      sudo sh -c 'echo "127.0.0.1  myapp.local" >> /etc/hosts'
-      ```
+     ```shell
+     sudo sh -c 'echo "127.0.0.1  myapp.local" >> /etc/hosts'
+     ```
 
-  2. Make sure that requests to `myapp.local` are not intercepted by nginx before tunneling. To ensure nginx is not listening on port 80, you can stop local nginx temporarily:
+  2. Then, Minikube tunnel:
 
-      ```shell
-      sudo nginx -s stop
-      ```
+     ```shell
+     minikube tunnel  # keep this terminal tab open for as long as you need to access myapp.local
+     ```
 
-  3. Finally, Minikube tunnel:
+  > **Note:** If you receive `Bad gateway` error when accessing the application at `myapp.local` using Minikube, please go to the `Troubleshooting` section to resolve this error.
 
-      ```shell
-      minikube tunnel  # keep this terminal tab open for as long as you need to access myapp.local
-      ```
-
- > **Note:** Make sure that you have only one instance of `myapp.local` on your `/etc/hosts` file (either for VM Cluster or Minikube). 
+> **Note:** Make sure that you have only one instance of `myapp.local` on your `/etc/hosts` file (either for VM Cluster or Minikube).
 
 Then access the application at http://myapp.local
 
@@ -304,6 +300,8 @@ for i in {1..10}; do curl -s -H "Host: myapp.local" -H "x-newvers: true" -H "x-u
 ```
 
 ## Prometheus, Grafana, Alert Manager, and Rate Limiting
+
+> **Note:** If you face any issues in this section, please check the `Troubleshooting` section.
 
 ### Prometheus
 
@@ -355,7 +353,7 @@ kubectl -n istio-system port-forward "$ALERTMANAGER_POD" 9093:9093
 
 ### Rate Limiting
 
-Rate Limiting is setup to a maximum of 2 requests/min per user (IP) on the `/predict` endpoint. This can be tested by trying to predict 3 different reviews in quick succession. The third request will be rejected with a `429 status code  (Too Many Requests)`.
+Rate Limiting is setup to a maximum of 2 requests/min per user (IP) on the `/predict` endpoint. This can be tested by trying to predict 3 different reviews in quick succession. The third request will be rejected with a `429 status code (Too Many Requests)`.
 
 Additionally, there is a global rate limit of 10 requests/min. This can be tested by refreshing the landing page at least 11 times in quick succession (ctrl+R in the browser). The 11th request will be rejected with a `429 status code (Too Many Requests)`.
 
@@ -374,8 +372,25 @@ This would set the `/predict` endpoint to 10 requests/min per user and the globa
 
 This section lists some backup methods and workarounds for problems that we have encountered. We list them separately to keep the main installation instructions readable.
 
-**Problem**: kubectl does not work from host, only from the ctrl node. Cannot access Prometheus/Grafana.
-**Solution**: Since kubectl still works on ctrl, just use ctrl's IP address instead of localhost. For example, to access Grafana at http://192.168.56.100:3000:
+**Problem 1**: Receiving `Bad gateway` error when accessing the application at `myapp.local` using Minikube.
+
+**Solution 1**: Make sure that requests to myapp.local are not intercepted by nginx before tunneling. To ensure nginx is not listening on port 80, you can stop local nginx temporarily:
+
+```bash
+sudo nginx -s stop
+```
+
+After stopping local nginx, re-run Minikube tunnel:
+
+```bash
+minikube tunnel  # keep this terminal tab open for as long as you need to access myapp.local
+```
+
+---
+
+**Problem 2**: kubectl does not work from host, only from the ctrl node. Cannot access Prometheus/Grafana.
+
+**Solution 2**: Since kubectl still works on ctrl, just use ctrl's IP address instead of localhost. For example, to access Grafana at http://192.168.56.100:3000:
 
 ```bash
 vagrant ssh ctrl
