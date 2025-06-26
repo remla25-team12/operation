@@ -184,10 +184,10 @@ Excellent:
 
 ### Code Quality - Excellent
 
-- Non-standard [.pylintrc]()
+- Non-standard [.pylintrc](https://github.com/remla25-team12/model-training/blob/b73e69e97cd00173d992496e1df75cc0a8de5d3a/.pylintrc#L85)
 - No warnings (else our GitHub action for linting would fail)
 - Multiple linters: black and flake8 defined in [setup.cfg](https://github.com/remla25-team12/model-training/blob/main/setup.cfg)
-- Custom pylint rule for ML-Specific code smells: We relaxed the naming convention rules to accommodate commonly used variable names in ML pipelines, such as X, X_train, X_test, y, and y_pred.
+- [Custom pylint rule](https://github.com/remla25-team12/model-training/blob/b73e69e97cd00173d992496e1df75cc0a8de5d3a/.pylintrc#L236) for ML-Specific code smells: We relaxed the naming convention rules to accommodate commonly used variable names in ML pipelines, such as X, X_train, X_test, y, and y_pred.
 
 # A5 Istio Service Mesh
 
@@ -202,7 +202,7 @@ Excellent:
 
 ### Additional Use Case - Excellent
 
-- We fully realized rate limiting with Istio: maximum 10 requests globally and maximum 2 model queries (/predict endpoint) per minute.
+- We fully realized rate limiting with Istio: maximum 10 requests globally and maximum 2 model queries (/predict endpoint) per minute. Check our [README]() for rate limiting details.
 
 ### Continuous Experimentation - Excellent
 

@@ -277,6 +277,8 @@ To access the deployed application, you need to be able to resolve `myapp.local`
       minikube tunnel  # keep this terminal tab open for as long as you need to access myapp.local
       ```
 
+ > **Note:** Make sure that you have only one instance of `myapp.local` on your `/etc/hosts` file (either for VM Cluster or Minikube). 
+
 Then access the application at http://myapp.local
 
 Metrics are available at http://myapp.local/metrics
