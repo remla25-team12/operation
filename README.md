@@ -339,8 +339,8 @@ The dashboard configurations inside the folder `helm/myapp/grafana/` are **autom
 ![Grafana dashboards tab showing our dashboard](imgs/grafana_load_dashboard.png)
 
 It should look like this:
-
-![Grafana dashboard](imgs/grafana_dashboard.png)
+![Grafana dashboard](imgs/grafana_dashboard_new.png)
+![Grafana dashboard](imgs/grafana_dashboard_remaining.png)
 
 ### Alert Manager
 
