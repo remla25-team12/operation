@@ -202,7 +202,7 @@ Excellent:
 
 ### Additional Use Case - Excellent
 
-- We fully realized rate limiting with Istio: maximum 10 requests globally and maximum 2 model queries (/predict endpoint) per minute. Check our [README]() for rate limiting details.
+- We fully realized rate limiting with Istio: maximum 10 requests globally and maximum 2 model queries (/predict endpoint) per minute. Check our [README](https://github.com/remla25-team12/operation/blob/main/README.md#rate-limiting) for rate limiting details.
 
 ### Continuous Experimentation - Excellent
 
