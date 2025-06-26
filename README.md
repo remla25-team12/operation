@@ -195,17 +195,16 @@ This repository serves as the central point of the project, containing the Docke
       $ cd /mnt/shared/
       ```
 
-   2. For **Minikube**, additional work is required. Clean up any pevious Minikube instance, launch a new instance, enable ingresses, and install Istio manually with its Helm Charts:
+   2. For **Minikube**, a different installation process is required. Clean up any pevious Minikube instance, launch a new instance, enable ingresses, and install Istio manually with its Helm Charts:
 
       ```shell
       minikube delete
       minikube start --memory=4096 --cpus=4 --driver=docker
-      minikube addons enable ingress
       helm repo add istio https://istio-release.storage.googleapis.com/charts
       helm repo update
       helm install istio-base istio/base -n istio-system --create-namespace
       helm install istiod istio/istiod -n istio-system
-      helm install istio-ingress istio/gateway -n istio-system
+      helm install istio-ingressgateway istio/gateway -n istio-system
       ```
 
       > **Note:** If you are using Fedora, you may need to run `sudo setenforce 0` first to allow Minikube to use the Docker driver.
@@ -261,6 +260,7 @@ To access the deployed application, you need to be able to resolve `myapp.local`
   ```bash
   minikube tunnel  # keep this terminal tab open for as long as you need to access myapp.local
   ```
+ >**Note**: You may have to wait a few seconds for the pods to be initialized and the Ingress to be set up. If you see "no healthy upstream" in the browser, wait a bit longer and refresh the page.
 
 Then access the application at http://myapp.local
 
@@ -298,7 +298,7 @@ export PROMETHEUS_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.
 kubectl -n istio-system port-forward $PROMETHEUS_POD_NAME 9090
 
 # Minikube:
-minikube service myprom-kube-prometheus-sta-prometheus --url
+minikube service myprom-kube-prometheus-sta-prometheus -n istio-system --url
 ```
 
 ### Grafana
@@ -311,7 +311,7 @@ export GRAFANA_POD_NAME=$(kubectl -n istio-system get pod -l "app.kubernetes.io/
 kubectl -n istio-system port-forward $GRAFANA_POD_NAME 3000
 
 # Minikube:
-minikube service myprom-grafana --url
+minikube service myprom-grafana -n istio-system --url
 ```
 
 Grafana login credentials:
@@ -328,7 +328,6 @@ It should look like this:
 ![Grafana dashboard](imgs/grafana_dashboard.png)
 
 ### Alert Manager
-
 Access Alert Manager at http://localhost:9093/:
 
 ```bash
@@ -336,8 +335,22 @@ export ALERTMANAGER_POD=$(kubectl -n istio-system get pod -l app.kubernetes.io/n
 kubectl -n istio-system port-forward "$ALERTMANAGER_POD" 9093:9093
 ```
 
-# Troubleshooting
+### Rate Limiting
 
+Rate Limiting is setups to 2 requests/min maximum per user (IP) on the `/predict` endpoint. This can be tested by trying to predict 3 different reviews in quick succession. The third request will be rejected with a `429 status code  (Too Many Requests)`.
+Additionally, there is a global rate limit of 10 requests/minute. This can be tested by refreshing the landing page at least 11 times in quick succession (ctrl+R in the browser). The 11th request will be rejected with a `429 status code (Too Many Requests)`.
+
+We understand that these rates are low and unrealistic for a production application, but they are convenient for testing purposes. 
+
+The rate limits can be adjusted by upgrading the current app deployment with the following command:
+
+```bash
+    helm upgrade --install myapp-dev ./helm/myapp \
+    --set ratelimit.predictLimit=10 --set ratelimit.globalLimit=100
+```
+This would set the `/predict` endpoint to 10 requests/minute per user and the global limit to 100 requests/minute.
+
+# Troubleshooting
 This section lists some backup methods and workarounds for problems that we have encountered. We list them separately to keep the main installation instructions readable.
 
 **Problem**: kubectl does not work from host, only from the ctrl node. Cannot access Prometheus/Grafana.
@@ -352,7 +365,6 @@ kubectl -n istio-system port-forward --address=0.0.0.0 $GRAFANA_POD_NAME 3000
 ```
 
 And for Prometheus at http://192.168.56.100:9090:
-
 ```bash
 # VM Cluster (Backup option)
 vagrant ssh ctrl
