@@ -85,6 +85,9 @@ This repository serves as the central point of the project, containing the Docke
    ```
 
 3. Navigate to http://localhost:8080 to access the application homepage.
+
+   > **Note:** If you see the model version as `Unavailable` on the application homepage, please refresh the page.
+
 4. When you're done, stop the running containers and clean up resources.
    ```bash
    docker compose down
