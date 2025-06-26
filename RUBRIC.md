@@ -140,12 +140,12 @@ Sufficient/Good:
 - All 4 ML Test Score categories are applied and clearly labelled with comments in [run_tests.py](https://github.com/remla25-team12/model-training/blob/main/tests/run_tests.py)
 - Non-determinism robustness test: [test_robustness.py](https://github.com/remla25-team12/model-training/blob/main/tests/test_robustness.py)
 - Performance tests: [test_performance.py](https://github.com/remla25-team12/model-training/blob/main/tests/test_performance.py)
-- **NOT IMPLEMENTED:** Feature cost test
+- Feature cost test : [test_feature_cost_importance](https://github.com/remla25-team12/model-training/blob/dbccc56ffbae17195fc71c9f518979d6b3400394/tests/test_aa_utils.py#L33)
 
 Excellent:
 
 - Coverage measured in [run_tests.py](https://github.com/remla25-team12/model-training/blob/main/tests/run_tests.py)
-- **NOT IMPLEMENTED:** Mutamorphic testing
+- Mutamorphic testing : [test_mutamorphic_with_synonym_replacement](https://github.com/remla25-team12/model-training/blob/dbccc56ffbae17195fc71c9f518979d6b3400394/tests/test_robustness.py#L69) and [test_synonym_metamorphic](https://github.com/remla25-team12/model-training/blob/dbccc56ffbae17195fc71c9f518979d6b3400394/tests/test_aa_utils.py#L61)
 
 ### Continuous Training - Excellent
 
